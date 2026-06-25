@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-apple-bg text-gray-900 font-sans antialiased min-h-screen;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl rounded-2xl shadow-card border border-white/60;
+  }
+
+  .btn-primary {
+    @apply px-6 py-3 bg-apple-blue text-white rounded-xl font-medium
+           hover:bg-blue-600 active:scale-[0.98] transition-all duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-white text-gray-700 rounded-xl font-medium border border-gray-200
+           hover:bg-gray-50 active:scale-[0.98] transition-all duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
+           focus:outline-none focus:ring-2 focus:ring-apple-blue/30 focus:border-apple-blue
+           transition-all duration-200;
+  }
+
+  .congrats-gold {
+    @apply font-extrabold;
+    color: #c9a227;
+    text-shadow:
+      0 0 24px rgba(234, 179, 8, 0.45),
+      0 2px 0 rgba(180, 130, 0, 0.35),
+      0 0 2px rgba(255, 215, 0, 0.8);
+    letter-spacing: 0.04em;
+  }
+}

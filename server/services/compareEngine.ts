@@ -1,0 +1,205 @@
+import geoData from '../data/geo/nationality-regions.json';
+import positionGroups from '../data/position-groups.json';
+import { CompareResult, Theme } from '../types';
+
+type CountryInfo = { continent: string; groups: string[] };
+
+const countries = geoData.countries as Record<string, CountryInfo>;
+const proximityGroups = geoData.proximityGroups as string[][];
+
+function normalizeStr(val: unknown): string {
+  if (val === null || val === undefined) return '';
+  return String(val).trim().toLowerCase();
+}
+
+function compareExact(a: unknown, b: unknown): CompareResult {
+  if (normalizeStr(a) === normalizeStr(b)) return 'hit';
+  return 'miss';
+}
+
+function compareNumber(
+  guess: unknown,
+  answer: unknown,
+  closeThreshold: number,
+  absoluteClose?: number
+): CompareResult {
+  const g = Number(guess);
+  const a = Number(answer);
+  if (isNaN(g) || isNaN(a)) return 'miss';
+  if (g === a) return 'hit';
+  if (absoluteClose !== undefined && Math.abs(g - a) <= absoluteClose) {
+    return 'close';
+  }
+  if (a !== 0 && Math.abs(g - a) / Math.abs(a) <= closeThreshold) {
+    return 'close';
+  }
+  if (a === 0 && Math.abs(g) <= (absoluteClose ?? 1)) return 'close';
+  return 'miss';
+}
+
+function getPositionGroup(theme: Theme, position: string): string | null {
+  const groups = positionGroups[theme as keyof typeof positionGroups] as Record<
+    string,
+    string[]
+  >;
+  if (!groups) return null;
+  const norm = normalizeStr(position);
+  for (const [group, members] of Object.entries(groups)) {
+    if (members.some((m) => normalizeStr(m) === norm)) return group;
+  }
+  return null;
+}
+
+function comparePosition(theme: Theme, guess: unknown, answer: unknown): CompareResult {
+  const g = normalizeStr(guess);
+  const a = normalizeStr(answer);
+  if (g === a) return 'hit';
+  const gGroup = getPositionGroup(theme, g);
+  const aGroup = getPositionGroup(theme, a);
+  if (gGroup && aGroup && gGroup === aGroup) return 'close';
+  return 'miss';
+}
+
+function compareNationality(guess: unknown, answer: unknown): CompareResult {
+  const g = String(guess ?? '').trim();
+  const a = String(answer ?? '').trim();
+  if (g === a) return 'hit';
+
+  const gInfo = countries[g];
+  const aInfo = countries[a];
+  if (!gInfo || !aInfo) return 'miss';
+
+  // 仅按更细的 groups（北欧、西欧、东欧、独联体、中东、东南亚等）判断接近，不再使用大洲级别匹配
+  for (const group of proximityGroups) {
+    if (group.includes(g) && group.includes(a)) return 'close';
+  }
+
+  const gGroups = new Set(gInfo.groups);
+  for (const grp of aInfo.groups) {
+    if (gGroups.has(grp)) return 'close';
+  }
+
+  return 'miss';
+}
+
+function compareNullable(guess: unknown, answer: unknown): CompareResult {
+  const gNull = guess === null || guess === undefined || guess === '';
+  const aNull = answer === null || answer === undefined || answer === '';
+  if (gNull && aNull) return 'hit';
+  if (gNull || aNull) return 'miss';
+  return compareExact(guess, answer);
+}
+
+const NUMERIC_RULES: Record<
+  Theme,
+  Record<string, { threshold?: number; absolute?: number }>
+> = {
+  csgo: {
+    age: { absolute: 2 },
+    rating: { absolute: 0.08 },
+    top20Count: { absolute: 1 },
+  },
+  football: {
+    age: { absolute: 2 },
+    marketValue: { threshold: 0.2 },
+    height: { absolute: 3 },
+  },
+  nba: {
+    age: { absolute: 2 },
+    height: { absolute: 3 },
+    playoffCount: { absolute: 1 },
+  },
+  anime: {
+    age: { absolute: 5 },
+    height: { absolute: 10 },
+    powerLevel: { absolute: 8 },
+  },
+};
+
+const POSITION_FIELDS = new Set(['position']);
+const NATIONALITY_FIELDS = new Set(['nationality', 'nationalTeam']);
+const NULLABLE_FIELDS = new Set(['club', 'school']);
+
+export function compareField(
+  theme: Theme,
+  field: string,
+  guessValue: unknown,
+  answerValue: unknown
+): CompareResult {
+  if (field === 'name') {
+    return compareExact(guessValue, answerValue);
+  }
+
+  if (NULLABLE_FIELDS.has(field)) {
+    return compareNullable(guessValue, answerValue);
+  }
+
+  if (NATIONALITY_FIELDS.has(field)) {
+    return compareNationality(guessValue, answerValue);
+  }
+
+  if (POSITION_FIELDS.has(field)) {
+    return comparePosition(theme, guessValue, answerValue);
+  }
+
+  const rule = NUMERIC_RULES[theme]?.[field];
+  if (rule) {
+    // Handle string ages like "千年" for anime
+    if (typeof guessValue === 'string' || typeof answerValue === 'string') {
+      return compareExact(guessValue, answerValue);
+    }
+    return compareNumber(
+      guessValue,
+      answerValue,
+      rule.threshold ?? 0,
+      rule.absolute
+    );
+  }
+
+  // string enum fields: team, anime, genre, race, occupation
+  const exact = compareExact(guessValue, answerValue);
+  if (exact === 'hit') return 'hit';
+
+  // race/occupation same category close for anime
+  if (theme === 'anime' && ['race', 'occupation'].includes(field)) {
+    const gGroup = getPositionGroup('anime', String(guessValue));
+    const aGroup = getPositionGroup('anime', String(answerValue));
+    if (gGroup && aGroup && gGroup === aGroup) return 'close';
+  }
+
+  // team close: same first word or substring (weaker)
+  if (field === 'team' || field === 'anime' || field === 'club') {
+    const g = normalizeStr(guessValue);
+    const a = normalizeStr(answerValue);
+    if (g.includes(a) || a.includes(g)) return 'close';
+  }
+
+  return 'miss';
+}
+
+/** When numeric guess misses, indicate higher or lower than answer */
+export function getNumericDirection(
+  theme: Theme,
+  field: string,
+  guessValue: unknown,
+  answerValue: unknown
+): 'higher' | 'lower' | null {
+  const rule = NUMERIC_RULES[theme]?.[field];
+  if (!rule) return null;
+  if (typeof guessValue === 'string' || typeof answerValue === 'string') return null;
+
+  const g = Number(guessValue);
+  const a = Number(answerValue);
+  if (isNaN(g) || isNaN(a) || g === a) return null;
+  return g > a ? 'higher' : 'lower';
+}
+
+export function formatValue(val: unknown, field?: string): string | number | null {
+  const empty =
+    val === null || val === undefined || (typeof val === 'string' && val.trim() === '');
+  if (field === 'club' && empty) return '无';
+  if (field === 'school' && empty) return '无';
+  if (empty) return null;
+  if (typeof val === 'number') return val;
+  return String(val);
+}

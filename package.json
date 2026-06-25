@@ -1,0 +1,44 @@
+{
+  "name": "guess-who",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "tsx watch server/index.ts",
+    "dev:client": "npm run dev --prefix client",
+    "restart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/kill-dev.ps1 && npm install && npm install --prefix client && npm run dev",
+    "build": "npm run build --prefix client && tsc -p server/tsconfig.json",
+    "start": "node dist/server/index.js",
+    "typecheck": "tsc -p server/tsconfig.json --noEmit && npm run typecheck --prefix client",
+    "fetch:images": "node scripts/fetch-all-images.js",
+    "fetch:images:csgo": "node scripts/scrape-csgo-wanmei.js",
+    "sync:csgo": "node scripts/sync-csgo-rosters-wanmei.js",
+    "sync:nba": "node scripts/sync-nba-hupu-full.js",
+    "patch:nba:names": "node scripts/patch-nba-chinese-names.js",
+    "sync:football:xhs": "node scripts/sync-football-xhs.js",
+    "patch:csgo:liquipedia": "node scripts/patch-csgo-liquipedia.js",
+    "patch:csgo:liquipedia:slow": "node scripts/patch-csgo-liquipedia.js --only-missing --limit 5 --delay-min 18000 --delay-max 32000",
+    "backfill:csgo:birthdates": "node scripts/backfill-csgo-birthdates.js",
+    "backfill:nba:birthdates": "node scripts/backfill-nba-birthdates.js --only-missing",
+    "backfill:nba:playoffs": "node scripts/backfill-nba-playoff-counts.js",
+    "backfill:birthdates": "node scripts/backfill-all-birthdates.js --only-missing",
+    "patch:csgo:team": "node scripts/patch-csgo-team.js",
+    "filter:football:leagues": "node scripts/filter-football-club-leagues.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.5",
+    "concurrently": "^9.1.2",
+    "puppeteer": "^25.2.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
