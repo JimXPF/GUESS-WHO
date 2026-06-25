@@ -5,44 +5,55 @@ interface Props {
   hints: HintInfo[];
 }
 
+function hintTitle(hint: HintInfo, index: number): string {
+  if (hint.field === 'confederation' || hint.field === 'clubLeague' || hint.field === 'dexNumber') {
+    return index === 0 ? '首条' : '追加';
+  }
+  if (hint.field === 'moveHint') return '招式';
+  return index === 0 ? '提示' : '追加';
+}
+
 export default function HintCard({ hints }: Props) {
   if (!hints.length) return null;
 
+  const single = hints.length === 1;
+
   return (
-    <div className="space-y-2">
-      <AnimatePresence mode="popLayout">
-        {hints.map((hint, index) => (
-          <motion.div
-            key={`${hint.field}-${hint.value}-${index}`}
-            initial={{ opacity: 0, y: -10, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8 }}
-            layout
-            className="glass-card p-5 text-center"
-          >
-            <p className="text-sm text-apple-gray mb-2">
-              {hint.field === 'confederation' || hint.field === 'clubLeague'
-                ? '💡 首条提示'
-                : index === 0
-                  ? '💡 提示'
-                  : `💡 追加提示（本题第 ${[3, 6, 9][index - 1]} 次未中）`}
-            </p>
-            <p className="text-lg font-medium text-gray-700 mb-1">{hint.label}</p>
-            <motion.p
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              className="text-3xl font-bold text-apple-blue"
+    <div className="w-full">
+      <div className="flex gap-2 w-full">
+        <AnimatePresence mode="popLayout">
+          {hints.map((hint, index) => (
+            <motion.div
+              key={`${hint.field}-${hint.value}-${index}`}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              layout
+              className={`glass-card px-2 sm:px-3 py-2 text-center min-w-0 ${
+                single ? 'flex-1 w-full' : 'flex-1 basis-0'
+              }`}
             >
-              {hint.value ?? '未知'}
-            </motion.p>
-            {index === 0 && hints.length === 1 && (
-              <p className="text-xs text-apple-gray mt-3">
-                根据提示猜测人物名字；连续 3 / 6 / 9 次未中将解锁更多提示
+              <p className="text-[10px] text-apple-gray leading-tight mb-0.5">
+                {hintTitle(hint, index)}
               </p>
-            )}
-          </motion.div>
-        ))}
-      </AnimatePresence>
+              <p
+                className="text-[11px] font-medium text-gray-600 leading-tight truncate"
+                title={hint.label}
+              >
+                {hint.label}
+              </p>
+              <p
+                className={`font-bold text-apple-blue leading-tight mt-0.5 truncate ${
+                  single ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'
+                }`}
+                title={String(hint.value ?? '')}
+              >
+                {hint.value ?? '—'}
+              </p>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

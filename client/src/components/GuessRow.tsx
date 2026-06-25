@@ -5,11 +5,12 @@ import { RESULT_COLORS, RESULT_LABELS } from '../types';
 interface AvatarProps {
   name: string;
   imageUrl?: string | null;
-  size?: 'sm' | 'md';
+  size?: 'xs' | 'sm' | 'md';
 }
 
 export function CharacterAvatar({ name, imageUrl, size = 'sm' }: AvatarProps) {
-  const dim = size === 'sm' ? 'w-9 h-9 text-xs' : 'w-11 h-11 text-sm';
+  const dim =
+    size === 'xs' ? 'w-7 h-7 text-[10px]' : size === 'sm' ? 'w-9 h-9 text-xs' : 'w-11 h-11 text-sm';
   const initial = name.charAt(0);
 
   if (imageUrl) {
@@ -61,6 +62,12 @@ const COL_WIDTH: Record<string, string> = {
   race: 'w-[72px]',
   occupation: 'w-[72px]',
   powerLevel: 'w-[72px]',
+  type1: 'w-[64px]',
+  type2: 'w-[64px]',
+  evolutionStage: 'w-[72px]',
+  category: 'w-[80px]',
+  ability: 'w-[72px]',
+  baseStatTotal: 'w-[72px]',
 };
 
 function compareHint(
@@ -71,10 +78,34 @@ function compareHint(
   if (!direction || guessValue == null) return null;
   const val = String(guessValue);
   const prefix = result === 'close' ? '略' : '';
-  // direction is guess vs answer; label tells where the answer sits vs this guess
   if (direction === 'higher') return `${prefix}低于${val}`;
   if (direction === 'lower') return `${prefix}高于${val}`;
   return null;
+}
+
+function FieldCell({ field, index, rowIndex }: { field: FieldCompare; index: number; rowIndex: number }) {
+  const hint =
+    field.result === 'hit'
+      ? '✓'
+      : compareHint(field.result, field.direction, field.guessValue);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: rowIndex * 0.04 + index * 0.02 }}
+      className={`rounded-md px-1 py-1 border text-center min-w-0 ${RESULT_COLORS[field.result]}`}
+      title={`${field.label} · ${RESULT_LABELS[field.result]}${hint && hint !== '✓' ? ` · ${hint}` : ''}`}
+    >
+      <p className="text-[9px] text-apple-gray leading-none mb-0.5 truncate">{field.label}</p>
+      <p className="text-[11px] font-semibold text-gray-800 leading-tight break-all">
+        {field.guessValue ?? '—'}
+      </p>
+      {hint && (
+        <p className="text-[9px] font-medium mt-0.5 opacity-90 leading-none">{hint}</p>
+      )}
+    </motion.div>
+  );
 }
 
 interface Props {
@@ -92,18 +123,46 @@ export default function GuessRow({
   isCorrect,
   index,
 }: Props) {
+  const cardClass = isCorrect
+    ? 'rounded-xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 via-green-50/80 to-white shadow-md shadow-emerald-200/50'
+    : 'glass-card';
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, type: 'spring', stiffness: 260 }}
-      className={
-        isCorrect
-          ? 'overflow-hidden rounded-xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 via-green-50/80 to-white shadow-lg shadow-emerald-200/60'
-          : 'glass-card overflow-hidden'
-      }
+      transition={{ delay: index * 0.04, type: 'spring', stiffness: 280 }}
+      className={cardClass}
     >
-      <div className="overflow-x-auto">
+      {/* Mobile: compact header + wrapped field grid */}
+      <div className="lg:hidden p-2">
+        <div className="flex items-center gap-2 min-w-0 mb-2">
+          <span className="text-[10px] font-semibold text-apple-gray shrink-0 tabular-nums">
+            猜测{index + 1}
+          </span>
+          <CharacterAvatar name={guessName} imageUrl={imageUrl} size="xs" />
+          <span className="text-sm font-semibold truncate min-w-0 flex-1" title={guessName}>
+            {guessName}
+          </span>
+          {isCorrect && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="text-apple-green text-xs font-bold shrink-0"
+            >
+              ✓
+            </motion.span>
+          )}
+        </div>
+        <div className="grid grid-cols-3 gap-1">
+          {fieldResults.map((field, fi) => (
+            <FieldCell key={field.field} field={field} index={fi} rowIndex={index} />
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: horizontal table */}
+      <div className="hidden lg:block overflow-x-auto">
         <table className="w-full text-xs border-collapse table-fixed min-w-[980px]">
           <thead>
             <tr className="border-b border-gray-100">
@@ -130,6 +189,7 @@ export default function GuessRow({
                 }`}
               >
                 <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[10px] text-apple-gray shrink-0">#{index + 1}</span>
                   <CharacterAvatar name={guessName} imageUrl={imageUrl} />
                   <span className="truncate" title={guessName}>
                     {guessName}

@@ -175,6 +175,7 @@ export default function GamePage() {
             onSubmit={handleGuess}
             disabled={inputDisabled}
             loading={loading}
+            suggestionsPlacement="top"
           />
           <button
             className="btn-primary shrink-0 px-6"
@@ -217,7 +218,7 @@ export default function GamePage() {
         pulseAttempts={pulseAttempts}
       />
 
-      <div className="flex-1 min-h-0 max-w-[1520px] mx-auto w-full px-3 sm:px-4 py-3 sm:py-4 grid grid-cols-1 lg:grid-cols-[200px_1fr_220px] gap-4">
+      <div className="flex-1 min-h-0 max-w-[1520px] mx-auto w-full px-3 sm:px-4 py-2 sm:py-3 grid grid-cols-1 lg:grid-cols-[200px_1fr_220px] gap-3 lg:gap-4 overflow-hidden">
         <aside className="hidden lg:flex lg:flex-col gap-4 shrink-0 order-2 lg:order-1 overflow-hidden">
           <StatSidebar
             score={session.score}
@@ -227,8 +228,8 @@ export default function GamePage() {
           />
         </aside>
 
-        <main className="flex flex-col min-h-0 min-w-0 order-1 lg:order-2">
-          <div className="shrink-0 space-y-2 sm:space-y-3 mb-2 sm:mb-3">
+        <main className="flex flex-col min-h-0 min-w-0 order-1 lg:order-2 overflow-hidden">
+          <div className="shrink-0 mb-2">
             {questionDone ? (
               <CongratsBanner attempts={session.questionAttempts} score={lastScore} />
             ) : (
@@ -236,13 +237,13 @@ export default function GamePage() {
             )}
 
             {!questionDone && toast && (
-              <div className="bg-apple-orange/10 border border-apple-orange/30 text-apple-orange rounded-xl px-3 py-2 text-sm text-center">
+              <div className="bg-apple-orange/10 border border-apple-orange/30 text-apple-orange rounded-lg px-3 py-1.5 text-xs text-center mt-2">
                 {toast}
               </div>
             )}
 
             {error && (
-              <div className="bg-apple-red/10 border border-apple-red/30 text-apple-red rounded-xl px-3 py-2 text-sm text-center">
+              <div className="bg-apple-red/10 border border-apple-red/30 text-apple-red rounded-lg px-3 py-1.5 text-xs text-center mt-2">
                 {error}
               </div>
             )}
@@ -250,7 +251,7 @@ export default function GamePage() {
 
           <div
             ref={scrollAreaRef}
-            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-2 pr-0.5 -mx-0.5 px-0.5 overscroll-contain"
+            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-2 overscroll-contain"
           >
             {currentGuesses.length === 0 ? (
               <div className="glass-card p-6 sm:p-8 text-center text-apple-gray">

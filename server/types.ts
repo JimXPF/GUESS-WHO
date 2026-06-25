@@ -102,7 +102,6 @@ export const THEME_FIELDS: Record<Theme, { field: string; label: string }[]> = {
     { field: 'team', label: '球队' },
     { field: 'age', label: '年龄' },
     { field: 'height', label: '身高(cm)' },
-    { field: 'school', label: '学校' },
     { field: 'draft', label: '选秀' },
     { field: 'playoffCount', label: '季后赛次数' },
     { field: 'position', label: '位置' },
@@ -113,7 +112,6 @@ export const THEME_FIELDS: Record<Theme, { field: string; label: string }[]> = {
     { field: 'race', label: '种族' },
     { field: 'occupation', label: '职业' },
     { field: 'age', label: '年龄' },
-    { field: 'height', label: '身高(cm)' },
     { field: 'powerLevel', label: '战斗力' },
   ],
 };
