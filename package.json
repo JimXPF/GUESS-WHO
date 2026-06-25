@@ -29,13 +29,13 @@
     "filter:football:leagues": "node scripts/filter-football-club-leagues.js"
   },
   "dependencies": {
-    "better-sqlite3": "^11.7.0",
+    "sql.js": "^1.11.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "uuid": "^11.0.5"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.12",
+    "@types/sql.js": "^1.4.9",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.5",

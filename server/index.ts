@@ -4,7 +4,7 @@ import path from 'path';
 import os from 'os';
 import { gameRouter } from './routes/game';
 import { leaderboardRouter } from './routes/leaderboard';
-import './db';
+import { initDatabase } from './db';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -40,10 +40,20 @@ function getLocalIp(): string {
   return 'localhost';
 }
 
-app.listen(PORT, '0.0.0.0', () => {
-  const ip = getLocalIp();
-  console.log(`API server running at http://0.0.0.0:${PORT}`);
-  console.log(`LAN access: http://${ip}:${PORT}`);
+async function start() {
+  await initDatabase();
+  console.log('Database initialized');
+
+  app.listen(PORT, '0.0.0.0', () => {
+    const ip = getLocalIp();
+    console.log(`API server running at http://0.0.0.0:${PORT}`);
+    console.log(`LAN access: http://${ip}:${PORT}`);
+  });
+}
+
+start().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
 });
 
 export default app;

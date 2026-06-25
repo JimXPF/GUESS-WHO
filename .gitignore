@@ -7,3 +7,6 @@ client/dist/
 .DS_Store
 .env
 *.log
+.coze
+AGENTS.md
+/coze-*.sh
