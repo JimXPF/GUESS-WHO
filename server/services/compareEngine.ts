@@ -37,6 +37,18 @@ function compareNumber(
   return 'miss';
 }
 
+function positionTokens(position: string): string[] {
+  const raw = String(position ?? '').trim();
+  if (!raw) return [];
+  if (raw.includes('/')) {
+    return raw
+      .split('/')
+      .map((part) => part.trim())
+      .filter(Boolean);
+  }
+  return [raw];
+}
+
 function getPositionGroup(theme: Theme, position: string): string | null {
   const groups = positionGroups[theme as keyof typeof positionGroups] as Record<
     string,
@@ -47,15 +59,26 @@ function getPositionGroup(theme: Theme, position: string): string | null {
   for (const [group, members] of Object.entries(groups)) {
     if (members.some((m) => normalizeStr(m) === norm)) return group;
   }
+  for (const token of positionTokens(position)) {
+    const tokenNorm = normalizeStr(token);
+    for (const [group, members] of Object.entries(groups)) {
+      if (members.some((m) => normalizeStr(m) === tokenNorm)) return group;
+    }
+  }
   return null;
 }
 
 function comparePosition(theme: Theme, guess: unknown, answer: unknown): CompareResult {
-  const g = normalizeStr(guess);
-  const a = normalizeStr(answer);
-  if (g === a) return 'hit';
-  const gGroup = getPositionGroup(theme, g);
-  const aGroup = getPositionGroup(theme, a);
+  const gFull = normalizeStr(String(guess ?? ''));
+  const aFull = normalizeStr(String(answer ?? ''));
+  if (gFull === aFull) return 'hit';
+
+  const gTokens = positionTokens(String(guess ?? '')).map(normalizeStr);
+  const aTokens = positionTokens(String(answer ?? '')).map(normalizeStr);
+  if (gTokens.some((gt) => aTokens.includes(gt))) return 'hit';
+
+  const gGroup = getPositionGroup(theme, String(guess ?? ''));
+  const aGroup = getPositionGroup(theme, String(answer ?? ''));
   if (gGroup && aGroup && gGroup === aGroup) return 'close';
   return 'miss';
 }

@@ -31,9 +31,11 @@ function mergeEntry(scraped, existing, teamName) {
     top20Count: scraped.top20Count ?? existing?.top20Count ?? 0,
     position: positionToZh(scraped.position || 'Rifler'),
     ...(scraped.top20Summary ? { top20Summary: scraped.top20Summary } : {}),
+    ...(scraped.sniperStat != null ? { sniperStat: scraped.sniperStat } : existing?.sniperStat != null ? { sniperStat: existing.sniperStat } : {}),
     ...(scraped.wanmeiId ? { wanmeiId: scraped.wanmeiId } : {}),
     ...(existing?.displayName ? { displayName: existing.displayName } : {}),
     ...(existing?.age != null ? { age: existing.age } : {}),
+    ...(existing?.birthDate ? { birthDate: existing.birthDate } : {}),
     imageUrl: normalizeImageUrl(scraped.src) || existing?.imageUrl,
   };
 }
@@ -109,7 +111,7 @@ async function main() {
   const removed = all.filter((p) => p.team === teamName && !rosterIds.has(p.id));
   console.log(`\nUpdated ${teamName}: ${players.length} players`);
   if (removed.length) console.log(`Removed: ${removed.map((p) => p.name).join(', ')}`);
-  console.log(`IGL: ${players.find((p) => p.position === '指挥')?.name || 'none'}`);
+  console.log(`IGL: ${players.find((p) => String(p.position).includes('指挥'))?.name || 'none'}`);
 }
 
 main().catch((e) => {

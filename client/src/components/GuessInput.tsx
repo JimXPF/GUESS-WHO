@@ -16,6 +16,8 @@ interface Props {
   onChange: (value: string) => void;
   onSubmit: (text: string, characterId?: string) => void;
   loading?: boolean;
+  /** Mobile sticky footer: open suggestions upward */
+  suggestionsPlacement?: 'top' | 'bottom';
 }
 
 export default function GuessInput({
@@ -26,6 +28,7 @@ export default function GuessInput({
   onChange,
   onSubmit,
   loading,
+  suggestionsPlacement = 'bottom',
 }: Props) {
   const [suggestions, setSuggestions] = useState<SuggestItem[]>([]);
   const [open, setOpen] = useState(false);
@@ -95,7 +98,7 @@ export default function GuessInput({
     <div ref={wrapRef} className="relative flex-1 min-w-0">
       <input
         ref={inputRef}
-        className="input-field w-full"
+        className="input-field w-full text-base min-h-[48px]"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -107,7 +110,13 @@ export default function GuessInput({
         spellCheck={false}
       />
       {open && suggestions.length > 0 && (
-        <ul className="absolute z-50 left-0 right-0 bottom-full mb-1 py-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-56 overflow-y-auto">
+        <ul
+          className={`absolute z-50 left-0 right-0 py-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto ${
+            suggestionsPlacement === 'top'
+              ? 'bottom-full mb-1'
+              : 'top-full mt-1'
+          }`}
+        >
           {suggestions.map((item, i) => (
             <li key={item.id}>
               <button

@@ -299,10 +299,11 @@ async function parsePlayerDetail(page) {
 
     const wanmeiId = (location.pathname.match(/\/players\/(\d+)/) || [])[1] || null;
 
-    return { name, team, nationality, position, src, rating, top20Text, wanmeiId };
+    return { name, team, nationality, position, src, rating, top20Text, wanmeiId, radar };
   });
 
   const top20 = parseTop20FromText(raw.top20Text);
+  const sniperStat = raw.radar?.['狙击'] ?? null;
   return {
     name: raw.name,
     team: raw.team,
@@ -313,6 +314,7 @@ async function parsePlayerDetail(page) {
     top20Count: top20.top20Count,
     top20Summary: top20.top20Summary,
     wanmeiId: raw.wanmeiId,
+    sniperStat,
   };
 }
 

@@ -30,7 +30,7 @@ const {
   launchLiquipediaBrowser,
   closeLiquipediaBrowser,
 } = require('./lib/liquipedia-csgo');
-const { buildPositionMaps, inferTeamPositions, playerMatchesNick, loadTeamIgls } = require('./lib/csgo-roster-utils');
+const { buildPositionMaps, inferTeamPositions } = require('./lib/csgo-roster-utils');
 const { loadThemeData, saveThemeData } = require('./lib/image-utils');
 
 function argInt(flag, fallback) {
@@ -40,20 +40,14 @@ function argInt(flag, fallback) {
   return Number.isNaN(n) ? fallback : n;
 }
 
-function applyPositions(players, teamIgls) {
+function applyPositions(players) {
   const positionMaps = buildPositionMaps([]);
   const byTeam = new Map();
   for (const p of players) {
     if (!byTeam.has(p.team)) byTeam.set(p.team, []);
     byTeam.get(p.team).push(p);
   }
-  for (const [team, roster] of byTeam) {
-    const igl = teamIgls[team];
-    if (igl) {
-      for (const p of roster) {
-        if (playerMatchesNick(p, igl)) p.position = '指挥';
-      }
-    }
+  for (const roster of byTeam.values()) {
     inferTeamPositions(roster, positionMaps);
   }
 }
@@ -74,10 +68,9 @@ async function main() {
   setDelayRange(delayMin, delayMax);
 
   const players = loadThemeData('csgo.json');
-  const teamIgls = loadTeamIgls();
 
   if (positionsOnly) {
-    applyPositions(players, teamIgls);
+    applyPositions(players);
     saveThemeData('csgo.json', players);
     console.log('Positions updated (no Liquipedia requests).');
     return;
@@ -148,7 +141,7 @@ async function main() {
     await closeLiquipediaBrowser();
   }
 
-  applyPositions(players, teamIgls);
+  applyPositions(players);
   saveThemeData('csgo.json', players);
 
   const withAge = players.filter((p) => p.age != null).length;

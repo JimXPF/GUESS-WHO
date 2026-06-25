@@ -295,7 +295,7 @@ function teamToZh(name) {
 function positionToZh(pos) {
   if (!pos) return '步枪手';
   if (POSITION_EN_TO_ZH[pos]) return POSITION_EN_TO_ZH[pos];
-  if (['狙击手', '步枪手', '指挥'].includes(pos)) return pos;
+  if (['狙击手', '步枪手', '指挥', '狙击手/指挥'].includes(pos)) return pos;
   return '步枪手';
 }
 
@@ -340,42 +340,52 @@ function playerMatchesNick(player, nick) {
   return false;
 }
 
-function inferTeamPositions(teamPlayers, positionMaps) {
+const POSITION_IGL = '指挥';
+const POSITION_AWP = '狙击手';
+const POSITION_RIFLE = '步枪手';
+const POSITION_IGL_AWP = '狙击手/指挥';
+
+function getSniperStat(player) {
+  const n = Number(player?.sniperStat);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function pickPrimaryAwper(teamPlayers) {
+  let best = null;
+  let bestStat = 0;
+  for (const p of teamPlayers) {
+    const stat = getSniperStat(p);
+    if (stat > bestStat) {
+      bestStat = stat;
+      best = p;
+    }
+  }
+  return bestStat > 0 ? best : null;
+}
+
+function inferTeamPositions(teamPlayers, _positionMaps) {
   const teamIgls = loadTeamIgls();
   const teamName = teamPlayers[0]?.team;
   const designatedIgl = teamName ? teamIgls[teamName] : null;
 
+  const iglPlayer = designatedIgl
+    ? teamPlayers.find((p) => playerMatchesNick(p, designatedIgl)) || null
+    : null;
+  const awpPlayer = pickPrimaryAwper(teamPlayers);
+
   for (const p of teamPlayers) {
-    const key = normalizeKey(p.id || p.name);
+    const isIgl = iglPlayer != null && p === iglPlayer;
+    const isAwp = awpPlayer != null && p === awpPlayer;
 
-    if (designatedIgl) {
-      p.position = playerMatchesNick(p, designatedIgl)
-        ? '指挥'
-        : positionMaps.awpers.has(key)
-          ? '狙击手'
-          : '步枪手';
-      continue;
+    if (isIgl && isAwp) {
+      p.position = POSITION_IGL_AWP;
+    } else if (isIgl) {
+      p.position = POSITION_IGL;
+    } else if (isAwp) {
+      p.position = POSITION_AWP;
+    } else {
+      p.position = POSITION_RIFLE;
     }
-
-    p.position = positionMaps.awpers.has(key) ? '狙击手' : '步枪手';
-  }
-
-  const snipers = teamPlayers.filter((p) => p.position === '狙击手');
-  if (snipers.length > 1) {
-    const primary =
-      snipers.find((p) => positionMaps.awpers.has(normalizeKey(p.id))) || snipers[0];
-    for (const p of teamPlayers) {
-      if (p.position === '狙击手' && p !== primary) p.position = '步枪手';
-    }
-  }
-
-  const hasAwper = teamPlayers.some((p) => p.position === '狙击手');
-  if (!hasAwper && teamPlayers.length) {
-    const awpCandidate = teamPlayers.find(
-      (p) =>
-        p.position !== '指挥' && positionMaps.awpers.has(normalizeKey(p.id))
-    );
-    if (awpCandidate) awpCandidate.position = '狙击手';
   }
 }
 

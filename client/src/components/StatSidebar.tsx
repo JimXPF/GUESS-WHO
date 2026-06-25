@@ -2,20 +2,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
   score: number;
-  attemptsLeft: number;
   correctCount: number;
   themeLabel: string;
   playerName: string;
-  pulseAttempts?: boolean;
 }
 
 export default function StatSidebar({
   score,
-  attemptsLeft,
   correctCount,
   themeLabel,
   playerName,
-  pulseAttempts,
 }: Props) {
   return (
     <>
@@ -43,21 +39,6 @@ export default function StatSidebar({
           <p className="text-xs text-apple-gray">答对</p>
           <p className="text-xl font-bold text-apple-green">{correctCount}</p>
         </div>
-      </div>
-
-      <div className="glass-card p-4 text-center lg:hidden">
-        <p className="text-xs text-apple-gray mb-1">剩余机会</p>
-        <AnimatePresence mode="wait">
-          <motion.p
-            key={attemptsLeft}
-            initial={{ scale: pulseAttempts ? 1.4 : 1 }}
-            animate={{ scale: 1 }}
-            className="text-3xl font-bold"
-          >
-            {attemptsLeft}
-            <span className="text-lg text-apple-gray font-normal">/10</span>
-          </motion.p>
-        </AnimatePresence>
       </div>
     </>
   );

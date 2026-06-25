@@ -19,8 +19,8 @@ function FieldMini({ f }: { f: FieldCompare }) {
 
 export default function CorrectHistory({ answers }: Props) {
   return (
-    <div className="glass-card p-4 flex flex-col min-h-0 flex-1 overflow-visible">
-      <p className="text-xs text-apple-gray mb-3 shrink-0">答对记录</p>
+    <div className="flex flex-col min-h-0">
+      <p className="text-xs text-apple-gray mb-2 shrink-0">答对记录</p>
       {answers.length === 0 ? (
         <p className="text-sm text-apple-gray text-center py-4">暂无</p>
       ) : (

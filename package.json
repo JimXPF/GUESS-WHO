@@ -23,6 +23,9 @@
     "backfill:nba:playoffs": "node scripts/backfill-nba-playoff-counts.js",
     "backfill:birthdates": "node scripts/backfill-all-birthdates.js --only-missing",
     "patch:csgo:team": "node scripts/patch-csgo-team.js",
+    "reinfer:csgo:positions": "node scripts/reinfer-csgo-positions.js",
+    "backfill:csgo:sniper-stats": "node scripts/backfill-csgo-sniper-stats.js --only-missing",
+    "patch:csgo:positions": "node scripts/patch-csgo-liquipedia.js --positions-only",
     "filter:football:leagues": "node scripts/filter-football-club-leagues.js"
   },
   "dependencies": {
