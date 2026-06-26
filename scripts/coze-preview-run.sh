@@ -6,21 +6,14 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
-# 显式声明关键环境变量
-export PORT=5000
-export API_PORT=3001
+# 启动后端服务（端口 3001）
+pnpm exec tsx server/index.ts &
+BACKEND_PID=$!
 
-# 清理端口残留进程（幂等性）
-fuser -k 5000/tcp 2>/dev/null || true
-fuser -k 3001/tcp 2>/dev/null || true
-sleep 1
+# 启动前端开发服务器（端口 5000）
+cd client
+pnpm exec vite --host 0.0.0.0 --port 5000 &
+FRONTEND_PID=$!
 
-# 后台启动后端服务
-nohup pnpm exec tsx server/index.ts > logs/server.log 2>&1 &
-SERVER_PID=$!
-
-# 等待后端启动
-sleep 3
-
-# 启动前端 Vite 开发服务器在 5000 端口
-exec pnpm exec vite --host 0.0.0.0 --port 5000
+# 等待进程
+wait $BACKEND_PID $FRONTEND_PID

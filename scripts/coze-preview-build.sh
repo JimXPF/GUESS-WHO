@@ -10,4 +10,6 @@ cd "$PROJECT_DIR"
 pnpm install --ignore-scripts
 
 # 安装 client 依赖
-pnpm install --dir client --ignore-scripts
+cd client
+pnpm install --ignore-scripts
+cd ..

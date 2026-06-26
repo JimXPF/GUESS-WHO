@@ -10,16 +10,15 @@ cd "$PROJECT_DIR"
 pnpm install --ignore-scripts
 
 # 安装 client 依赖
-pnpm install --dir client --ignore-scripts
+cd client
+pnpm install --ignore-scripts
 
 # 构建前端
-cd client && pnpm exec vite build && cd ..
+pnpm exec vite build
+cd ..
 
 # 编译后端 TypeScript
 pnpm exec tsc -p server/tsconfig.json
 
-# 复制 sql.js wasm 文件到 dist 目录（用于运行时）
-if [ -d "node_modules/sql.js/dist" ]; then
-  mkdir -p dist/server
-  cp node_modules/sql.js/dist/sql-wasm.wasm dist/server/ 2>/dev/null || true
-fi
+# 复制 sql.js wasm 文件到 dist/server
+cp node_modules/sql.js/dist/sql-wasm.wasm dist/server/
