@@ -24070,16 +24070,6 @@
         "id": "csl",
         "label": "中超球员",
         "name": "中超"
-      },
-      {
-        "id": "eredivisie",
-        "label": "荷甲球员",
-        "name": "荷甲"
-      },
-      {
-        "id": "primeira-liga",
-        "label": "葡超球员",
-        "name": "葡超"
       }
     ]
   }

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-dev.ps1",
+    "dev:inner": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "tsx watch server/index.ts",
     "dev:client": "npm run dev --prefix client",
     "restart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/kill-dev.ps1 && npm install && npm install --prefix client && npm run dev",
@@ -14,6 +15,7 @@
     "fetch:images:csgo": "node scripts/scrape-csgo-wanmei.js",
     "sync:csgo": "node scripts/sync-csgo-rosters-wanmei.js",
     "sync:nba": "node scripts/sync-nba-hupu-full.js",
+    "filter:nba": "node scripts/filter-nba-playable.js",
     "patch:nba:names": "node scripts/patch-nba-chinese-names.js",
     "sync:football:xhs": "node scripts/sync-football-xhs.js",
     "patch:csgo:liquipedia": "node scripts/patch-csgo-liquipedia.js",
@@ -21,12 +23,14 @@
     "backfill:csgo:birthdates": "node scripts/backfill-csgo-birthdates.js",
     "backfill:nba:birthdates": "node scripts/backfill-nba-birthdates.js --only-missing",
     "backfill:nba:playoffs": "node scripts/backfill-nba-playoff-counts.js",
+    "backfill:nba:games": "node scripts/backfill-nba-games-since-2025.js",
     "backfill:birthdates": "node scripts/backfill-all-birthdates.js --only-missing",
     "patch:csgo:team": "node scripts/patch-csgo-team.js",
     "reinfer:csgo:positions": "node scripts/reinfer-csgo-positions.js",
     "backfill:csgo:sniper-stats": "node scripts/backfill-csgo-sniper-stats.js --only-missing",
     "patch:csgo:positions": "node scripts/patch-csgo-liquipedia.js --positions-only",
     "sync:pokemon": "node scripts/sync-pokemon-pokeapi.js",
+    "patch:aliases": "node scripts/patch-search-aliases.js",
     "filter:football:leagues": "node scripts/filter-football-club-leagues.js"
   },
   "dependencies": {

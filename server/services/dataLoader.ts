@@ -3,6 +3,7 @@ import path from 'path';
 import { CharacterEntry, THEME_FIELDS, Theme } from '../types';
 import { computeAgeFromBirthDate, computeAgeFromReferenceYear, normalizeBirthDate } from './ageUtils';
 import { isPlayableFootballAnswer } from './footballHints';
+import { getDivisionHint, isPlayableNBAAnswer } from './nbaHints';
 
 interface ThemeFile {
   version?: number;
@@ -69,8 +70,12 @@ const banks: Record<Theme, CharacterEntry[]> = {
 
 function loadBank(theme: Theme): CharacterEntry[] {
   const file = readThemeFile(theme);
-  banks[theme] = file.players;
-  return file.players;
+  let players = file.players;
+  if (theme === 'nba') {
+    players = players.filter(isPlayableNBAAnswer);
+  }
+  banks[theme] = players;
+  return players;
 }
 
 export function getBank(theme: Theme): CharacterEntry[] {
@@ -120,6 +125,41 @@ export function getNameFieldValue(entry: CharacterEntry, theme: Theme): string {
   return getDisplayName(entry, theme);
 }
 
+/** Standardized search dropdown sublabel per theme (never alias/englishName). */
+export function getSearchSublabel(entry: CharacterEntry, theme: Theme): string | undefined {
+  switch (theme) {
+    case 'csgo':
+      return String(entry.team || '') || undefined;
+    case 'football': {
+      const national = String(entry.nationalTeam || '');
+      const club = String(entry.club || '');
+      if (national && club) return `${national}/${club}`;
+      return national || club || undefined;
+    }
+    case 'nba': {
+      const team = String(entry.team || '');
+      if (!team) return undefined;
+      const teamDisplay = getNBATeamDisplay(team);
+      const division = getDivisionHint(entry.team);
+      if (division) {
+        const divisionShort = division.replace(/赛区球员$/, '');
+        return `${divisionShort}-${teamDisplay}`;
+      }
+      return teamDisplay;
+    }
+    case 'pokemon': {
+      const t1 = entry.type1 ? String(entry.type1) : '';
+      const t2 = entry.type2 ? String(entry.type2) : '';
+      if (t1 && t2) return `${t1}/${t2}`;
+      return t1 || undefined;
+    }
+    case 'anime':
+      return String(entry.anime || '') || undefined;
+    default:
+      return undefined;
+  }
+}
+
 export function searchCharacters(
   theme: Theme,
   query: string,
@@ -132,7 +172,7 @@ export function searchCharacters(
   const scored: Array<{ id: string; label: string; sublabel?: string; score: number }> = [];
 
   for (const entry of bank) {
-    const keys: Array<{ key: string; label: string; sublabel?: string }> = [];
+    const keys: Array<{ key: string; label: string }> = [];
 
     if (theme === 'csgo') {
       const displayLabel = String(entry.name || entry.id);
@@ -146,23 +186,17 @@ export function searchCharacters(
     } else {
       keys.push({ key: normalizeText(entry.name), label: entry.name });
       if (entry.englishName) {
-        keys.push({
-          key: normalizeText(entry.englishName),
-          label: entry.name,
-          sublabel: entry.englishName,
-        });
+        keys.push({ key: normalizeText(entry.englishName), label: entry.name });
       }
       for (const a of entry.aliases || []) {
-        keys.push({
-          key: normalizeText(a),
-          label: entry.name,
-          sublabel: a !== entry.name ? String(a) : undefined,
-        });
+        keys.push({ key: normalizeText(a), label: entry.name });
       }
       // 仅匹配名字，不再匹配 anime / team 等字段，避免输入“咒术”“湖人”等泄露大量角色
     }
 
-    for (const { key, label, sublabel } of keys) {
+    const sublabel = getSearchSublabel(entry, theme);
+
+    for (const { key, label } of keys) {
       if (!key) continue;
       let score = -1;
       if (key === normalized) score = 100;
@@ -174,24 +208,10 @@ export function searchCharacters(
       else if (normalized.includes(key) && key.length >= 2) score = 45;
 
       if (score >= 0) {
-        let fallbackSublabel = sublabel;
-        if (!fallbackSublabel) {
-          if (theme === 'csgo') {
-            fallbackSublabel = String(entry.team || '');
-          } else if (theme === 'nba' && entry.team) {
-            fallbackSublabel = getNBATeamDisplay(String(entry.team));
-          } else if (theme === 'pokemon') {
-            const t1 = entry.type1 ? String(entry.type1) : '';
-            const t2 = entry.type2 ? String(entry.type2) : '';
-            fallbackSublabel = t2 ? `${t1}/${t2}` : t1 || String(entry.category || '');
-          } else {
-            fallbackSublabel = String(entry.anime || entry.team || '');
-          }
-        }
         scored.push({
           id: entry.id,
           label,
-          sublabel: theme === 'csgo' ? String(entry.team || '') : fallbackSublabel,
+          sublabel,
           score,
         });
         break;
@@ -230,6 +250,7 @@ export function findCharacterByGuess(
       }
     } else {
       if (normalizeText(entry.name) === normalized) return entry;
+      if (entry.englishName && normalizeText(entry.englishName) === normalized) return entry;
       for (const a of entry.aliases || []) {
         if (normalizeText(a) === normalized) return entry;
       }
@@ -250,6 +271,9 @@ export function pickRandomCharacter(
   let bank = getBank(theme).filter((c) => !excludeIds.includes(c.id));
   if (theme === 'football') {
     bank = bank.filter(isPlayableFootballAnswer);
+  }
+  if (theme === 'nba') {
+    bank = bank.filter(isPlayableNBAAnswer);
   }
   if (bank.length === 0) {
     throw new Error('No characters available');

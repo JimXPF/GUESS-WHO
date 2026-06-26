@@ -10,7 +10,8 @@ export interface FieldCompare {
   answerValue: string | number | null;
   result: CompareResult;
   showAnswer: boolean;
-  direction?: 'higher' | 'lower' | null;
+  direction?: 'higher' | 'lower' | 'later' | 'earlier' | null;
+  hint?: string | null;
 }
 
 export interface GuessRecord {

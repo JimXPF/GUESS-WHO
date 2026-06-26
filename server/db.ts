@@ -1,12 +1,104 @@
+/**
+ * sql.js 持久化层（扣子 / 无原生模块环境）
+ *
+ * 官方说明：https://sql.js.org/
+ * - 数据库在内存中，需手动 export + 写盘
+ * - 不支持多连接并发写；单进程内内存读写同步完成，落盘 debounce + 串行
+ *
+ * 扣子编程内置 PostgreSQL（https://docs.coze.cn/guides/integrate_database），
+ * 流量增大时可迁移；当前方案适合单实例 + 小库。
+ */
 import initSqlJs, { Database as SqlJsDatabase, SqlValue } from 'sql.js';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 let _db: SqlJsDatabase;
-// 使用 /tmp 目录存储数据库（平台只读文件系统）
-const dbPath = '/tmp/guess-who.db';
+
+const SAVE_DEBOUNCE_MS = Number(process.env.DB_SAVE_DEBOUNCE_MS) || 400;
+
+function resolveDbPath(): string {
+  if (process.env.DB_PATH) return process.env.DB_PATH;
+  const projectPath = path.join(__dirname, '..', 'guess-who.db');
+  try {
+    fs.accessSync(path.dirname(projectPath), fs.constants.W_OK);
+    return projectPath;
+  } catch {
+    return path.join(os.tmpdir(), 'guess-who.db');
+  }
+}
+
+const dbPath = resolveDbPath();
+
+function wasmLocateFile(file: string): string {
+  try {
+    const distDir = path.dirname(require.resolve('sql.js/dist/sql-wasm.js'));
+    return path.join(distDir, file);
+  } catch {
+    return path.join(__dirname, '..', 'node_modules', 'sql.js', 'dist', file);
+  }
+}
+
+let saveTimer: ReturnType<typeof setTimeout> | null = null;
+let saveChain: Promise<void> = Promise.resolve();
+let dirty = false;
+
+function flushDbSync(): void {
+  if (!_db) return;
+  const dir = path.dirname(dbPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  const tmpPath = `${dbPath}.${process.pid}.tmp`;
+  const data = _db.export();
+  fs.writeFileSync(tmpPath, Buffer.from(data));
+  fs.renameSync(tmpPath, dbPath);
+  dirty = false;
+}
+
+function schedulePersist(): void {
+  dirty = true;
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveTimer = null;
+    saveChain = saveChain
+      .then(
+        () =>
+          new Promise<void>((resolve, reject) => {
+            setImmediate(() => {
+              try {
+                if (dirty) flushDbSync();
+                resolve();
+              } catch (err) {
+                reject(err);
+              }
+            });
+          })
+      )
+      .catch((err) => {
+        console.error('[db] persist failed:', err);
+      });
+  }, SAVE_DEBOUNCE_MS);
+}
+
+/** 立即落盘（进程退出前调用） */
+export async function flushDb(): Promise<void> {
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+  }
+  await saveChain;
+  if (dirty) flushDbSync();
+}
+
+export function getDbPath(): string {
+  return dbPath;
+}
 
 export async function initDatabase(): Promise<void> {
-  const SQL = await initSqlJs();
+  const SQL = await initSqlJs({
+    locateFile: wasmLocateFile,
+  });
 
   if (fs.existsSync(dbPath)) {
     const buffer = fs.readFileSync(dbPath);
@@ -89,10 +181,10 @@ export async function initDatabase(): Promise<void> {
     _db.run('ALTER TABLE sessions ADD COLUMN question_compare_move TEXT');
   } catch { /* exists */ }
 
-  saveDb();
+  flushDbSync();
+  console.log(`[db] sql.js ready, path=${dbPath}, debounce=${SAVE_DEBOUNCE_MS}ms`);
 }
 
-// Helper to convert sql.js result to better-sqlite3 compatible format
 function queryOne<T>(sql: string, params: SqlValue[] = []): T | undefined {
   const stmt = _db.prepare(sql);
   stmt.bind(params);
@@ -116,20 +208,31 @@ function queryAll<T>(sql: string, params: SqlValue[] = []): T[] {
   return results;
 }
 
-function execute(sql: string, params: SqlValue[] = []): void {
-  _db.run(sql, params);
-  saveDb();
-}
+/** @deprecated 使用 flushDb；保留给测试 */
 export function saveDb(): void {
-  const data = _db.export();
-  fs.writeFileSync(dbPath, Buffer.from(data));
+  flushDbSync();
 }
 
-// Export db-like interface compatible with gameService
 export const db = {
   prepare: (sql: string) => ({
     get: <T>(...params: SqlValue[]) => queryOne<T>(sql, params),
     all: <T>(...params: SqlValue[]) => queryAll<T>(sql, params),
-    run: (...params: SqlValue[]) => execute(sql, params),
+    run: (...params: SqlValue[]) => {
+      _db.run(sql, params);
+      schedulePersist();
+    },
   }),
 };
+
+export function registerDbShutdownHooks(): void {
+  const shutdown = () => {
+    try {
+      if (saveTimer) clearTimeout(saveTimer);
+      if (dirty) flushDbSync();
+    } catch (err) {
+      console.error('[db] shutdown flush failed:', err);
+    }
+  };
+  process.once('SIGINT', shutdown);
+  process.once('SIGTERM', shutdown);
+}

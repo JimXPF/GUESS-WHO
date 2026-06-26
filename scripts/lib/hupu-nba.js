@@ -224,6 +224,129 @@ function countPlayoffSeasons(text) {
   return years.size;
 }
 
+/** Parse regular-season career table rows from Hupu player detail page text. */
+function parseCareerRegularSeasonStats(text) {
+  const markers = ['职业生涯常规赛平均数据', '常规赛平均数据'];
+  let block = text;
+  for (const marker of markers) {
+    const idx = text.indexOf(marker);
+    if (idx >= 0) {
+      block = text.slice(idx + marker.length);
+      break;
+    }
+  }
+
+  const headerIdx = block.search(/赛季[\s\t]+球队/);
+  if (headerIdx < 0) return [];
+
+  const afterHeader = block.slice(headerIdx);
+  const end = afterHeader.search(
+    /\n(职业生涯季后赛|生涯季后赛|篮板排行榜|得分排行榜|助攻排行榜|抢断排行榜|盖帽排行榜|相关帖子)/
+  );
+  const slice = end > 0 ? afterHeader.slice(0, end) : afterHeader.slice(0, 6000);
+
+  const rows = [];
+  for (const line of slice.split('\n')) {
+    const m = line.match(/^(20\d{2})[\t ]([^\t]+)[\t ](\d+)[\t ]/);
+    if (!m) continue;
+    const team = m[2].trim();
+    if (!team || team === '汇总' || team === '总计') continue;
+    rows.push({ year: Number(m[1]), team, games: Number(m[3]) });
+  }
+  return rows;
+}
+
+/** Parse regular-season career table years from Hupu player detail page text. */
+function parseCareerRegularSeasonYears(text) {
+  return [...new Set(parseCareerRegularSeasonStats(text).map((r) => r.year))];
+}
+
+/** 本赛季常规赛「场次」from 本赛季常规赛平均数据 block */
+function parseCurrentSeasonGames(text) {
+  const marker = '本赛季常规赛平均数据';
+  const idx = text.indexOf(marker);
+  if (idx < 0) return null;
+  const after = text.slice(idx + marker.length, idx + marker.length + 600);
+  for (const line of after.split('\n')) {
+    const m = line.match(/^(\d+)\t[\d.]+\t/);
+    if (m) return Number(m[1]);
+  }
+  return null;
+}
+
+function summarizeGamesSince2025(initialText, regularText, minYear = 2025) {
+  let currentSeasonGp = null;
+  for (const t of [initialText, regularText]) {
+    const gp = parseCurrentSeasonGames(t);
+    if (gp != null) currentSeasonGp = gp;
+  }
+
+  const byYear = new Map();
+  for (const t of [initialText, regularText]) {
+    for (const row of parseCareerRegularSeasonStats(t)) {
+      if (row.year < minYear) continue;
+      const prev = byYear.get(row.year);
+      if (!prev || row.games > prev.games) byYear.set(row.year, row);
+    }
+  }
+
+  const careerGpSince2025 = [...byYear.values()].sort((a, b) => a.year - b.year);
+  const maxCareerGpSince2025 = careerGpSince2025.length
+    ? Math.max(...careerGpSince2025.map((r) => r.games))
+    : null;
+
+  const candidates = [currentSeasonGp, maxCareerGpSince2025].filter((n) => n != null && n >= 0);
+  const bestGpSince2025 = candidates.length ? Math.max(...candidates) : null;
+  const totalGpSince2025 = careerGpSince2025.length
+    ? careerGpSince2025.reduce((sum, r) => sum + r.games, 0)
+    : currentSeasonGp;
+
+  return {
+    currentSeasonGp,
+    careerGpSince2025,
+    maxCareerGpSince2025,
+    bestGpSince2025,
+    totalGpSince2025: totalGpSince2025 ?? null,
+  };
+}
+
+function hasCareerDataSince(text, minYear = 2025) {
+  const years = parseCareerRegularSeasonYears(text);
+  for (const y of years) {
+    if (y >= minYear) return true;
+  }
+  return false;
+}
+
+/** Hupu "本赛季常规赛" block — active players may lack a 2025 career row but have current-season stats. */
+function hasCurrentSeasonRegularStats(text) {
+  const marker = '本赛季常规赛平均数据';
+  const idx = text.indexOf(marker);
+  if (idx < 0) return false;
+  const after = text.slice(idx + marker.length, idx + marker.length + 500);
+  return /\n\d+\t[\d.]+\t/.test(after);
+}
+
+function hasCareerSince2025(text) {
+  return hasCareerDataSince(text, 2025) || hasCurrentSeasonRegularStats(text);
+}
+
+async function clickCareerRegularTab(page) {
+  return page.evaluate(() => {
+    const candidates = [];
+    for (const el of document.querySelectorAll('a, span, div, li, button')) {
+      const t = (el.textContent || '').trim();
+      if (!t.endsWith('生涯常规赛表现')) continue;
+      if (t.includes('季后赛')) continue;
+      if (t.length > 40) continue;
+      candidates.push(el);
+    }
+    if (!candidates.length) return false;
+    candidates[candidates.length - 1].click();
+    return true;
+  });
+}
+
 async function clickCareerPlayoffTab(page) {
   return page.evaluate(() => {
     const candidates = [];
@@ -321,6 +444,12 @@ async function fetchPlayerDetail(page, detailUrl, options = {}) {
   await page.goto(detailUrl, { waitUntil, timeout });
   await sleep(options.postWait ?? 900);
 
+  const initialText = await page.evaluate(() => document.body.innerText || '');
+
+  await clickCareerRegularTab(page);
+  await sleep(options.regularTabWait ?? 1200);
+  const regularText = await page.evaluate(() => document.body.innerText || '');
+
   await clickCareerPlayoffTab(page);
   await sleep(options.playoffTabWait ?? 1200);
 
@@ -360,12 +489,25 @@ async function fetchPlayerDetail(page, detailUrl, options = {}) {
     };
   });
 
+  const careerRegularYears = [
+    ...new Set([
+      ...parseCareerRegularSeasonYears(initialText),
+      ...parseCareerRegularSeasonYears(regularText),
+    ]),
+  ].sort((a, b) => a - b);
+
+  const gamesSince2025 = summarizeGamesSince2025(initialText, regularText, 2025);
+
   return {
     ...raw,
     height: parseHeightCm(raw.heightRaw),
     position: parsePosition(raw.positionRaw),
     draft: parseDraft(raw.draftRaw),
     playoffCount: countPlayoffSeasons(raw.pageText),
+    careerRegularYears,
+    ...gamesSince2025,
+    hasCareerSince2025:
+      hasCareerSince2025(initialText) || hasCareerSince2025(regularText),
   };
 }
 
@@ -445,7 +587,14 @@ module.exports = {
   parseHeightCm,
   parseDraft,
   countPlayoffSeasons,
-  countPlayoffSeasons,
+  parseCareerRegularSeasonStats,
+  parseCareerRegularSeasonYears,
+  parseCurrentSeasonGames,
+  summarizeGamesSince2025,
+  hasCareerDataSince,
+  hasCurrentSeasonRegularStats,
+  hasCareerSince2025,
+  clickCareerRegularTab,
   clickCareerPlayoffTab,
   ageFromBirthday,
   launchBrowser,

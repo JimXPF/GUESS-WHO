@@ -73,16 +73,26 @@ const COL_WIDTH: Record<string, string> = {
   spAttack: 'w-[56px]',
   spDefense: 'w-[56px]',
   speed: 'w-[56px]',
+  eggGroup: 'w-[80px]',
   learnableMove: 'w-[88px]',
   baseStatTotal: 'w-[72px]',
 };
 
 function compareHint(
+  field: string,
   result: FieldCompare['result'],
   direction: FieldCompare['direction'],
   guessValue: string | number | null | undefined
 ): string | null {
   if (!direction || guessValue == null) return null;
+
+  if (field === 'draft') {
+    const yearMatch = String(guessValue).match(/(\d{4})/);
+    const year = yearMatch?.[1] ?? String(guessValue);
+    if (direction === 'later') return `晚于${year}`;
+    if (direction === 'earlier') return `早于${year}`;
+  }
+
   const val = String(guessValue);
   const prefix = result === 'close' ? '略' : '';
   if (direction === 'higher') return `${prefix}低于${val}`;
@@ -94,7 +104,7 @@ function FieldCell({ field, index, rowIndex }: { field: FieldCompare; index: num
   const hint =
     field.result === 'hit'
       ? '✓'
-      : compareHint(field.result, field.direction, field.guessValue);
+      : field.hint ?? compareHint(field.field, field.result, field.direction, field.guessValue);
 
   return (
     <motion.div
@@ -216,7 +226,7 @@ export default function GuessRow({
                 const hint =
                   field.result === 'hit'
                     ? '猜对了'
-                    : compareHint(field.result, field.direction, field.guessValue);
+                    : field.hint ?? compareHint(field.field, field.result, field.direction, field.guessValue);
                 return (
                   <motion.td
                     key={field.field}

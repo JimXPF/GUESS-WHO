@@ -1,5 +1,5 @@
 /**
- * 从 PokeAPI 同步第一世代 151 只宝可梦（中文名 + 第三世代升级招式）
+ * 从 PokeAPI 同步前三世代 386 只宝可梦（中文名 + 第三世代升级招式 + 生蛋群）
  * 用法: node scripts/sync-pokemon-pokeapi.js
  */
 const fs = require('fs');
@@ -83,6 +83,13 @@ async function syncOne(id) {
   const genus = species.genera.find((g) => g.language.name === 'zh-hans' || g.language.name === 'zh-Hans')?.genus || '';
   const category = genus || `${name}宝可梦`;
 
+  const eggGroupNames = await Promise.all(
+    (species.egg_groups || []).map((g) =>
+      localizedResource('egg-group', g.name, g.name)
+    )
+  );
+  const eggGroup = eggGroupNames.length ? eggGroupNames.join('、') : null;
+
   const types = await Promise.all(pokemon.types.map((t) => localizedType(t.type.url)));
   const type1 = types[0] || null;
   const type2 = types[1] || null;
@@ -130,6 +137,7 @@ async function syncOne(id) {
     type2,
     evolutionStage,
     category,
+    eggGroup,
     ability: primaryAbility,
     hiddenAbility,
     hp: stats.hp,
@@ -147,10 +155,12 @@ async function syncOne(id) {
   };
 }
 
+const MAX_DEX = 386;
+
 async function main() {
   const players = [];
-  for (let id = 1; id <= 151; id++) {
-    process.stdout.write(`\r同步 #${id}/151...`);
+  for (let id = 1; id <= MAX_DEX; id++) {
+    process.stdout.write(`\r同步 #${id}/${MAX_DEX}...`);
     try {
       players.push(await syncOne(id));
     } catch (e) {
@@ -158,14 +168,14 @@ async function main() {
     }
     await new Promise((r) => setTimeout(r, 50));
   }
-  console.log(`\n完成 ${players.length}/151，写入 ${OUT}`);
+  console.log(`\n完成 ${players.length}/${MAX_DEX}，写入 ${OUT}`);
   fs.writeFileSync(
     OUT,
     JSON.stringify(
       {
-        version: 1,
+        version: 2,
         updatedAt: new Date().toISOString(),
-        source: 'pokeapi-gen1-gen3-moves',
+        source: 'pokeapi-gen1-3-gen3-moves',
         players,
       },
       null,
@@ -173,6 +183,9 @@ async function main() {
     ),
     'utf-8'
   );
+
+  const { patchPokemon } = require('./patch-search-aliases');
+  patchPokemon();
 }
 
 main().catch((e) => {

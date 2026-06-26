@@ -2,10 +2,30 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { startGame, SESSION_KEY } from '../api';
-import { GAME_MODE_LABELS, GameMode, THEME_LABELS, Theme } from '../types';
+import {
+  GAME_MODE_LABELS,
+  GameMode,
+  THEME_ICONS,
+  THEME_LABELS,
+  Theme,
+} from '../types';
 
 const MODES: GameMode[] = ['classic-six'];
 const THEMES: Theme[] = ['csgo', 'football', 'nba', 'pokemon', 'anime'];
+
+const MODE_ICONS: Record<GameMode, string> = {
+  'classic-six': '🎯',
+};
+
+function optionClass(selected: boolean, compact = false) {
+  return `${
+    compact ? 'min-h-[52px] px-3' : 'w-full min-h-[52px] px-4'
+  } py-3 rounded-xl border-2 text-left transition-all duration-200 flex items-center gap-2.5 min-w-0 ${
+    selected
+      ? 'border-apple-blue bg-apple-blue/5 shadow-soft'
+      : 'border-gray-100 bg-white active:bg-gray-50 sm:hover:border-gray-200'
+  }`;
+}
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -68,40 +88,39 @@ export default function HomePage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="game-mode" className="block text-sm font-medium text-gray-600 mb-2">
-                玩法
-              </label>
-              <select
-                id="game-mode"
-                className="input-field"
-                value={gameMode}
-                onChange={(e) => setGameMode(e.target.value as GameMode)}
-              >
-                {MODES.map((m) => (
-                  <option key={m} value={m}>
-                    {GAME_MODE_LABELS[m]}
-                  </option>
-                ))}
-              </select>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-2">玩法</label>
+            <div className="flex flex-col gap-2">
+              {MODES.map((m) => (
+                <motion.button
+                  key={m}
+                  type="button"
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setGameMode(m)}
+                  className={optionClass(gameMode === m)}
+                >
+                  <span className="text-xl leading-none shrink-0">{MODE_ICONS[m]}</span>
+                  <span className="font-medium text-sm sm:text-base">{GAME_MODE_LABELS[m]}</span>
+                </motion.button>
+              ))}
             </div>
-            <div>
-              <label htmlFor="theme" className="block text-sm font-medium text-gray-600 mb-2">
-                主题
-              </label>
-              <select
-                id="theme"
-                className="input-field"
-                value={theme}
-                onChange={(e) => setTheme(e.target.value as Theme)}
-              >
-                {THEMES.map((t) => (
-                  <option key={t} value={t}>
-                    {THEME_LABELS[t]}
-                  </option>
-                ))}
-              </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-2">主题</label>
+            <div className="grid grid-cols-2 gap-2">
+              {THEMES.map((t) => (
+                <motion.button
+                  key={t}
+                  type="button"
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setTheme(t)}
+                  className={optionClass(theme === t, true)}
+                >
+                  <span className="text-xl leading-none shrink-0">{THEME_ICONS[t]}</span>
+                  <span className="font-medium text-sm truncate min-w-0">{THEME_LABELS[t]}</span>
+                </motion.button>
+              ))}
             </div>
           </div>
 

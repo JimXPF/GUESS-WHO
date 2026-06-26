@@ -29,7 +29,7 @@ import {
   getNBATeamDisplay,
   getNBAPositionDisplay,
 } from './dataLoader';
-import { compareField, formatValue, getNumericDirection } from './compareEngine';
+import { compareField, formatValue, getDraftCompareHint, getDraftYearDirection, getNumericDirection } from './compareEngine';
 import {
   buildFootballPrimaryHint,
   getFootballHintFields,
@@ -42,13 +42,14 @@ import {
 } from './nbaHints';
 import { parseActiveFields, pickActiveFields } from './activeFields';
 import {
+  buildPokemonHint,
+  buildPokemonQuestion,
+} from './pokemonQuestion';
+import {
   buildPokemonMoveHint,
-  buildPokemonPrimaryHint,
   buildPokemonWeaknessHint,
-  getPokemonBonusHintFields,
   guessKnowsMove,
   isPokemonHintFieldExcluded,
-  pickCompareMove,
   shouldShowWeaknessHint,
 } from './pokemonHints';
 
@@ -102,10 +103,6 @@ function pickQuestionHints(
     const extra = shuffleFields(getNBAHintFields());
     return { primary: 'division', extra: extra.slice(0, BONUS_HINT_THRESHOLDS.length) };
   }
-  if (theme === 'pokemon') {
-    const extra = shuffleFields(getPokemonBonusHintFields(activeFields));
-    return { primary: 'category', extra: extra.slice(0, BONUS_HINT_THRESHOLDS.length) };
-  }
   const shuffled = shuffleFields(
     getHintFields(theme, activeFields).filter(
       (f) => f !== 'name' && !isHintFieldExcluded(f) && !isNBAHintFieldExcluded(f)
@@ -152,7 +149,8 @@ function buildSessionHints(
   extraHintFields: string[],
   questionAttempts: number,
   activeFields: string[],
-  hitFields: Set<string> = new Set()
+  hitFields: Set<string> = new Set(),
+  compareMove: string | null = null
 ): HintInfo[] {
   const hints =
     theme === 'football'
@@ -160,7 +158,7 @@ function buildSessionHints(
       : theme === 'nba'
         ? [buildNBAPrimaryHint(answer)]
         : theme === 'pokemon'
-          ? [buildPokemonPrimaryHint(answer)]
+          ? [buildPokemonHint(answer, hintField, compareMove)]
           : [buildHint(theme, answer, hintField, activeFields)];
 
   const shownFields = new Set(hints.map((h) => h.field));
@@ -266,7 +264,13 @@ function compareAllFields(
     const result = compareField(theme, field, compareGuess, compareAnswer);
     const direction =
       result !== 'hit'
-        ? getNumericDirection(theme, field, compareGuess, compareAnswer)
+        ? theme === 'nba' && field === 'draft'
+          ? getDraftYearDirection(compareGuess, compareAnswer)
+          : getNumericDirection(theme, field, compareGuess, compareAnswer)
+        : null;
+    const hint =
+      theme === 'nba' && field === 'draft' && result !== 'hit'
+        ? getDraftCompareHint(result, compareGuess, compareAnswer)
         : null;
     return {
       field,
@@ -276,6 +280,7 @@ function compareAllFields(
       result,
       showAnswer: result === 'hit',
       direction,
+      hint,
     };
   });
 }
@@ -359,9 +364,32 @@ function rowToSession(row: SessionRow): Omit<GameSession, 'hint' | 'hints' | 'gu
   };
 }
 
-function resolveCompareMove(theme: Theme, answer: CharacterEntry, activeFields: string[]): string | null {
-  if (theme !== 'pokemon' || !activeFields.includes('learnableMove')) return null;
-  return pickCompareMove(answer);
+function resolveQuestionSetup(
+  theme: Theme,
+  answer: CharacterEntry
+): {
+  hintField: string;
+  extraHintFields: string[];
+  activeFields: string[];
+  compareMove: string | null;
+} {
+  if (theme === 'pokemon') {
+    const setup = buildPokemonQuestion(answer);
+    return {
+      hintField: setup.hintField,
+      extraHintFields: setup.extraHintFields,
+      activeFields: setup.activeFields,
+      compareMove: setup.compareMove,
+    };
+  }
+  const activeFields = pickActiveFields(theme);
+  const { primary, extra } = pickQuestionHints(theme, activeFields);
+  return {
+    hintField: primary,
+    extraHintFields: extra,
+    activeFields,
+    compareMove: null,
+  };
 }
 
 function getSessionRow(sessionId: string): SessionRow | undefined {
@@ -387,10 +415,8 @@ export function startGame(
   theme: Theme,
   gameMode: GameMode = 'classic-six'
 ): GameSession {
-  const activeFields = pickActiveFields(theme);
   const answer = pickRandomCharacter(theme);
-  const { primary: hintField, extra: extraHintFields } = pickQuestionHints(theme, activeFields);
-  const compareMove = resolveCompareMove(theme, answer, activeFields);
+  const setup = resolveQuestionSetup(theme, answer);
   const sessionId = uuidv4();
 
   db.prepare(
@@ -402,10 +428,10 @@ export function startGame(
     theme,
     gameMode,
     answer.id,
-    hintField,
-    JSON.stringify(extraHintFields),
-    JSON.stringify(activeFields),
-    compareMove,
+    setup.hintField,
+    JSON.stringify(setup.extraHintFields),
+    JSON.stringify(setup.activeFields),
+    setup.compareMove,
     JSON.stringify([answer.id]),
     MAX_ATTEMPTS
   );
@@ -413,10 +439,12 @@ export function startGame(
   const hints = buildSessionHints(
     theme,
     answer,
-    hintField,
-    extraHintFields,
+    setup.hintField,
+    setup.extraHintFields,
     0,
-    activeFields
+    setup.activeFields,
+    new Set(),
+    setup.compareMove
   );
 
   return {
@@ -424,7 +452,7 @@ export function startGame(
     playerName: playerName.trim(),
     theme,
     gameMode,
-    activeFields,
+    activeFields: setup.activeFields,
     attemptsLeft: MAX_ATTEMPTS,
     score: 0,
     correctCount: 0,
@@ -549,18 +577,17 @@ export function nextQuestion(sessionId: string): GameSession {
   }
 
   const used = parseUsedAnswerIds(row.used_answer_ids);
-  const activeFields = parseActiveFields(row.active_fields, row.theme);
   const answer = pickRandomCharacter(row.theme, used);
-  const { primary: hintField, extra: extraHintFields } = pickQuestionHints(row.theme, activeFields);
-  const compareMove = resolveCompareMove(row.theme, answer, activeFields);
+  const setup = resolveQuestionSetup(row.theme, answer);
 
   db.prepare(
-    `UPDATE sessions SET answer_id = ?, hint_field = ?, extra_hint_fields = ?, question_compare_move = ?, used_answer_ids = ?, question_attempts = 0, question_index = question_index + 1, status = 'playing', updated_at = datetime('now') WHERE id = ?`
+    `UPDATE sessions SET answer_id = ?, hint_field = ?, extra_hint_fields = ?, active_fields = ?, question_compare_move = ?, used_answer_ids = ?, question_attempts = 0, question_index = question_index + 1, status = 'playing', updated_at = datetime('now') WHERE id = ?`
   ).run(
     answer.id,
-    hintField,
-    JSON.stringify(extraHintFields),
-    compareMove,
+    setup.hintField,
+    JSON.stringify(setup.extraHintFields),
+    JSON.stringify(setup.activeFields),
+    setup.compareMove,
     JSON.stringify([...used, answer.id]),
     sessionId
   );
@@ -605,7 +632,8 @@ export function getGameSession(sessionId: string): GameSession | null {
     extraHintFields,
     row.question_attempts,
     activeFields,
-    hitFields
+    hitFields,
+    row.question_compare_move
   );
 
   return {

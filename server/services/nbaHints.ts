@@ -13,6 +13,21 @@ const divisions = (() => {
   }
 })();
 
+const playableMinTotalGpSince2025 = (() => {
+  try {
+    const raw = fs.readFileSync(path.join(__dirname, '..', 'data', 'nba.json'), 'utf-8');
+    const parsed = JSON.parse(raw);
+    const v = parsed.meta?.playableMinTotalGpSince2025;
+    return typeof v === 'number' && v >= 0 ? v : 0;
+  } catch {
+    return 0;
+  }
+})();
+
+export function getPlayableMinTotalGpSince2025(): number {
+  return playableMinTotalGpSince2025;
+}
+
 const HINT_EXCLUDE = new Set([
   'name',
   'id',
@@ -51,4 +66,14 @@ export function isNBAHintField(field: string): boolean {
 
 export function isNBAHintFieldExcluded(field: string): boolean {
   return HINT_EXCLUDE.has(field) || field === 'division';
+}
+
+/** Hupu 2025+ career data + min total games (meta.playableMinTotalGpSince2025). */
+export function isPlayableNBAAnswer(entry: CharacterEntry): boolean {
+  if (entry.hasCareerSince2025 !== true) return false;
+  const minGp = playableMinTotalGpSince2025;
+  if (minGp <= 0) return true;
+  const total = entry.totalGpSince2025;
+  if (total == null || typeof total !== 'number') return false;
+  return total >= minGp;
 }

@@ -33,7 +33,6 @@ function mergeEntry(scraped, existing, teamName) {
     ...(scraped.top20Summary ? { top20Summary: scraped.top20Summary } : {}),
     ...(scraped.sniperStat != null ? { sniperStat: scraped.sniperStat } : existing?.sniperStat != null ? { sniperStat: existing.sniperStat } : {}),
     ...(scraped.wanmeiId ? { wanmeiId: scraped.wanmeiId } : {}),
-    ...(existing?.displayName ? { displayName: existing.displayName } : {}),
     ...(existing?.age != null ? { age: existing.age } : {}),
     ...(existing?.birthDate ? { birthDate: existing.birthDate } : {}),
     imageUrl: normalizeImageUrl(scraped.src) || existing?.imageUrl,

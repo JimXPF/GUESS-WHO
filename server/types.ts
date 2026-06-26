@@ -9,7 +9,7 @@ export interface CharacterEntry {
   englishName?: string; // 英文/罗马音名，用于检索（不作为主显示）
   displayName?: string;
   aliases?: string[];
-  [field: string]: string | number | null | string[] | undefined;
+  [field: string]: string | number | boolean | null | string[] | undefined;
 }
 
 export interface FieldCompare {
@@ -19,7 +19,8 @@ export interface FieldCompare {
   answerValue: string | number | null;
   result: CompareResult;
   showAnswer: boolean;
-  direction?: 'higher' | 'lower' | null;
+  direction?: 'higher' | 'lower' | 'later' | 'earlier' | null;
+  hint?: string | null;
 }
 
 export interface GuessRecord {
@@ -136,6 +137,7 @@ export const THEME_FIELD_DEFS: Record<Theme, { field: string; label: string }[]>
     { field: 'spAttack', label: '特攻' },
     { field: 'spDefense', label: '特防' },
     { field: 'speed', label: '速度' },
+    { field: 'eggGroup', label: '生蛋群' },
     { field: 'learnableMove', label: '可学习技能' },
   ],
 };
@@ -164,7 +166,19 @@ export function getThemeFields(
   theme: Theme,
   activeFields: string[]
 ): { field: string; label: string }[] {
-  return activeFields.map((field) => ({
+  const ordered =
+    theme === 'pokemon'
+      ? (() => {
+          const o: string[] = [];
+          if (activeFields.includes('type1')) o.push('type1');
+          if (activeFields.includes('type2')) o.push('type2');
+          for (const f of activeFields) {
+            if (f !== 'type1' && f !== 'type2') o.push(f);
+          }
+          return o;
+        })()
+      : activeFields;
+  return ordered.map((field) => ({
     field,
     label: getFieldLabel(theme, field),
   }));

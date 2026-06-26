@@ -98,7 +98,6 @@ function mergeEntry(scraped, existing, teamFallback) {
   if (scraped.wanmeiId) entry.wanmeiId = scraped.wanmeiId;
   else if (reuseExisting && existing?.wanmeiId) entry.wanmeiId = existing.wanmeiId;
 
-  if (reuseExisting && existing?.displayName) entry.displayName = existing.displayName;
   if (reuseExisting && existing?.age != null) entry.age = existing.age;
   if (reuseExisting && existing?.birthDate) entry.birthDate = existing.birthDate;
   if (imageUrl) entry.imageUrl = imageUrl;

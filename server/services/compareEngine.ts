@@ -113,6 +113,68 @@ function compareNullable(guess: unknown, answer: unknown): CompareResult {
   return compareExact(guess, answer);
 }
 
+export function parseDraftYear(draft: unknown): number | null {
+  const m = String(draft ?? '').match(/(\d{4})年/);
+  return m ? Number(m[1]) : null;
+}
+
+function parseDraftRound(draft: unknown): number | null {
+  const m = String(draft ?? '').match(/(\d{4})年第(\d+)轮/);
+  return m ? Number(m[2]) : null;
+}
+
+function isUndrafted(draft: unknown): boolean {
+  return /落选秀|undrafted/i.test(String(draft ?? ''));
+}
+
+function compareDraft(guess: unknown, answer: unknown): CompareResult {
+  const g = String(guess ?? '');
+  const a = String(answer ?? '');
+  if (g === a) return 'hit';
+
+  const gUndrafted = isUndrafted(g);
+  const aUndrafted = isUndrafted(a);
+  if (gUndrafted && aUndrafted) return 'hit';
+  if (gUndrafted || aUndrafted) return 'miss';
+
+  const gy = parseDraftYear(g);
+  const ay = parseDraftYear(a);
+  if (gy == null || ay == null) return compareExact(guess, answer);
+  if (gy === ay) {
+    const gr = parseDraftRound(g);
+    const ar = parseDraftRound(a);
+    if (gr != null && ar != null && gr === ar) return 'hit';
+    return 'close';
+  }
+  return 'miss';
+}
+
+/** Answer draft year vs guess: later = answer drafted after guess year */
+export function getDraftYearDirection(
+  guess: unknown,
+  answer: unknown
+): 'later' | 'earlier' | null {
+  if (isUndrafted(guess) || isUndrafted(answer)) return null;
+  const gy = parseDraftYear(guess);
+  const ay = parseDraftYear(answer);
+  if (gy == null || ay == null || gy === ay) return null;
+  return ay > gy ? 'later' : 'earlier';
+}
+
+/** UI hint text for NBA draft field comparisons */
+export function getDraftCompareHint(
+  result: CompareResult,
+  guess: unknown,
+  answer: unknown
+): string | null {
+  if (result === 'hit') return null;
+  if (result === 'close') return '轮次不对';
+  const dir = getDraftYearDirection(guess, answer);
+  const year = parseDraftYear(guess);
+  if (!dir || year == null) return null;
+  return dir === 'later' ? `晚于${year}` : `早于${year}`;
+}
+
 const NUMERIC_RULES: Record<
   Theme,
   Record<string, { threshold?: number; absolute?: number }>
@@ -182,6 +244,10 @@ export function compareField(
 
   if (POSITION_FIELDS.has(field)) {
     return comparePosition(theme, guessValue, answerValue);
+  }
+
+  if (theme === 'nba' && field === 'draft') {
+    return compareDraft(guessValue, answerValue);
   }
 
   const rule = NUMERIC_RULES[theme]?.[field];

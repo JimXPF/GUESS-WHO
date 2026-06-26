@@ -7,8 +7,18 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || '请求失败');
+  const text = await res.text();
+  let data: { error?: string } | T = {} as T;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(res.ok ? '服务器返回无效数据' : `请求失败 (${res.status})`);
+    }
+  } else if (!res.ok) {
+    throw new Error(`请求失败 (${res.status})，请确认后端服务已启动`);
+  }
+  if (!res.ok) throw new Error((data as { error?: string }).error || '请求失败');
   return data as T;
 }
 

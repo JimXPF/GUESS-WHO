@@ -1,14 +1,13 @@
 import typeChart from '../data/pokemon-type-chart.json';
 import { CharacterEntry, HintInfo } from '../types';
-import { getFieldLabel } from '../types';
 
 const HINT_EXCLUDE = new Set([
   'dexNumber',
   'hiddenAbility',
   'color',
-  'eggGroup',
   'captureTier',
   'gen3LevelMoves',
+  'learnableMove',
   'imageUrl',
   'englishName',
   'aliases',
@@ -51,19 +50,11 @@ export function shouldShowWeaknessHint(activeFields: string[]): boolean {
   return !activeFields.some((f) => TYPE_FIELDS.has(f));
 }
 
-export function buildPokemonPrimaryHint(answer: CharacterEntry): HintInfo {
-  return {
-    field: 'category',
-    label: getFieldLabel('pokemon', 'category'),
-    value: answer.category != null ? String(answer.category) : null,
-  };
-}
-
 export function getPokemonBonusHintFields(activeFields: string[]): string[] {
   const pool = [
     'evolutionStage',
     'ability',
-    'type1',
+    'eggGroup',
     'type2',
     'category',
     'moveHint',

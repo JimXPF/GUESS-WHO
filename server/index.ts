@@ -4,7 +4,7 @@ import path from 'path';
 import os from 'os';
 import { gameRouter } from './routes/game';
 import { leaderboardRouter } from './routes/leaderboard';
-import { initDatabase } from './db';
+import { initDatabase, registerDbShutdownHooks } from './db';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -42,6 +42,7 @@ function getLocalIp(): string {
 
 async function start() {
   await initDatabase();
+  registerDbShutdownHooks();
   console.log('Database initialized');
 
   app.listen(PORT, '0.0.0.0', () => {

@@ -119,6 +119,24 @@ async function main() {
 
       if (detail.imageUrl) entry.imageUrl = detail.imageUrl;
 
+      if (!detail.hasCareerSince2025) {
+        console.log(`  skip (no 2025+ career): ${nameStd}`);
+        continue;
+      }
+      entry.hasCareerSince2025 = true;
+      if (detail.careerRegularYears?.length) {
+        entry.careerRegularYears = detail.careerRegularYears;
+      }
+      if (detail.currentSeasonGp != null) entry.currentSeasonGp = detail.currentSeasonGp;
+      if (detail.maxCareerGpSince2025 != null) {
+        entry.maxCareerGpSince2025 = detail.maxCareerGpSince2025;
+      }
+      if (detail.bestGpSince2025 != null) entry.bestGpSince2025 = detail.bestGpSince2025;
+      if (detail.totalGpSince2025 != null) entry.totalGpSince2025 = detail.totalGpSince2025;
+      if (detail.careerGpSince2025?.length) {
+        entry.careerGpSince2025 = detail.careerGpSince2025;
+      }
+
       out.push(entry);
       ok++;
       if ((i + 1) % 25 === 0 || i === targets.length - 1) {

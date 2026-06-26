@@ -1,94 +1,411 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-25T11:43:15.824Z",
+  "updatedAt": "2026-06-26T08:28:10.523Z",
   "players": [
     {
-      "id": "graviti",
-      "name": "Graviti",
+      "id": "910",
+      "name": "910",
       "aliases": [
-        "Graviti",
-        "graviti"
+        "910"
       ],
-      "team": "3DMAX",
-      "nationality": "法国",
-      "rating": 0.98,
+      "team": "The MongolZ",
+      "nationality": "蒙古",
+      "rating": 1.14,
       "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "21969",
-      "age": 22,
-      "birthDate": "2003-11-08",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
+      "position": "狙击手",
+      "wanmeiId": "21809",
+      "age": 23,
+      "birthDate": "2002-07-05",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 93
+    },
+    {
+      "id": "afro",
+      "name": "afro",
+      "aliases": [
+        "afro"
+      ],
+      "team": "Monte",
+      "nationality": "法国",
+      "rating": 1.14,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "19926",
+      "age": 27,
+      "birthDate": "1999-06-11",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 94
+    },
+    {
+      "id": "aleksib",
+      "name": "Aleksib",
+      "aliases": [
+        "aleksib",
+        "Aleksib"
+      ],
+      "team": "Natus Vincere",
+      "nationality": "芬兰",
+      "rating": 0.88,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "9816",
+      "age": 29,
+      "birthDate": "1997-03-30",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
       "sniperStat": 0
     },
     {
-      "id": "kursy",
-      "name": "Kursy",
+      "id": "alex",
+      "name": "alex",
       "aliases": [
-        "Kursy",
-        "kursy"
+        "alex"
       ],
-      "team": "3DMAX",
-      "nationality": "法国",
-      "rating": 0.95,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20482",
-      "age": 24,
-      "birthDate": "2001-08-17",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 59
-    },
-    {
-      "id": "lucky",
-      "name": "Lucky",
-      "aliases": [
-        "Lucky",
-        "lucky"
-      ],
-      "team": "3DMAX",
-      "nationality": "法国",
-      "rating": 1.08,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "13497",
-      "age": 22,
-      "birthDate": "2003-07-13",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 4
-    },
-    {
-      "id": "maka",
-      "name": "Maka",
-      "aliases": [
-        "Maka",
-        "maka"
-      ],
-      "team": "3DMAX",
-      "nationality": "法国",
-      "rating": 1,
-      "top20Count": 0,
-      "position": "狙击手/指挥",
-      "wanmeiId": "13138",
-      "age": 28,
-      "birthDate": "1997-07-06",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 88
-    },
-    {
-      "id": "misutaaa",
-      "name": "misutaaa",
-      "aliases": [
-        "misutaaa"
-      ],
-      "team": "3DMAX",
-      "nationality": "法国",
+      "team": "Gentle Mates",
+      "nationality": "西班牙",
       "rating": 1.04,
       "top20Count": 0,
       "position": "步枪手",
-      "wanmeiId": "14176",
+      "wanmeiId": "8371",
+      "age": 44,
+      "birthDate": "1982-02-28",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "alex666",
+      "name": "alex666",
+      "aliases": [
+        "alex666"
+      ],
+      "team": "B8",
+      "nationality": "乌克兰",
+      "rating": 1.01,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "20112",
+      "age": 24,
+      "birthDate": "2001-08-03",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "apex",
+      "name": "apEX",
+      "aliases": [
+        "apex",
+        "apEX"
+      ],
+      "team": "Vitality",
+      "nationality": "法国",
+      "rating": 0.97,
+      "top20Count": 2,
+      "position": "指挥",
+      "top20Summary": "2015 #18; 2014 #15;",
+      "wanmeiId": "7322",
+      "age": 33,
+      "birthDate": "1993-02-22",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "art",
+      "name": "arT",
+      "aliases": [
+        "art",
+        "arT"
+      ],
+      "team": "Legacy",
+      "nationality": "巴西",
+      "rating": 0.96,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "12521",
+      "age": 30,
+      "birthDate": "1996-03-27",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 3
+    },
+    {
+      "id": "aw",
+      "name": "AW",
+      "aliases": [
+        "aw",
+        "AW"
+      ],
+      "team": "magic",
+      "nationality": "俄罗斯",
+      "rating": 1.01,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "22076",
+      "age": 20,
+      "birthDate": "2006-01-11",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "azuwu",
+      "name": "AZUWU",
+      "aliases": [
+        "azuwu",
+        "AZUWU"
+      ],
+      "team": "Monte",
+      "nationality": "英国",
+      "rating": 0.99,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "22106",
+      "age": 22,
+      "birthDate": "2003-11-05",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "b1t",
+      "name": "b1t",
+      "aliases": [
+        "b1t"
+      ],
+      "team": "Natus Vincere",
+      "nationality": "乌克兰",
+      "rating": 1.16,
+      "top20Count": 4,
+      "position": "步枪手",
+      "top20Summary": "2025 #20; 2024 #9; 2022 #16; 2021 #9;",
+      "wanmeiId": "18987",
       "age": 23,
-      "birthDate": "2003-01-15",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
+      "birthDate": "2003-01-05",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "biguzera",
+      "name": "biguzera",
+      "aliases": [
+        "biguzera"
+      ],
+      "team": "paiN",
+      "nationality": "巴西",
+      "rating": 1.01,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "18141",
+      "age": 29,
+      "birthDate": "1997-02-18",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 2
+    },
+    {
+      "id": "blamef",
+      "name": "blameF",
+      "aliases": [
+        "blamef",
+        "blameF"
+      ],
+      "team": "BIG",
+      "nationality": "丹麦",
+      "rating": 1.19,
+      "top20Count": 4,
+      "position": "指挥",
+      "top20Summary": "2023 #16; 2022 #12; 2021 #13; 2020 #6;",
+      "wanmeiId": "15165",
+      "age": 29,
+      "birthDate": "1997-06-10",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "blitz",
+      "name": "bLitz",
+      "aliases": [
+        "blitz",
+        "bLitz"
+      ],
+      "team": "The MongolZ",
+      "nationality": "蒙古",
+      "rating": 1.01,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "20194",
+      "age": 24,
+      "birthDate": "2001-06-26",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 2
+    },
+    {
+      "id": "boombl4",
+      "name": "Boombl4",
+      "aliases": [
+        "boombl4",
+        "Boombl4"
+      ],
+      "team": "BB",
+      "nationality": "俄罗斯",
+      "rating": 0.97,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "11840",
+      "age": 27,
+      "birthDate": "1998-12-20",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "brnz4n",
+      "name": "brnz4n",
+      "aliases": [
+        "brnz4n"
+      ],
+      "team": "MIBR",
+      "nationality": "巴西",
+      "rating": 0.92,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20987",
+      "age": 22,
+      "birthDate": "2003-08-26",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "broky",
+      "name": "broky",
+      "aliases": [
+        "broky"
+      ],
+      "team": "FaZe",
+      "nationality": "拉脱维亚",
+      "rating": 1.01,
+      "top20Count": 4,
+      "position": "狙击手",
+      "top20Summary": "2024 #8; 2023 #10; 2022 #6; 2021 #20;",
+      "wanmeiId": "18053",
+      "age": 25,
+      "birthDate": "2001-02-14",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 93
+    },
+    {
+      "id": "bymas",
+      "name": "Bymas",
+      "aliases": [
+        "bymas",
+        "Bymas"
+      ],
+      "team": "Monte",
+      "nationality": "立陶宛",
+      "rating": 0.95,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "19015",
+      "age": 22,
+      "birthDate": "2003-08-12",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "c4llm3su3",
+      "name": "C4LLM3SU3",
+      "aliases": [
+        "c4llm3su3",
+        "C4LLM3SU3"
+      ],
+      "team": "Lynn Vision",
+      "nationality": "中国",
+      "rating": 1,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "23100",
+      "age": 22,
+      "birthDate": "2004-03-09",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "cmtry",
+      "name": "cmtry",
+      "aliases": [
+        "cmtry"
+      ],
+      "team": "FUT",
+      "nationality": "乌克兰",
+      "rating": 1.02,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "22674",
+      "age": 18,
+      "birthDate": "2007-09-27",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 91
+    },
+    {
+      "id": "cobrazera",
+      "name": "cobrazera",
+      "aliases": [
+        "cobrazera"
+      ],
+      "team": "The MongolZ",
+      "nationality": "蒙古",
+      "rating": 1.01,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "23402",
+      "age": 20,
+      "birthDate": "2005-08-03",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 6
+    },
+    {
+      "id": "d1ledez",
+      "name": "d1Ledez",
+      "aliases": [
+        "d1ledez",
+        "d1Ledez"
+      ],
+      "team": "BB",
+      "nationality": "俄罗斯",
+      "rating": 1.11,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20357",
+      "age": 22,
+      "birthDate": "2003-07-03",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "dav1g",
+      "name": "dav1g",
+      "aliases": [
+        "dav1g"
+      ],
+      "team": "Gentle Mates",
+      "nationality": "西班牙",
+      "rating": 0.94,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "19509",
+      "age": 25,
+      "birthDate": "2001-06-06",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "dem0n",
+      "name": "dem0n",
+      "aliases": [
+        "dem0n"
+      ],
+      "team": "FUT",
+      "nationality": "乌克兰",
+      "rating": 1.12,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20584",
+      "age": 18,
+      "birthDate": "2007-10-02",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
       "sniperStat": 0
     },
     {
@@ -109,11 +426,299 @@
       "sniperStat": 0
     },
     {
+      "id": "donk",
+      "name": "donk",
+      "aliases": [
+        "donk"
+      ],
+      "team": "Spirit",
+      "nationality": "俄罗斯",
+      "rating": 1.43,
+      "top20Count": 2,
+      "position": "步枪手",
+      "top20Summary": "2025 #2; 2024 #1;",
+      "wanmeiId": "21167",
+      "age": 19,
+      "birthDate": "2007-01-25",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "dumau",
+      "name": "dumau",
+      "aliases": [
+        "dumau"
+      ],
+      "team": "Legacy",
+      "nationality": "巴西",
+      "rating": 1.18,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "15698",
+      "age": 22,
+      "birthDate": "2003-11-09",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "dziugss",
+      "name": "dziugss",
+      "aliases": [
+        "dziugss"
+      ],
+      "team": "FUT",
+      "nationality": "立陶宛",
+      "rating": 1.15,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "23553",
+      "age": 17,
+      "birthDate": "2008-09-12",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "elige",
+      "name": "EliGE",
+      "aliases": [
+        "elige",
+        "EliGE"
+      ],
+      "team": "Liquid",
+      "nationality": "美国",
+      "rating": 0.99,
+      "top20Count": 6,
+      "position": "步枪手",
+      "top20Summary": "2024 #19; 2021 #19; 2020 #8; 2019 #4; 2018 #15; 2017 #12;",
+      "wanmeiId": "8738",
+      "age": 28,
+      "birthDate": "1997-07-16",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "emiliaqaq",
+      "name": "EmiliaQAQ",
+      "aliases": [
+        "emiliaqaq",
+        "EmiliaQAQ"
+      ],
+      "team": "Lynn Vision",
+      "nationality": "中国",
+      "rating": 1.08,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "22922",
+      "age": 21,
+      "birthDate": "2004-08-23",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "esenthial",
+      "name": "esenthial",
+      "aliases": [
+        "esenthial"
+      ],
+      "team": "B8",
+      "nationality": "乌克兰",
+      "rating": 1.01,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "23643",
+      "age": 20,
+      "birthDate": "2006-02-26",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "fallen",
+      "name": "FalleN",
+      "aliases": [
+        "fallen",
+        "FalleN"
+      ],
+      "team": "FURIA",
+      "nationality": "巴西",
+      "rating": 0.93,
+      "top20Count": 2,
+      "position": "指挥",
+      "top20Summary": "2017 #6; 2016 #2;",
+      "wanmeiId": "2023",
+      "age": 35,
+      "birthDate": "1991-05-30",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 3
+    },
+    {
+      "id": "faven",
+      "name": "faveN",
+      "aliases": [
+        "faven",
+        "faveN"
+      ],
+      "team": "BIG",
+      "nationality": "德国",
+      "rating": 0.99,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "14932",
+      "age": 26,
+      "birthDate": "2000-02-08",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "flamez",
+      "name": "flameZ",
+      "aliases": [
+        "flamez",
+        "flameZ"
+      ],
+      "team": "Vitality",
+      "nationality": "以色列",
+      "rating": 1.11,
+      "top20Count": 2,
+      "position": "步枪手",
+      "top20Summary": "2025 #7; 2024 #7;",
+      "wanmeiId": "16693",
+      "age": 23,
+      "birthDate": "2003-06-22",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "frozen",
+      "name": "frozen",
+      "aliases": [
+        "frozen"
+      ],
+      "team": "FaZe",
+      "nationality": "斯洛伐克",
+      "rating": 1.25,
+      "top20Count": 4,
+      "position": "步枪手",
+      "top20Summary": "2025 #8; 2024 #10; 2023 #12; 2022 #17;",
+      "wanmeiId": "9960",
+      "age": 23,
+      "birthDate": "2002-07-18",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "gizmy",
+      "name": "Gizmy",
+      "aliases": [
+        "gizmy",
+        "Gizmy"
+      ],
+      "team": "Monte",
+      "nationality": "英国",
+      "rating": 0.98,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "21816",
+      "age": 22,
+      "birthDate": "2004-02-20",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "gr1ks",
+      "name": "gr1ks",
+      "aliases": [
+        "gr1ks"
+      ],
+      "team": "BIG",
+      "nationality": "白俄罗斯",
+      "rating": 1.1,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "22884",
+      "age": 20,
+      "birthDate": "2005-10-24",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 94
+    },
+    {
+      "id": "graviti",
+      "name": "Graviti",
+      "aliases": [
+        "graviti",
+        "Graviti"
+      ],
+      "team": "3DMAX",
+      "nationality": "法国",
+      "rating": 0.98,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "21969",
+      "age": 22,
+      "birthDate": "2003-11-08",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "heavygod",
+      "name": "HeavyGod",
+      "aliases": [
+        "heavygod",
+        "HeavyGod"
+      ],
+      "team": "G2",
+      "nationality": "以色列",
+      "rating": 1.18,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20447",
+      "age": 23,
+      "birthDate": "2002-07-24",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "hobbit",
+      "name": "HObbit",
+      "aliases": [
+        "hobbit",
+        "HObbit"
+      ],
+      "team": "PVISION",
+      "nationality": "哈萨克斯坦",
+      "rating": 1.2,
+      "top20Count": 2,
+      "position": "步枪手",
+      "top20Summary": "2021 #6; 2017 #11;",
+      "wanmeiId": "8528",
+      "age": 32,
+      "birthDate": "1994-05-18",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "hooxi",
+      "name": "HooXi",
+      "aliases": [
+        "hooxi",
+        "HooXi"
+      ],
+      "team": "Astralis",
+      "nationality": "丹麦",
+      "rating": 0.87,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "10096",
+      "age": 31,
+      "birthDate": "1995-05-21",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
       "id": "huasopeek",
       "name": "HUASOPEEK",
       "aliases": [
-        "HUASOPEEK",
-        "huasopeek"
+        "huasopeek",
+        "HUASOPEEK"
       ],
       "team": "9z",
       "nationality": "智利",
@@ -127,73 +732,76 @@
       "sniperStat": 0
     },
     {
-      "id": "luchov",
-      "name": "luchov",
+      "id": "hunter",
+      "name": "huNter-",
       "aliases": [
-        "luchov"
+        "hunter",
+        "huNter-"
       ],
-      "team": "9z",
-      "nationality": "阿根廷",
-      "rating": 1.18,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20394",
-      "age": 25,
-      "birthDate": "2001-05-11",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "max",
-      "name": "max",
-      "aliases": [
-        "max"
-      ],
-      "team": "9z",
-      "nationality": "乌拉圭",
-      "rating": 0.95,
-      "top20Count": 0,
+      "team": "G2",
+      "nationality": "波黑",
+      "rating": 1.06,
+      "top20Count": 4,
       "position": "指挥",
-      "wanmeiId": "12092",
-      "age": 27,
-      "birthDate": "1999-06-15",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
+      "top20Summary": "2023 #13; 2022 #14; 2021 #12; 2020 #13;",
+      "wanmeiId": "3972",
+      "age": 30,
+      "birthDate": "1996-01-03",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
       "sniperStat": 0
     },
     {
-      "id": "meyern",
-      "name": "meyern",
+      "id": "hypex",
+      "name": "hypex",
       "aliases": [
-        "meyern"
+        "hypex"
       ],
-      "team": "9z",
-      "nationality": "阿根廷",
-      "rating": 0.99,
+      "team": "GamerLegion",
+      "nationality": "波兰",
+      "rating": 1.03,
       "top20Count": 0,
       "position": "狙击手",
-      "wanmeiId": "14737",
-      "age": 23,
-      "birthDate": "2002-09-10",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
+      "wanmeiId": "23766",
+      "age": 22,
+      "birthDate": "2003-12-22",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
       "sniperStat": 91
     },
     {
-      "id": "hooxi",
-      "name": "HooXi",
+      "id": "im",
+      "name": "iM",
       "aliases": [
-        "HooXi",
-        "hooxi"
+        "im",
+        "iM"
       ],
-      "team": "Astralis",
-      "nationality": "丹麦",
-      "rating": 0.87,
+      "team": "Natus Vincere",
+      "nationality": "罗马尼亚",
+      "rating": 1.06,
+      "top20Count": 2,
+      "position": "步枪手",
+      "top20Summary": "2025 #19; 2024 #16;",
+      "wanmeiId": "14759",
+      "age": 26,
+      "birthDate": "1999-07-29",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "insani",
+      "name": "insani",
+      "aliases": [
+        "insani"
+      ],
+      "team": "MIBR",
+      "nationality": "巴西",
+      "rating": 1.25,
       "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "10096",
-      "age": 31,
-      "birthDate": "1995-05-21",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "position": "步枪手",
+      "wanmeiId": "21037",
+      "age": 22,
+      "birthDate": "2004-04-25",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
     },
     {
       "id": "jabbi",
@@ -214,6 +822,789 @@
       "sniperStat": 3
     },
     {
+      "id": "jame",
+      "name": "Jame",
+      "aliases": [
+        "jame",
+        "Jame"
+      ],
+      "team": "PVISION",
+      "nationality": "俄罗斯",
+      "rating": 1.06,
+      "top20Count": 2,
+      "position": "狙击手/指挥",
+      "top20Summary": "2022 #20; 2021 #10;",
+      "wanmeiId": "13776",
+      "age": 27,
+      "birthDate": "1998-08-23",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 93
+    },
+    {
+      "id": "jamyoung",
+      "name": "JamYoung",
+      "aliases": [
+        "jamyoung",
+        "JamYoung"
+      ],
+      "team": "TYLOO",
+      "nationality": "中国",
+      "rating": 1.2,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "19645",
+      "age": 24,
+      "birthDate": "2001-07-23",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "jba",
+      "name": "JBa",
+      "aliases": [
+        "jba",
+        "JBa"
+      ],
+      "team": "M80",
+      "nationality": "美国",
+      "rating": 1.03,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "21665",
+      "age": 22,
+      "birthDate": "2004-06-10",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "jcobbb",
+      "name": "jcobbb",
+      "aliases": [
+        "jcobbb"
+      ],
+      "team": "FaZe",
+      "nationality": "波兰",
+      "rating": 0.99,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "22383",
+      "age": 22,
+      "birthDate": "2004-01-27",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "jdc",
+      "name": "JDC",
+      "aliases": [
+        "jdc",
+        "JDC"
+      ],
+      "team": "BIG",
+      "nationality": "德国",
+      "rating": 1.09,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "14929",
+      "age": 26,
+      "birthDate": "2000-04-07",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "jee",
+      "name": "Jee",
+      "aliases": [
+        "jee",
+        "Jee"
+      ],
+      "team": "TYLOO",
+      "nationality": "中国",
+      "rating": 1.13,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "20702",
+      "age": 21,
+      "birthDate": "2004-12-21",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 91
+    },
+    {
+      "id": "karrigan",
+      "name": "karrigan",
+      "aliases": [
+        "karrigan"
+      ],
+      "team": "Falcons",
+      "nationality": "丹麦",
+      "rating": 0.78,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "429",
+      "age": 36,
+      "birthDate": "1990-04-14",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "kensizor",
+      "name": "kensizor",
+      "aliases": [
+        "kensizor"
+      ],
+      "team": "B8",
+      "nationality": "乌克兰",
+      "rating": 1.04,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "22842",
+      "age": 20,
+      "birthDate": "2006-02-02",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "kl1m",
+      "name": "kl1m",
+      "aliases": [
+        "kl1m"
+      ],
+      "team": "MIBR",
+      "nationality": "俄罗斯",
+      "rating": 1.12,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "23192",
+      "age": 20,
+      "birthDate": "2005-10-03",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 61
+    },
+    {
+      "id": "krabeni",
+      "name": "Krabeni",
+      "aliases": [
+        "krabeni",
+        "Krabeni"
+      ],
+      "team": "FUT",
+      "nationality": "塞尔维亚",
+      "rating": 1.05,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "22203",
+      "age": 21,
+      "birthDate": "2005-04-07",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "kscerato",
+      "name": "KSCERATO",
+      "aliases": [
+        "kscerato",
+        "KSCERATO"
+      ],
+      "team": "FURIA",
+      "nationality": "巴西",
+      "rating": 1.15,
+      "top20Count": 5,
+      "position": "步枪手",
+      "top20Summary": "2025 #9; 2023 #19; 2022 #9; 2021 #15; 2020 #18;",
+      "wanmeiId": "15631",
+      "age": 26,
+      "birthDate": "1999-09-12",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "kursy",
+      "name": "Kursy",
+      "aliases": [
+        "kursy",
+        "Kursy"
+      ],
+      "team": "3DMAX",
+      "nationality": "法国",
+      "rating": 0.95,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20482",
+      "age": 24,
+      "birthDate": "2001-08-17",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 59
+    },
+    {
+      "id": "kyousuke",
+      "name": "kyousuke",
+      "aliases": [
+        "kyousuke"
+      ],
+      "team": "Falcons",
+      "nationality": "俄罗斯",
+      "rating": 1.16,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "24177",
+      "age": 18,
+      "birthDate": "2008-01-30",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 2
+    },
+    {
+      "id": "lake",
+      "name": "Lake",
+      "aliases": [
+        "lake",
+        "Lake"
+      ],
+      "team": "M80",
+      "nationality": "美国",
+      "rating": 1.11,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "22921",
+      "age": 21,
+      "birthDate": "2004-10-19",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "latto",
+      "name": "latto",
+      "aliases": [
+        "latto"
+      ],
+      "team": "Legacy",
+      "nationality": "巴西",
+      "rating": 1.19,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "19045",
+      "age": 23,
+      "birthDate": "2002-12-21",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "launx",
+      "name": "lauNX",
+      "aliases": [
+        "launx",
+        "lauNX"
+      ],
+      "team": "FUT",
+      "nationality": "罗马尼亚",
+      "rating": 1,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20761",
+      "age": 21,
+      "birthDate": "2005-05-10",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "lnz",
+      "name": "LNZ",
+      "aliases": [
+        "lnz",
+        "LNZ"
+      ],
+      "team": "MIBR",
+      "nationality": "瑞典",
+      "rating": 1.03,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "19310",
+      "age": 23,
+      "birthDate": "2002-10-20",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "luchov",
+      "name": "luchov",
+      "aliases": [
+        "luchov"
+      ],
+      "team": "9z",
+      "nationality": "阿根廷",
+      "rating": 1.18,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20394",
+      "age": 25,
+      "birthDate": "2001-05-11",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "lucky",
+      "name": "Lucky",
+      "aliases": [
+        "lucky",
+        "Lucky"
+      ],
+      "team": "3DMAX",
+      "nationality": "法国",
+      "rating": 1.08,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "13497",
+      "age": 22,
+      "birthDate": "2003-07-13",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 4
+    },
+    {
+      "id": "m0nesy",
+      "name": "m0NESY",
+      "aliases": [
+        "m0nesy",
+        "m0NESY"
+      ],
+      "team": "Falcons",
+      "nationality": "俄罗斯",
+      "rating": 1.27,
+      "top20Count": 4,
+      "position": "狙击手",
+      "top20Summary": "2025 #4; 2024 #2; 2023 #4; 2022 #7;",
+      "wanmeiId": "19230",
+      "age": 21,
+      "birthDate": "2005-05-01",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 95
+    },
+    {
+      "id": "magixx",
+      "name": "magixx",
+      "aliases": [
+        "magixx"
+      ],
+      "team": "Spirit",
+      "nationality": "俄罗斯",
+      "rating": 1.03,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "18317",
+      "age": 23,
+      "birthDate": "2003-06-03",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "magnojez",
+      "name": "Magnojez",
+      "aliases": [
+        "magnojez",
+        "Magnojez"
+      ],
+      "team": "BB",
+      "nationality": "俄罗斯",
+      "rating": 1.21,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "21667",
+      "age": 21,
+      "birthDate": "2004-10-14",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 3
+    },
+    {
+      "id": "maj3r",
+      "name": "MAJ3R",
+      "aliases": [
+        "maj3r",
+        "MAJ3R"
+      ],
+      "team": "Aurora",
+      "nationality": "土耳其",
+      "rating": 0.94,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "150",
+      "age": 35,
+      "birthDate": "1991-01-25",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/B4D61360CFF24DB9BC74860EB3B37E94-1782336410078.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "maka",
+      "name": "Maka",
+      "aliases": [
+        "maka",
+        "Maka"
+      ],
+      "team": "3DMAX",
+      "nationality": "法国",
+      "rating": 1,
+      "top20Count": 0,
+      "position": "狙击手/指挥",
+      "wanmeiId": "13138",
+      "age": 28,
+      "birthDate": "1997-07-06",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 88
+    },
+    {
+      "id": "makazze",
+      "name": "makazze",
+      "aliases": [
+        "makazze"
+      ],
+      "team": "Natus Vincere",
+      "nationality": "塞尔维亚",
+      "rating": 1.1,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "22673",
+      "age": 19,
+      "birthDate": "2006-12-21",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "malbsmd",
+      "name": "malbsMd",
+      "aliases": [
+        "malbsmd",
+        "malbsMd"
+      ],
+      "team": "Liquid",
+      "nationality": "危地马拉",
+      "rating": 1.12,
+      "top20Count": 1,
+      "position": "步枪手",
+      "top20Summary": "2024 #12;",
+      "wanmeiId": "11617",
+      "age": 23,
+      "birthDate": "2002-10-17",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "martinezsa",
+      "name": "MartinezSa",
+      "aliases": [
+        "martinezsa",
+        "MartinezSa"
+      ],
+      "team": "Gentle Mates",
+      "nationality": "西班牙",
+      "rating": 1.16,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "21239",
+      "age": 25,
+      "birthDate": "2001-01-29",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 95
+    },
+    {
+      "id": "masval",
+      "name": "MaSvAl",
+      "aliases": [
+        "masval",
+        "MaSvAl"
+      ],
+      "team": "magic",
+      "nationality": "-",
+      "rating": 1.18,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "19874",
+      "age": 23,
+      "birthDate": "2003-01-17",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "matys",
+      "name": "MATYS",
+      "aliases": [
+        "matys",
+        "MATYS"
+      ],
+      "team": "G2",
+      "nationality": "斯洛伐克",
+      "rating": 1.07,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "21062",
+      "age": 22,
+      "birthDate": "2003-09-14",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "max",
+      "name": "max",
+      "aliases": [
+        "max"
+      ],
+      "team": "9z",
+      "nationality": "乌拉圭",
+      "rating": 0.95,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "12092",
+      "age": 27,
+      "birthDate": "1999-06-15",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "mercury",
+      "name": "Mercury",
+      "aliases": [
+        "mercury",
+        "Mercury"
+      ],
+      "team": "TYLOO",
+      "nationality": "中国",
+      "rating": 1.05,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "20895",
+      "age": 25,
+      "birthDate": "2000-12-15",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "meyern",
+      "name": "meyern",
+      "aliases": [
+        "meyern"
+      ],
+      "team": "9z",
+      "nationality": "阿根廷",
+      "rating": 0.99,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "14737",
+      "age": 23,
+      "birthDate": "2002-09-10",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 91
+    },
+    {
+      "id": "mezii",
+      "name": "mezii",
+      "aliases": [
+        "mezii"
+      ],
+      "team": "Vitality",
+      "nationality": "英国",
+      "rating": 1.01,
+      "top20Count": 1,
+      "position": "步枪手",
+      "top20Summary": "2025 #12;",
+      "wanmeiId": "18462",
+      "age": 27,
+      "birthDate": "1998-10-15",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "misutaaa",
+      "name": "misutaaa",
+      "aliases": [
+        "misutaaa"
+      ],
+      "team": "3DMAX",
+      "nationality": "法国",
+      "rating": 1.04,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "14176",
+      "age": 23,
+      "birthDate": "2003-01-15",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "mo0n",
+      "name": "mo0N",
+      "aliases": [
+        "mo0n",
+        "mo0N"
+      ],
+      "team": "magic",
+      "nationality": "-",
+      "rating": 1.04,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "23858",
+      "age": 20,
+      "birthDate": "2005-07-19",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 91
+    },
+    {
+      "id": "molodoy",
+      "name": "molodoy",
+      "aliases": [
+        "molodoy"
+      ],
+      "team": "FURIA",
+      "nationality": "哈萨克斯坦",
+      "rating": 1.16,
+      "top20Count": 1,
+      "position": "狙击手",
+      "top20Summary": "2025 #6;",
+      "wanmeiId": "24144",
+      "age": 21,
+      "birthDate": "2005-01-10",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 93
+    },
+    {
+      "id": "mopoz",
+      "name": "mopoz",
+      "aliases": [
+        "mopoz"
+      ],
+      "team": "Gentle Mates",
+      "nationality": "西班牙",
+      "rating": 1.08,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "9254",
+      "age": 29,
+      "birthDate": "1996-08-07",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "moseyuh",
+      "name": "Moseyuh",
+      "aliases": [
+        "moseyuh",
+        "Moseyuh"
+      ],
+      "team": "TYLOO",
+      "nationality": "中国",
+      "rating": 1.11,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "21621",
+      "age": 21,
+      "birthDate": "2004-12-21",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "mzinho",
+      "name": "mzinho",
+      "aliases": [
+        "mzinho"
+      ],
+      "team": "The MongolZ",
+      "nationality": "蒙古",
+      "rating": 1.03,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "21001",
+      "age": 18,
+      "birthDate": "2007-06-28",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "n0te",
+      "name": "n0te",
+      "aliases": [
+        "n0te"
+      ],
+      "team": "NIP",
+      "nationality": "未知",
+      "rating": 1.18,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "22035",
+      "age": 20,
+      "birthDate": "2006-02-02",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "naf",
+      "name": "NAF",
+      "aliases": [
+        "naf",
+        "NAF"
+      ],
+      "team": "Liquid",
+      "nationality": "加拿大",
+      "rating": 1.03,
+      "top20Count": 3,
+      "position": "步枪手",
+      "top20Summary": "2021 #14; 2019 #7; 2018 #6;",
+      "wanmeiId": "8520",
+      "age": 28,
+      "birthDate": "1997-11-24",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 5
+    },
+    {
+      "id": "nertz",
+      "name": "NertZ",
+      "aliases": [
+        "nertz",
+        "NertZ"
+      ],
+      "team": "G2",
+      "nationality": "以色列",
+      "rating": 1.07,
+      "top20Count": 1,
+      "position": "步枪手",
+      "top20Summary": "2023 #14;",
+      "wanmeiId": "9436",
+      "age": 26,
+      "birthDate": "1999-07-12",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "niko",
+      "name": "NiKo",
+      "aliases": [
+        "niko",
+        "NiKo"
+      ],
+      "team": "Falcons",
+      "nationality": "波黑",
+      "rating": 1.12,
+      "top20Count": 10,
+      "position": "步枪手",
+      "top20Summary": "2025 #18; 2024 #4; 2023 #2; 2022 #5; 2021 #3; 2020 #4; 2019 #11; 2018 #3; 2017 #2; 2016 #11;",
+      "wanmeiId": "3741",
+      "age": 29,
+      "birthDate": "1997-02-16",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "npl",
+      "name": "npl",
+      "aliases": [
+        "npl"
+      ],
+      "team": "B8",
+      "nationality": "乌克兰",
+      "rating": 1.13,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "21708",
+      "age": 20,
+      "birthDate": "2005-07-21",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
       "id": "phzy",
       "name": "phzy",
       "aliases": [
@@ -229,6 +1620,95 @@
       "birthDate": "2002-09-24",
       "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
       "sniperStat": 92
+    },
+    {
+      "id": "piriajr",
+      "name": "piriajr",
+      "aliases": [
+        "piriajr"
+      ],
+      "team": "paiN",
+      "nationality": "巴西",
+      "rating": 1.08,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "18714",
+      "age": 23,
+      "birthDate": "2002-10-01",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 2
+    },
+    {
+      "id": "pr",
+      "name": "PR",
+      "aliases": [
+        "pr",
+        "PR"
+      ],
+      "team": "GamerLegion",
+      "nationality": "捷克",
+      "rating": 1.05,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "22279",
+      "age": 18,
+      "birthDate": "2007-09-17",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "rainwaker",
+      "name": "Rainwaker",
+      "aliases": [
+        "rainwaker",
+        "Rainwaker"
+      ],
+      "team": "Monte",
+      "nationality": "保加利亚",
+      "rating": 1.11,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "17145",
+      "age": 25,
+      "birthDate": "2001-04-27",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "rez",
+      "name": "REZ",
+      "aliases": [
+        "rez",
+        "REZ"
+      ],
+      "team": "GamerLegion",
+      "nationality": "瑞典",
+      "rating": 1.1,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "9278",
+      "age": 28,
+      "birthDate": "1998-01-11",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "ropz",
+      "name": "ropz",
+      "aliases": [
+        "ropz"
+      ],
+      "team": "Vitality",
+      "nationality": "爱沙尼亚",
+      "rating": 1.17,
+      "top20Count": 8,
+      "position": "步枪手",
+      "top20Summary": "2025 #3; 2024 #18; 2023 #3; 2022 #8; 2021 #18; 2020 #7; 2019 #10; 2018 #19;",
+      "wanmeiId": "11816",
+      "age": 26,
+      "birthDate": "1999-12-22",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 3
     },
     {
       "id": "ryu",
@@ -248,39 +1728,264 @@
       "sniperStat": 0
     },
     {
-      "id": "staehr",
-      "name": "Staehr",
+      "id": "s1n",
+      "name": "s1n",
       "aliases": [
-        "Staehr",
-        "staehr"
+        "s1n"
       ],
-      "team": "Astralis",
-      "nationality": "丹麦",
-      "rating": 1.14,
+      "team": "M80",
+      "nationality": "德国",
+      "rating": 0.95,
       "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20304",
-      "age": 21,
-      "birthDate": "2004-07-19",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
+      "position": "指挥",
+      "wanmeiId": "20104",
+      "age": 24,
+      "birthDate": "2002-03-18",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
       "sniperStat": 0
     },
     {
-      "id": "maj3r",
-      "name": "MAJ3R",
+      "id": "s1ren",
+      "name": "S1ren",
       "aliases": [
-        "MAJ3R",
-        "maj3r"
+        "s1ren",
+        "S1ren"
       ],
-      "team": "Aurora",
-      "nationality": "土耳其",
-      "rating": 0.94,
+      "team": "BB",
+      "nationality": "俄罗斯",
+      "rating": 1.02,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "18506",
+      "age": 23,
+      "birthDate": "2002-07-16",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "s1zzi",
+      "name": "s1zzi",
+      "aliases": [
+        "s1zzi"
+      ],
+      "team": "B8",
+      "nationality": "乌克兰",
+      "rating": 1.03,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "25619",
+      "age": 16,
+      "birthDate": "2009-12-20",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 93
+    },
+    {
+      "id": "saadzin",
+      "name": "saadzin",
+      "aliases": [
+        "saadzin"
+      ],
+      "team": "Legacy",
+      "nationality": "巴西",
+      "rating": 1.06,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "22965",
+      "age": 22,
+      "birthDate": "2004-05-14",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 92
+    },
+    {
+      "id": "saffee",
+      "name": "saffee",
+      "aliases": [
+        "saffee"
+      ],
+      "team": "paiN",
+      "nationality": "巴西",
+      "rating": 1.03,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "18835",
+      "age": 32,
+      "birthDate": "1994-05-17",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 91
+    },
+    {
+      "id": "sausol",
+      "name": "sausol",
+      "aliases": [
+        "sausol"
+      ],
+      "team": "Gentle Mates",
+      "nationality": "西班牙",
+      "rating": 1.04,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "18749",
+      "age": 26,
+      "birthDate": "2000-05-31",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "sfade8",
+      "name": "sFade8",
+      "aliases": [
+        "sfade8",
+        "sFade8"
+      ],
+      "team": "magic",
+      "nationality": "-",
+      "rating": 1,
       "top20Count": 0,
       "position": "指挥",
-      "wanmeiId": "150",
-      "age": 35,
-      "birthDate": "1991-01-25",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/B4D61360CFF24DB9BC74860EB3B37E94-1782336410078.png?x-oss-process=image/resize,w_280",
+      "wanmeiId": "22075",
+      "age": 22,
+      "birthDate": "2004-01-26",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "sh1ro",
+      "name": "sh1ro",
+      "aliases": [
+        "sh1ro"
+      ],
+      "team": "Spirit",
+      "nationality": "俄罗斯",
+      "rating": 1.17,
+      "top20Count": 5,
+      "position": "狙击手",
+      "top20Summary": "2025 #5; 2024 #6; 2023 #8; 2022 #3; 2021 #4;",
+      "wanmeiId": "16920",
+      "age": 24,
+      "birthDate": "2001-07-15",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 93
+    },
+    {
+      "id": "siuhy",
+      "name": "siuhy",
+      "aliases": [
+        "siuhy"
+      ],
+      "team": "Liquid",
+      "nationality": "波兰",
+      "rating": 0.83,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "16820",
+      "age": 23,
+      "birthDate": "2002-08-26",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "sjuush",
+      "name": "sjuush",
+      "aliases": [
+        "sjuush"
+      ],
+      "team": "NIP",
+      "nationality": "丹麦",
+      "rating": 1.02,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "14148",
+      "age": 27,
+      "birthDate": "1999-01-03",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "slaxejezzz",
+      "name": "slaxejezzz",
+      "aliases": [
+        "slaxejezzz"
+      ],
+      "team": "PVISION",
+      "nationality": "-",
+      "rating": 1.25,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "24807",
+      "age": 18,
+      "birthDate": "2007-11-01",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 5
+    },
+    {
+      "id": "slaxz-",
+      "name": "slaxz-",
+      "aliases": [
+        "slaxz-"
+      ],
+      "team": "M80",
+      "nationality": "德国",
+      "rating": 1.09,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "15370",
+      "age": 27,
+      "birthDate": "1998-11-25",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 93
+    },
+    {
+      "id": "snappi",
+      "name": "Snappi",
+      "aliases": [
+        "snappi",
+        "Snappi"
+      ],
+      "team": "NIP",
+      "nationality": "丹麦",
+      "rating": 0.88,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "922",
+      "age": 36,
+      "birthDate": "1990-06-09",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "snax",
+      "name": "Snax",
+      "aliases": [
+        "snax",
+        "Snax"
+      ],
+      "team": "GamerLegion",
+      "nationality": "波兰",
+      "rating": 0.83,
+      "top20Count": 4,
+      "position": "指挥",
+      "top20Summary": "2017 #20; 2016 #5; 2015 #4; 2014 #4;",
+      "wanmeiId": "2553",
+      "age": 32,
+      "birthDate": "1993-07-05",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 1
+    },
+    {
+      "id": "snow",
+      "name": "snow",
+      "aliases": [
+        "snow"
+      ],
+      "team": "paiN",
+      "nationality": "巴西",
+      "rating": 1.11,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20171",
+      "age": 19,
+      "birthDate": "2007-03-22",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
       "sniperStat": 1
     },
     {
@@ -301,11 +2006,353 @@
       "sniperStat": 0
     },
     {
+      "id": "spinx",
+      "name": "Spinx",
+      "aliases": [
+        "spinx",
+        "Spinx"
+      ],
+      "team": "MOUZ",
+      "nationality": "以色列",
+      "rating": 1.01,
+      "top20Count": 4,
+      "position": "步枪手",
+      "top20Summary": "2025 #10; 2024 #13; 2023 #5; 2022 #18;",
+      "wanmeiId": "18221",
+      "age": 25,
+      "birthDate": "2000-09-13",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/CEF2AE72D93F46D8A66E053B5114A762-1782335042561.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "staehr",
+      "name": "Staehr",
+      "aliases": [
+        "staehr",
+        "Staehr"
+      ],
+      "team": "Astralis",
+      "nationality": "丹麦",
+      "rating": 1.14,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20304",
+      "age": 21,
+      "birthDate": "2004-07-19",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "starry",
+      "name": "Starry",
+      "aliases": [
+        "starry",
+        "Starry"
+      ],
+      "team": "Lynn Vision",
+      "nationality": "中国",
+      "rating": 1.15,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20254",
+      "age": 21,
+      "birthDate": "2005-01-03",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 5
+    },
+    {
+      "id": "stavn",
+      "name": "stavn",
+      "aliases": [
+        "stavn"
+      ],
+      "team": "NIP",
+      "nationality": "丹麦",
+      "rating": 1.11,
+      "top20Count": 4,
+      "position": "狙击手",
+      "top20Summary": "2023 #9; 2022 #10; 2021 #16; 2020 #12;",
+      "wanmeiId": "10994",
+      "age": 24,
+      "birthDate": "2002-03-26",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 93
+    },
+    {
+      "id": "sunpayus",
+      "name": "SunPayus",
+      "aliases": [
+        "sunpayus",
+        "SunPayus"
+      ],
+      "team": "G2",
+      "nationality": "西班牙",
+      "rating": 1.06,
+      "top20Count": 1,
+      "position": "狙击手",
+      "top20Summary": "2023 #6;",
+      "wanmeiId": "19164",
+      "age": 27,
+      "birthDate": "1998-11-19",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 92
+    },
+    {
+      "id": "swisher",
+      "name": "Swisher",
+      "aliases": [
+        "swisher",
+        "Swisher"
+      ],
+      "team": "M80",
+      "nationality": "美国",
+      "rating": 1.06,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "16599",
+      "age": 27,
+      "birthDate": "1998-09-17",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "tabsen",
+      "name": "tabseN",
+      "aliases": [
+        "tabsen",
+        "tabseN"
+      ],
+      "team": "BIG",
+      "nationality": "德国",
+      "rating": 0.94,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "5794",
+      "age": 31,
+      "birthDate": "1995-04-05",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "tauson",
+      "name": "Tauson",
+      "aliases": [
+        "tauson",
+        "Tauson"
+      ],
+      "team": "GamerLegion",
+      "nationality": "丹麦",
+      "rating": 1.01,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20301",
+      "age": 20,
+      "birthDate": "2005-08-17",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "techno",
+      "name": "Techno",
+      "aliases": [
+        "techno",
+        "Techno"
+      ],
+      "team": "The MongolZ",
+      "nationality": "蒙古",
+      "rating": 0.94,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "20275",
+      "age": 21,
+      "birthDate": "2005-05-20",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "tenzy",
+      "name": "tENZY",
+      "aliases": [
+        "tenzy",
+        "tENZY"
+      ],
+      "team": "magic",
+      "nationality": "-",
+      "rating": 1.15,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "24173",
+      "age": 21,
+      "birthDate": "2005-03-15",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "teses",
+      "name": "TeSeS",
+      "aliases": [
+        "teses",
+        "TeSeS"
+      ],
+      "team": "Falcons",
+      "nationality": "丹麦",
+      "rating": 1.03,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "12018",
+      "age": 25,
+      "birthDate": "2000-12-12",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "tn1r",
+      "name": "tN1R",
+      "aliases": [
+        "tn1r",
+        "tN1R"
+      ],
+      "team": "Spirit",
+      "nationality": "白俄罗斯",
+      "rating": 1.09,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "19808",
+      "age": 25,
+      "birthDate": "2001-02-14",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "torzsi",
+      "name": "torzsi",
+      "aliases": [
+        "torzsi"
+      ],
+      "team": "MOUZ",
+      "nationality": "匈牙利",
+      "rating": 1.02,
+      "top20Count": 2,
+      "position": "狙击手",
+      "top20Summary": "2025 #17; 2024 #20;",
+      "wanmeiId": "18072",
+      "age": 24,
+      "birthDate": "2002-05-17",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/CEF2AE72D93F46D8A66E053B5114A762-1782335042561.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 93
+    },
+    {
+      "id": "twistzz",
+      "name": "Twistzz",
+      "aliases": [
+        "twistzz",
+        "Twistzz"
+      ],
+      "team": "FaZe",
+      "nationality": "加拿大",
+      "rating": 1.17,
+      "top20Count": 6,
+      "position": "指挥",
+      "top20Summary": "2025 #11; 2023 #20; 2022 #11; 2021 #17; 2019 #9; 2018 #12;",
+      "wanmeiId": "10394",
+      "age": 26,
+      "birthDate": "1999-11-14",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "ultimate",
+      "name": "ultimate",
+      "aliases": [
+        "ultimate"
+      ],
+      "team": "Liquid",
+      "nationality": "波兰",
+      "rating": 0.99,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "21763",
+      "age": 22,
+      "birthDate": "2003-11-29",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 90
+    },
+    {
+      "id": "venomzera",
+      "name": "venomzera",
+      "aliases": [
+        "venomzera"
+      ],
+      "team": "MIBR",
+      "nationality": "巴西",
+      "rating": 0.99,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "21288",
+      "age": 21,
+      "birthDate": "2004-08-19",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "vsm",
+      "name": "vsm",
+      "aliases": [
+        "vsm"
+      ],
+      "team": "paiN",
+      "nationality": "巴西",
+      "rating": 1,
+      "top20Count": 0,
+      "position": "步枪手",
+      "wanmeiId": "16816",
+      "age": 26,
+      "birthDate": "1999-07-02",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "w0nderful",
+      "name": "w0nderful",
+      "aliases": [
+        "w0nderful"
+      ],
+      "team": "Natus Vincere",
+      "nationality": "乌克兰",
+      "rating": 1.17,
+      "top20Count": 1,
+      "position": "狙击手",
+      "top20Summary": "2024 #11;",
+      "wanmeiId": "20127",
+      "age": 21,
+      "birthDate": "2004-12-14",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 92
+    },
+    {
+      "id": "westmelon",
+      "name": "Westmelon",
+      "aliases": [
+        "westmelon",
+        "Westmelon"
+      ],
+      "team": "Lynn Vision",
+      "nationality": "中国",
+      "rating": 1.02,
+      "top20Count": 0,
+      "position": "指挥",
+      "wanmeiId": "16551",
+      "age": 25,
+      "birthDate": "2001-02-04",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
       "id": "wicadia",
       "name": "Wicadia",
       "aliases": [
-        "Wicadia",
-        "wicadia"
+        "wicadia",
+        "Wicadia"
       ],
       "team": "Aurora",
       "nationality": "土耳其",
@@ -340,8 +2387,8 @@
       "id": "xantares",
       "name": "XANTARES",
       "aliases": [
-        "XANTARES",
-        "xantares"
+        "xantares",
+        "XANTARES"
       ],
       "team": "Aurora",
       "nationality": "土耳其",
@@ -354,1574 +2401,6 @@
       "birthDate": "1995-08-07",
       "imageUrl": "https://cdn.wmpvp.com/appengine/B4D61360CFF24DB9BC74860EB3B37E94-1782336410078.png?x-oss-process=image/resize,w_280",
       "sniperStat": 0
-    },
-    {
-      "id": "alex666",
-      "name": "alex666",
-      "aliases": [
-        "alex666"
-      ],
-      "team": "B8",
-      "nationality": "乌克兰",
-      "rating": 1.01,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "20112",
-      "age": 24,
-      "birthDate": "2001-08-03",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "esenthial",
-      "name": "esenthial",
-      "aliases": [
-        "esenthial"
-      ],
-      "team": "B8",
-      "nationality": "乌克兰",
-      "rating": 1.01,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "23643",
-      "age": 20,
-      "birthDate": "2006-02-26",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "kensizor",
-      "name": "kensizor",
-      "aliases": [
-        "kensizor"
-      ],
-      "team": "B8",
-      "nationality": "乌克兰",
-      "rating": 1.04,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "22842",
-      "age": 20,
-      "birthDate": "2006-02-02",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "npl",
-      "name": "npl",
-      "aliases": [
-        "npl"
-      ],
-      "team": "B8",
-      "nationality": "乌克兰",
-      "rating": 1.13,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "21708",
-      "age": 20,
-      "birthDate": "2005-07-21",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "s1zzi",
-      "name": "s1zzi",
-      "aliases": [
-        "s1zzi"
-      ],
-      "team": "B8",
-      "nationality": "乌克兰",
-      "rating": 1.03,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "25619",
-      "age": 16,
-      "birthDate": "2009-12-20",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
-    },
-    {
-      "id": "boombl4",
-      "name": "Boombl4",
-      "aliases": [
-        "Boombl4",
-        "boombl4"
-      ],
-      "team": "BB",
-      "nationality": "俄罗斯",
-      "rating": 0.97,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "11840",
-      "age": 27,
-      "birthDate": "1998-12-20",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "d1ledez",
-      "name": "d1Ledez",
-      "aliases": [
-        "d1Ledez",
-        "d1ledez"
-      ],
-      "team": "BB",
-      "nationality": "俄罗斯",
-      "rating": 1.11,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20357",
-      "age": 22,
-      "birthDate": "2003-07-03",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "magnojez",
-      "name": "Magnojez",
-      "aliases": [
-        "Magnojez",
-        "magnojez"
-      ],
-      "team": "BB",
-      "nationality": "俄罗斯",
-      "rating": 1.21,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "21667",
-      "age": 21,
-      "birthDate": "2004-10-14",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 3
-    },
-    {
-      "id": "s1ren",
-      "name": "S1ren",
-      "aliases": [
-        "S1ren",
-        "s1ren"
-      ],
-      "team": "BB",
-      "nationality": "俄罗斯",
-      "rating": 1.02,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "18506",
-      "age": 23,
-      "birthDate": "2002-07-16",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "zorte",
-      "name": "zorte",
-      "aliases": [
-        "zorte"
-      ],
-      "team": "BB",
-      "nationality": "俄罗斯",
-      "rating": 1,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "15662",
-      "age": 28,
-      "birthDate": "1998-05-27",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 92
-    },
-    {
-      "id": "blamef",
-      "name": "blameF",
-      "aliases": [
-        "blameF",
-        "blamef",
-        "布雷姆"
-      ],
-      "team": "BIG",
-      "nationality": "丹麦",
-      "rating": 1.19,
-      "top20Count": 4,
-      "position": "指挥",
-      "top20Summary": "2023 #16; 2022 #12; 2021 #13; 2020 #6;",
-      "wanmeiId": "15165",
-      "displayName": "布雷姆",
-      "age": 29,
-      "birthDate": "1997-06-10",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "faven",
-      "name": "faveN",
-      "aliases": [
-        "faveN",
-        "faven"
-      ],
-      "team": "BIG",
-      "nationality": "德国",
-      "rating": 0.99,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "14932",
-      "age": 26,
-      "birthDate": "2000-02-08",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "gr1ks",
-      "name": "gr1ks",
-      "aliases": [
-        "gr1ks"
-      ],
-      "team": "BIG",
-      "nationality": "白俄罗斯",
-      "rating": 1.1,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "22884",
-      "age": 20,
-      "birthDate": "2005-10-24",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 94
-    },
-    {
-      "id": "jdc",
-      "name": "JDC",
-      "aliases": [
-        "JDC",
-        "jdc"
-      ],
-      "team": "BIG",
-      "nationality": "德国",
-      "rating": 1.09,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "14929",
-      "age": 26,
-      "birthDate": "2000-04-07",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "tabsen",
-      "name": "tabseN",
-      "aliases": [
-        "tabseN",
-        "tabsen"
-      ],
-      "team": "BIG",
-      "nationality": "德国",
-      "rating": 0.94,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "5794",
-      "age": 31,
-      "birthDate": "1995-04-05",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "karrigan",
-      "name": "karrigan",
-      "aliases": [
-        "karrigan",
-        "大凯瑞",
-        "卡瑞甘"
-      ],
-      "team": "Falcons",
-      "nationality": "丹麦",
-      "rating": 0.78,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "429",
-      "displayName": "大凯瑞",
-      "age": 36,
-      "birthDate": "1990-04-14",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "kyousuke",
-      "name": "kyousuke",
-      "aliases": [
-        "kyousuke"
-      ],
-      "team": "Falcons",
-      "nationality": "俄罗斯",
-      "rating": 1.16,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "24177",
-      "age": 18,
-      "birthDate": "2008-01-30",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
-    },
-    {
-      "id": "m0nesy",
-      "name": "m0NESY",
-      "aliases": [
-        "m0NESY",
-        "m0nesy",
-        "太子"
-      ],
-      "team": "Falcons",
-      "nationality": "俄罗斯",
-      "rating": 1.27,
-      "top20Count": 4,
-      "position": "狙击手",
-      "top20Summary": "2025 #4; 2024 #2; 2023 #4; 2022 #7;",
-      "wanmeiId": "19230",
-      "displayName": "太子",
-      "age": 21,
-      "birthDate": "2005-05-01",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 95
-    },
-    {
-      "id": "niko",
-      "name": "NiKo",
-      "aliases": [
-        "NiKo",
-        "niko",
-        "尼公子",
-        "尼古拉"
-      ],
-      "team": "Falcons",
-      "nationality": "波黑",
-      "rating": 1.12,
-      "top20Count": 10,
-      "position": "步枪手",
-      "top20Summary": "2025 #18; 2024 #4; 2023 #2; 2022 #5; 2021 #3; 2020 #4; 2019 #11; 2018 #3; 2017 #2; 2016 #11;",
-      "wanmeiId": "3741",
-      "displayName": "尼公子",
-      "age": 29,
-      "birthDate": "1997-02-16",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "teses",
-      "name": "TeSeS",
-      "aliases": [
-        "TeSeS",
-        "teses",
-        "特塞斯"
-      ],
-      "team": "Falcons",
-      "nationality": "丹麦",
-      "rating": 1.03,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "12018",
-      "displayName": "特塞斯",
-      "age": 25,
-      "birthDate": "2000-12-12",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "broky",
-      "name": "broky",
-      "aliases": [
-        "broky",
-        "布罗基"
-      ],
-      "team": "FaZe",
-      "nationality": "拉脱维亚",
-      "rating": 1.01,
-      "top20Count": 4,
-      "position": "狙击手",
-      "top20Summary": "2024 #8; 2023 #10; 2022 #6; 2021 #20;",
-      "wanmeiId": "18053",
-      "displayName": "布罗基",
-      "age": 25,
-      "birthDate": "2001-02-14",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
-    },
-    {
-      "id": "frozen",
-      "name": "frozen",
-      "aliases": [
-        "frozen",
-        "寒王"
-      ],
-      "team": "FaZe",
-      "nationality": "斯洛伐克",
-      "rating": 1.25,
-      "top20Count": 4,
-      "position": "步枪手",
-      "top20Summary": "2025 #8; 2024 #10; 2023 #12; 2022 #17;",
-      "wanmeiId": "9960",
-      "displayName": "寒王",
-      "age": 23,
-      "birthDate": "2002-07-18",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "jcobbb",
-      "name": "jcobbb",
-      "aliases": [
-        "jcobbb"
-      ],
-      "team": "FaZe",
-      "nationality": "波兰",
-      "rating": 0.99,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "22383",
-      "age": 22,
-      "birthDate": "2004-01-27",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "twistzz",
-      "name": "Twistzz",
-      "aliases": [
-        "Twistzz",
-        "twistzz",
-        "总监"
-      ],
-      "team": "FaZe",
-      "nationality": "加拿大",
-      "rating": 1.17,
-      "top20Count": 6,
-      "position": "指挥",
-      "top20Summary": "2025 #11; 2023 #20; 2022 #11; 2021 #17; 2019 #9; 2018 #12;",
-      "wanmeiId": "10394",
-      "displayName": "总监",
-      "age": 26,
-      "birthDate": "1999-11-14",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "fallen",
-      "name": "FalleN",
-      "aliases": [
-        "FalleN",
-        "fallen",
-        "教父"
-      ],
-      "team": "FURIA",
-      "nationality": "巴西",
-      "rating": 0.93,
-      "top20Count": 2,
-      "position": "指挥",
-      "top20Summary": "2017 #6; 2016 #2;",
-      "wanmeiId": "2023",
-      "displayName": "教父",
-      "age": 35,
-      "birthDate": "1991-05-30",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 3
-    },
-    {
-      "id": "kscerato",
-      "name": "KSCERATO",
-      "aliases": [
-        "KSCERATO",
-        "kscerato",
-        "卡塞拉托"
-      ],
-      "team": "FURIA",
-      "nationality": "巴西",
-      "rating": 1.15,
-      "top20Count": 5,
-      "position": "步枪手",
-      "top20Summary": "2025 #9; 2023 #19; 2022 #9; 2021 #15; 2020 #18;",
-      "wanmeiId": "15631",
-      "displayName": "卡塞拉托",
-      "age": 26,
-      "birthDate": "1999-09-12",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "molodoy",
-      "name": "molodoy",
-      "aliases": [
-        "molodoy"
-      ],
-      "team": "FURIA",
-      "nationality": "哈萨克斯坦",
-      "rating": 1.16,
-      "top20Count": 1,
-      "position": "狙击手",
-      "top20Summary": "2025 #6;",
-      "wanmeiId": "24144",
-      "age": 21,
-      "birthDate": "2005-01-10",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
-    },
-    {
-      "id": "yekindar",
-      "name": "YEKINDAR",
-      "aliases": [
-        "YEKINDAR",
-        "yekindar",
-        "叶金"
-      ],
-      "team": "FURIA",
-      "nationality": "拉脱维亚",
-      "rating": 1.1,
-      "top20Count": 3,
-      "position": "步枪手",
-      "top20Summary": "2025 #15; 2022 #15; 2021 #8;",
-      "wanmeiId": "13915",
-      "displayName": "叶金",
-      "age": 26,
-      "birthDate": "1999-10-04",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
-    },
-    {
-      "id": "yuurih",
-      "name": "yuurih",
-      "aliases": [
-        "yuurih",
-        "尤里"
-      ],
-      "team": "FURIA",
-      "nationality": "巴西",
-      "rating": 1.06,
-      "top20Count": 2,
-      "position": "步枪手",
-      "top20Summary": "2022 #19; 2020 #14;",
-      "wanmeiId": "12553",
-      "displayName": "尤里",
-      "age": 26,
-      "birthDate": "1999-12-22",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "cmtry",
-      "name": "cmtry",
-      "aliases": [
-        "cmtry"
-      ],
-      "team": "FUT",
-      "nationality": "乌克兰",
-      "rating": 1.02,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "22674",
-      "age": 18,
-      "birthDate": "2007-09-27",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
-    },
-    {
-      "id": "dem0n",
-      "name": "dem0n",
-      "aliases": [
-        "dem0n"
-      ],
-      "team": "FUT",
-      "nationality": "乌克兰",
-      "rating": 1.12,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20584",
-      "age": 18,
-      "birthDate": "2007-10-02",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "dziugss",
-      "name": "dziugss",
-      "aliases": [
-        "dziugss"
-      ],
-      "team": "FUT",
-      "nationality": "立陶宛",
-      "rating": 1.15,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "23553",
-      "age": 17,
-      "birthDate": "2008-09-12",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "krabeni",
-      "name": "Krabeni",
-      "aliases": [
-        "Krabeni",
-        "krabeni"
-      ],
-      "team": "FUT",
-      "nationality": "塞尔维亚",
-      "rating": 1.05,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "22203",
-      "age": 21,
-      "birthDate": "2005-04-07",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "launx",
-      "name": "lauNX",
-      "aliases": [
-        "lauNX",
-        "launx"
-      ],
-      "team": "FUT",
-      "nationality": "罗马尼亚",
-      "rating": 1,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20761",
-      "age": 21,
-      "birthDate": "2005-05-10",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "heavygod",
-      "name": "HeavyGod",
-      "aliases": [
-        "HeavyGod",
-        "heavygod"
-      ],
-      "team": "G2",
-      "nationality": "以色列",
-      "rating": 1.18,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20447",
-      "age": 23,
-      "birthDate": "2002-07-24",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "hunter",
-      "name": "huNter-",
-      "aliases": [
-        "huNter-",
-        "hunter-",
-        "hunter",
-        "HuNter",
-        "猎人"
-      ],
-      "team": "G2",
-      "nationality": "波黑",
-      "rating": 1.06,
-      "top20Count": 4,
-      "position": "指挥",
-      "top20Summary": "2023 #13; 2022 #14; 2021 #12; 2020 #13;",
-      "wanmeiId": "3972",
-      "displayName": "猎人",
-      "age": 30,
-      "birthDate": "1996-01-03",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "matys",
-      "name": "MATYS",
-      "aliases": [
-        "MATYS",
-        "matys"
-      ],
-      "team": "G2",
-      "nationality": "斯洛伐克",
-      "rating": 1.07,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "21062",
-      "age": 22,
-      "birthDate": "2003-09-14",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "nertz",
-      "name": "NertZ",
-      "aliases": [
-        "NertZ",
-        "nertz"
-      ],
-      "team": "G2",
-      "nationality": "以色列",
-      "rating": 1.07,
-      "top20Count": 1,
-      "position": "步枪手",
-      "top20Summary": "2023 #14;",
-      "wanmeiId": "9436",
-      "age": 26,
-      "birthDate": "1999-07-12",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "sunpayus",
-      "name": "SunPayus",
-      "aliases": [
-        "SunPayus",
-        "sunpayus"
-      ],
-      "team": "G2",
-      "nationality": "西班牙",
-      "rating": 1.06,
-      "top20Count": 1,
-      "position": "狙击手",
-      "top20Summary": "2023 #6;",
-      "wanmeiId": "19164",
-      "age": 27,
-      "birthDate": "1998-11-19",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 92
-    },
-    {
-      "id": "hypex",
-      "name": "hypex",
-      "aliases": [
-        "hypex"
-      ],
-      "team": "GamerLegion",
-      "nationality": "波兰",
-      "rating": 1.03,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "23766",
-      "age": 22,
-      "birthDate": "2003-12-22",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
-    },
-    {
-      "id": "pr",
-      "name": "PR",
-      "aliases": [
-        "PR",
-        "pr"
-      ],
-      "team": "GamerLegion",
-      "nationality": "捷克",
-      "rating": 1.05,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "22279",
-      "age": 18,
-      "birthDate": "2007-09-17",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "rez",
-      "name": "REZ",
-      "aliases": [
-        "REZ",
-        "rez"
-      ],
-      "team": "GamerLegion",
-      "nationality": "瑞典",
-      "rating": 1.1,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "9278",
-      "age": 28,
-      "birthDate": "1998-01-11",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "snax",
-      "name": "Snax",
-      "aliases": [
-        "Snax",
-        "snax"
-      ],
-      "team": "GamerLegion",
-      "nationality": "波兰",
-      "rating": 0.83,
-      "top20Count": 4,
-      "position": "指挥",
-      "top20Summary": "2017 #20; 2016 #5; 2015 #4; 2014 #4;",
-      "wanmeiId": "2553",
-      "age": 32,
-      "birthDate": "1993-07-05",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "tauson",
-      "name": "Tauson",
-      "aliases": [
-        "Tauson",
-        "tauson"
-      ],
-      "team": "GamerLegion",
-      "nationality": "丹麦",
-      "rating": 1.01,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20301",
-      "age": 20,
-      "birthDate": "2005-08-17",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "alex",
-      "name": "alex",
-      "aliases": [
-        "alex"
-      ],
-      "team": "Gentle Mates",
-      "nationality": "西班牙",
-      "rating": 1.04,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "8371",
-      "age": 44,
-      "birthDate": "1982-02-28",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "dav1g",
-      "name": "dav1g",
-      "aliases": [
-        "dav1g"
-      ],
-      "team": "Gentle Mates",
-      "nationality": "西班牙",
-      "rating": 0.94,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "19509",
-      "age": 25,
-      "birthDate": "2001-06-06",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "martinezsa",
-      "name": "MartinezSa",
-      "aliases": [
-        "MartinezSa",
-        "martinezsa"
-      ],
-      "team": "Gentle Mates",
-      "nationality": "西班牙",
-      "rating": 1.16,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "21239",
-      "age": 25,
-      "birthDate": "2001-01-29",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 95
-    },
-    {
-      "id": "mopoz",
-      "name": "mopoz",
-      "aliases": [
-        "mopoz"
-      ],
-      "team": "Gentle Mates",
-      "nationality": "西班牙",
-      "rating": 1.08,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "9254",
-      "age": 29,
-      "birthDate": "1996-08-07",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "sausol",
-      "name": "sausol",
-      "aliases": [
-        "sausol"
-      ],
-      "team": "Gentle Mates",
-      "nationality": "西班牙",
-      "rating": 1.04,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "18749",
-      "age": 26,
-      "birthDate": "2000-05-31",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "art",
-      "name": "arT",
-      "aliases": [
-        "arT",
-        "art",
-        "阿rt",
-        "艺术"
-      ],
-      "team": "Legacy",
-      "nationality": "巴西",
-      "rating": 0.96,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "12521",
-      "displayName": "阿rt",
-      "age": 30,
-      "birthDate": "1996-03-27",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 3
-    },
-    {
-      "id": "dumau",
-      "name": "dumau",
-      "aliases": [
-        "dumau",
-        "杜茂"
-      ],
-      "team": "Legacy",
-      "nationality": "巴西",
-      "rating": 1.18,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "15698",
-      "displayName": "杜茂",
-      "age": 22,
-      "birthDate": "2003-11-09",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "latto",
-      "name": "latto",
-      "aliases": [
-        "latto",
-        "拉托"
-      ],
-      "team": "Legacy",
-      "nationality": "巴西",
-      "rating": 1.19,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "19045",
-      "displayName": "拉托",
-      "age": 23,
-      "birthDate": "2002-12-21",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "saadzin",
-      "name": "saadzin",
-      "aliases": [
-        "saadzin"
-      ],
-      "team": "Legacy",
-      "nationality": "巴西",
-      "rating": 1.06,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "22965",
-      "age": 22,
-      "birthDate": "2004-05-14",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 92
-    },
-    {
-      "id": "elige",
-      "name": "EliGE",
-      "aliases": [
-        "EliGE",
-        "elige",
-        "鸡哥"
-      ],
-      "team": "Liquid",
-      "nationality": "美国",
-      "rating": 0.99,
-      "top20Count": 6,
-      "position": "步枪手",
-      "top20Summary": "2024 #19; 2021 #19; 2020 #8; 2019 #4; 2018 #15; 2017 #12;",
-      "wanmeiId": "8738",
-      "displayName": "鸡哥",
-      "age": 28,
-      "birthDate": "1997-07-16",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "malbsmd",
-      "name": "malbsMd",
-      "aliases": [
-        "malbsMd",
-        "malbsmd",
-        "马尔布斯"
-      ],
-      "team": "Liquid",
-      "nationality": "危地马拉",
-      "rating": 1.12,
-      "top20Count": 1,
-      "position": "步枪手",
-      "top20Summary": "2024 #12;",
-      "wanmeiId": "11617",
-      "displayName": "马尔布斯",
-      "age": 23,
-      "birthDate": "2002-10-17",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "naf",
-      "name": "NAF",
-      "aliases": [
-        "NAF",
-        "naf",
-        "纳夫"
-      ],
-      "team": "Liquid",
-      "nationality": "加拿大",
-      "rating": 1.03,
-      "top20Count": 3,
-      "position": "步枪手",
-      "top20Summary": "2021 #14; 2019 #7; 2018 #6;",
-      "wanmeiId": "8520",
-      "displayName": "纳夫",
-      "age": 28,
-      "birthDate": "1997-11-24",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 5
-    },
-    {
-      "id": "siuhy",
-      "name": "siuhy",
-      "aliases": [
-        "siuhy",
-        "修伊"
-      ],
-      "team": "Liquid",
-      "nationality": "波兰",
-      "rating": 0.83,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "16820",
-      "displayName": "修伊",
-      "age": 23,
-      "birthDate": "2002-08-26",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "ultimate",
-      "name": "ultimate",
-      "aliases": [
-        "ultimate"
-      ],
-      "team": "Liquid",
-      "nationality": "波兰",
-      "rating": 0.99,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "21763",
-      "age": 22,
-      "birthDate": "2003-11-29",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 90
-    },
-    {
-      "id": "c4llm3su3",
-      "name": "C4LLM3SU3",
-      "aliases": [
-        "C4LLM3SU3",
-        "c4llm3su3"
-      ],
-      "team": "Lynn Vision",
-      "nationality": "中国",
-      "rating": 1,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "23100",
-      "age": 22,
-      "birthDate": "2004-03-09",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "emiliaqaq",
-      "name": "EmiliaQAQ",
-      "aliases": [
-        "EmiliaQAQ",
-        "emiliaqaq"
-      ],
-      "team": "Lynn Vision",
-      "nationality": "中国",
-      "rating": 1.08,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "22922",
-      "age": 21,
-      "birthDate": "2004-08-23",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "starry",
-      "name": "Starry",
-      "aliases": [
-        "Starry",
-        "starry"
-      ],
-      "team": "Lynn Vision",
-      "nationality": "中国",
-      "rating": 1.15,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20254",
-      "age": 21,
-      "birthDate": "2005-01-03",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 5
-    },
-    {
-      "id": "westmelon",
-      "name": "Westmelon",
-      "aliases": [
-        "Westmelon",
-        "westmelon"
-      ],
-      "team": "Lynn Vision",
-      "nationality": "中国",
-      "rating": 1.02,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "16551",
-      "age": 25,
-      "birthDate": "2001-02-04",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "z4kr",
-      "name": "z4KR",
-      "aliases": [
-        "z4KR",
-        "z4kr"
-      ],
-      "team": "Lynn Vision",
-      "nationality": "中国",
-      "rating": 1.15,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "18744",
-      "age": 23,
-      "birthDate": "2002-11-14",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 94
-    },
-    {
-      "id": "jba",
-      "name": "JBa",
-      "aliases": [
-        "JBa",
-        "jba"
-      ],
-      "team": "M80",
-      "nationality": "美国",
-      "rating": 1.03,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "21665",
-      "age": 22,
-      "birthDate": "2004-06-10",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "lake",
-      "name": "Lake",
-      "aliases": [
-        "Lake",
-        "lake"
-      ],
-      "team": "M80",
-      "nationality": "美国",
-      "rating": 1.11,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "22921",
-      "age": 21,
-      "birthDate": "2004-10-19",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "s1n",
-      "name": "s1n",
-      "aliases": [
-        "s1n",
-        "辛"
-      ],
-      "team": "M80",
-      "nationality": "德国",
-      "rating": 0.95,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "20104",
-      "displayName": "辛",
-      "age": 24,
-      "birthDate": "2002-03-18",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "slaxz-",
-      "name": "slaxz-",
-      "aliases": [
-        "slaxz-"
-      ],
-      "team": "M80",
-      "nationality": "德国",
-      "rating": 1.09,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "15370",
-      "age": 27,
-      "birthDate": "1998-11-25",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
-    },
-    {
-      "id": "swisher",
-      "name": "Swisher",
-      "aliases": [
-        "Swisher",
-        "swisher"
-      ],
-      "team": "M80",
-      "nationality": "美国",
-      "rating": 1.06,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "16599",
-      "age": 27,
-      "birthDate": "1998-09-17",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "aw",
-      "name": "AW",
-      "aliases": [
-        "AW",
-        "aw"
-      ],
-      "team": "magic",
-      "nationality": "俄罗斯",
-      "rating": 1.01,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "22076",
-      "age": 20,
-      "birthDate": "2006-01-11",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "masval",
-      "name": "MaSvAl",
-      "aliases": [
-        "MaSvAl",
-        "masval"
-      ],
-      "team": "magic",
-      "nationality": "-",
-      "rating": 1.18,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "19874",
-      "age": 23,
-      "birthDate": "2003-01-17",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "mo0n",
-      "name": "mo0N",
-      "aliases": [
-        "mo0N",
-        "mo0n"
-      ],
-      "team": "magic",
-      "nationality": "-",
-      "rating": 1.04,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "23858",
-      "age": 20,
-      "birthDate": "2005-07-19",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
-    },
-    {
-      "id": "sfade8",
-      "name": "sFade8",
-      "aliases": [
-        "sFade8",
-        "sfade8"
-      ],
-      "team": "magic",
-      "nationality": "-",
-      "rating": 1,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "22075",
-      "age": 22,
-      "birthDate": "2004-01-26",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "tenzy",
-      "name": "tENZY",
-      "aliases": [
-        "tENZY",
-        "tenzy"
-      ],
-      "team": "magic",
-      "nationality": "-",
-      "rating": 1.15,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "24173",
-      "age": 21,
-      "birthDate": "2005-03-15",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "brnz4n",
-      "name": "brnz4n",
-      "aliases": [
-        "brnz4n"
-      ],
-      "team": "MIBR",
-      "nationality": "巴西",
-      "rating": 0.92,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20987",
-      "age": 22,
-      "birthDate": "2003-08-26",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "insani",
-      "name": "insani",
-      "aliases": [
-        "insani",
-        "因萨尼"
-      ],
-      "team": "MIBR",
-      "nationality": "巴西",
-      "rating": 1.25,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "21037",
-      "displayName": "因萨尼",
-      "age": 22,
-      "birthDate": "2004-04-25",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "kl1m",
-      "name": "kl1m",
-      "aliases": [
-        "kl1m"
-      ],
-      "team": "MIBR",
-      "nationality": "俄罗斯",
-      "rating": 1.12,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "23192",
-      "age": 20,
-      "birthDate": "2005-10-03",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 61
-    },
-    {
-      "id": "lnz",
-      "name": "LNZ",
-      "aliases": [
-        "LNZ",
-        "lnz"
-      ],
-      "team": "MIBR",
-      "nationality": "瑞典",
-      "rating": 1.03,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "19310",
-      "age": 23,
-      "birthDate": "2002-10-20",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "venomzera",
-      "name": "venomzera",
-      "aliases": [
-        "venomzera"
-      ],
-      "team": "MIBR",
-      "nationality": "巴西",
-      "rating": 0.99,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "21288",
-      "age": 21,
-      "birthDate": "2004-08-19",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "afro",
-      "name": "afro",
-      "aliases": [
-        "afro"
-      ],
-      "team": "Monte",
-      "nationality": "法国",
-      "rating": 1.14,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "19926",
-      "age": 27,
-      "birthDate": "1999-06-11",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 94
-    },
-    {
-      "id": "azuwu",
-      "name": "AZUWU",
-      "aliases": [
-        "AZUWU",
-        "azuwu"
-      ],
-      "team": "Monte",
-      "nationality": "英国",
-      "rating": 0.99,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "22106",
-      "age": 22,
-      "birthDate": "2003-11-05",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "bymas",
-      "name": "Bymas",
-      "aliases": [
-        "Bymas",
-        "bymas"
-      ],
-      "team": "Monte",
-      "nationality": "立陶宛",
-      "rating": 0.95,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "19015",
-      "age": 22,
-      "birthDate": "2003-08-12",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "gizmy",
-      "name": "Gizmy",
-      "aliases": [
-        "Gizmy",
-        "gizmy"
-      ],
-      "team": "Monte",
-      "nationality": "英国",
-      "rating": 0.98,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "21816",
-      "age": 22,
-      "birthDate": "2004-02-20",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "rainwaker",
-      "name": "Rainwaker",
-      "aliases": [
-        "Rainwaker",
-        "rainwaker"
-      ],
-      "team": "Monte",
-      "nationality": "保加利亚",
-      "rating": 1.11,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "17145",
-      "age": 25,
-      "birthDate": "2001-04-27",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "spinx",
-      "name": "Spinx",
-      "aliases": [
-        "Spinx",
-        "spinx",
-        "斯平克斯"
-      ],
-      "team": "MOUZ",
-      "nationality": "以色列",
-      "rating": 1.01,
-      "top20Count": 4,
-      "position": "步枪手",
-      "top20Summary": "2025 #10; 2024 #13; 2023 #5; 2022 #18;",
-      "wanmeiId": "18221",
-      "displayName": "斯平克斯",
-      "age": 25,
-      "birthDate": "2000-09-13",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/CEF2AE72D93F46D8A66E053B5114A762-1782335042561.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "torzsi",
-      "name": "torzsi",
-      "aliases": [
-        "torzsi",
-        "托尔兹"
-      ],
-      "team": "MOUZ",
-      "nationality": "匈牙利",
-      "rating": 1.02,
-      "top20Count": 2,
-      "position": "狙击手",
-      "top20Summary": "2025 #17; 2024 #20;",
-      "wanmeiId": "18072",
-      "displayName": "托尔兹",
-      "age": 24,
-      "birthDate": "2002-05-17",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/CEF2AE72D93F46D8A66E053B5114A762-1782335042561.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
     },
     {
       "id": "xelex",
@@ -1944,9 +2423,8 @@
       "id": "xertion",
       "name": "xertioN",
       "aliases": [
-        "xertioN",
         "xertion",
-        "泽tion"
+        "xertioN"
       ],
       "team": "MOUZ",
       "nationality": "以色列",
@@ -1955,190 +2433,35 @@
       "position": "指挥",
       "top20Summary": "2025 #16; 2024 #14;",
       "wanmeiId": "20312",
-      "displayName": "泽tion",
       "age": 21,
       "birthDate": "2004-07-22",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CEF2AE72D93F46D8A66E053B5114A762-1782335042561.png?x-oss-process=image/resize,w_280",
       "sniperStat": 0
     },
     {
-      "id": "aleksib",
-      "name": "Aleksib",
+      "id": "xielo",
+      "name": "xiELO",
       "aliases": [
-        "Aleksib",
-        "aleksib",
-        "阿莱"
+        "xielo",
+        "xiELO"
       ],
-      "team": "Natus Vincere",
-      "nationality": "芬兰",
-      "rating": 0.88,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "9816",
-      "displayName": "阿莱",
-      "age": 29,
-      "birthDate": "1997-03-30",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "b1t",
-      "name": "b1t",
-      "aliases": [
-        "b1t",
-        "比特"
-      ],
-      "team": "Natus Vincere",
-      "nationality": "乌克兰",
-      "rating": 1.16,
-      "top20Count": 4,
-      "position": "步枪手",
-      "top20Summary": "2025 #20; 2024 #9; 2022 #16; 2021 #9;",
-      "wanmeiId": "18987",
-      "displayName": "比特",
-      "age": 23,
-      "birthDate": "2003-01-05",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "im",
-      "name": "iM",
-      "aliases": [
-        "iM",
-        "im",
-        "艾姆"
-      ],
-      "team": "Natus Vincere",
-      "nationality": "罗马尼亚",
-      "rating": 1.06,
-      "top20Count": 2,
-      "position": "步枪手",
-      "top20Summary": "2025 #19; 2024 #16;",
-      "wanmeiId": "14759",
-      "displayName": "艾姆",
-      "age": 26,
-      "birthDate": "1999-07-29",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "makazze",
-      "name": "makazze",
-      "aliases": [
-        "makazze"
-      ],
-      "team": "Natus Vincere",
-      "nationality": "塞尔维亚",
-      "rating": 1.1,
+      "team": "PVISION",
+      "nationality": "俄罗斯",
+      "rating": 0.98,
       "top20Count": 0,
       "position": "步枪手",
-      "wanmeiId": "22673",
-      "age": 19,
-      "birthDate": "2006-12-21",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "w0nderful",
-      "name": "w0nderful",
-      "aliases": [
-        "w0nderful",
-        "奇迹"
-      ],
-      "team": "Natus Vincere",
-      "nationality": "乌克兰",
-      "rating": 1.17,
-      "top20Count": 1,
-      "position": "狙击手",
-      "top20Summary": "2024 #11;",
-      "wanmeiId": "20127",
-      "displayName": "奇迹",
-      "age": 21,
-      "birthDate": "2004-12-14",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 92
-    },
-    {
-      "id": "n0te",
-      "name": "n0te",
-      "aliases": [
-        "n0te"
-      ],
-      "team": "NIP",
-      "nationality": "未知",
-      "rating": 1.18,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "22035",
+      "wanmeiId": "22471",
       "age": 20,
-      "birthDate": "2006-02-02",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "sjuush",
-      "name": "sjuush",
-      "aliases": [
-        "sjuush",
-        "舒什"
-      ],
-      "team": "NIP",
-      "nationality": "丹麦",
-      "rating": 1.02,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "14148",
-      "displayName": "舒什",
-      "age": 27,
-      "birthDate": "1999-01-03",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "snappi",
-      "name": "Snappi",
-      "aliases": [
-        "Snappi",
-        "snappi"
-      ],
-      "team": "NIP",
-      "nationality": "丹麦",
-      "rating": 0.88,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "922",
-      "age": 36,
-      "birthDate": "1990-06-09",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "stavn",
-      "name": "stavn",
-      "aliases": [
-        "stavn",
-        "斯塔夫"
-      ],
-      "team": "NIP",
-      "nationality": "丹麦",
-      "rating": 1.11,
-      "top20Count": 4,
-      "position": "狙击手",
-      "top20Summary": "2023 #9; 2022 #10; 2021 #16; 2020 #12;",
-      "wanmeiId": "10994",
-      "displayName": "斯塔夫",
-      "age": 24,
-      "birthDate": "2002-03-26",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "birthDate": "2006-01-28",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
     },
     {
       "id": "xkacpersky",
       "name": "xKacpersky",
       "aliases": [
-        "xKacpersky",
-        "xkacpersky"
+        "xkacpersky",
+        "xKacpersky"
       ],
       "team": "NIP",
       "nationality": "波兰",
@@ -2152,172 +2475,111 @@
       "sniperStat": 0
     },
     {
-      "id": "biguzera",
-      "name": "biguzera",
+      "id": "yekindar",
+      "name": "YEKINDAR",
       "aliases": [
-        "biguzera",
-        "比古泽拉"
+        "yekindar",
+        "YEKINDAR"
       ],
-      "team": "paiN",
-      "nationality": "巴西",
-      "rating": 1.01,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "18141",
-      "displayName": "比古泽拉",
-      "age": 29,
-      "birthDate": "1997-02-18",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
-    },
-    {
-      "id": "piriajr",
-      "name": "piriajr",
-      "aliases": [
-        "piriajr"
-      ],
-      "team": "paiN",
-      "nationality": "巴西",
-      "rating": 1.08,
-      "top20Count": 0,
+      "team": "FURIA",
+      "nationality": "拉脱维亚",
+      "rating": 1.1,
+      "top20Count": 3,
       "position": "步枪手",
-      "wanmeiId": "18714",
-      "age": 23,
-      "birthDate": "2002-10-01",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
+      "top20Summary": "2025 #15; 2022 #15; 2021 #8;",
+      "wanmeiId": "13915",
+      "age": 26,
+      "birthDate": "1999-10-04",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
       "sniperStat": 2
     },
     {
-      "id": "saffee",
-      "name": "saffee",
+      "id": "yuurih",
+      "name": "yuurih",
       "aliases": [
-        "saffee",
-        "萨菲"
+        "yuurih"
       ],
-      "team": "paiN",
+      "team": "FURIA",
       "nationality": "巴西",
-      "rating": 1.03,
+      "rating": 1.06,
+      "top20Count": 2,
+      "position": "步枪手",
+      "top20Summary": "2022 #19; 2020 #14;",
+      "wanmeiId": "12553",
+      "age": 26,
+      "birthDate": "1999-12-22",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
+    },
+    {
+      "id": "z4kr",
+      "name": "z4KR",
+      "aliases": [
+        "z4kr",
+        "z4KR"
+      ],
+      "team": "Lynn Vision",
+      "nationality": "中国",
+      "rating": 1.15,
       "top20Count": 0,
       "position": "狙击手",
-      "wanmeiId": "18835",
-      "displayName": "萨菲",
-      "age": 32,
-      "birthDate": "1994-05-17",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
+      "wanmeiId": "18744",
+      "age": 23,
+      "birthDate": "2002-11-14",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 94
     },
     {
-      "id": "snow",
-      "name": "snow",
+      "id": "zero",
+      "name": "Zero",
       "aliases": [
-        "snow"
+        "zero",
+        "Zero"
       ],
-      "team": "paiN",
-      "nationality": "巴西",
-      "rating": 1.11,
+      "team": "TYLOO",
+      "nationality": "中国",
+      "rating": 1.09,
       "top20Count": 0,
       "position": "步枪手",
-      "wanmeiId": "20171",
-      "age": 19,
-      "birthDate": "2007-03-22",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "wanmeiId": "24857",
+      "age": 20,
+      "birthDate": "2005-08-31",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 0
     },
     {
-      "id": "vsm",
-      "name": "vsm",
+      "id": "zont1x",
+      "name": "zont1x",
       "aliases": [
-        "vsm",
-        "维森"
+        "zont1x"
       ],
-      "team": "paiN",
-      "nationality": "巴西",
+      "team": "Spirit",
+      "nationality": "乌克兰",
       "rating": 1,
       "top20Count": 0,
       "position": "步枪手",
-      "wanmeiId": "16816",
-      "displayName": "维森",
-      "age": 26,
-      "birthDate": "1999-07-02",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "hobbit",
-      "name": "HObbit",
-      "aliases": [
-        "HObbit",
-        "hobbit",
-        "霍比特"
-      ],
-      "team": "PVISION",
-      "nationality": "哈萨克斯坦",
-      "rating": 1.2,
-      "top20Count": 2,
-      "position": "步枪手",
-      "top20Summary": "2021 #6; 2017 #11;",
-      "wanmeiId": "8528",
-      "displayName": "霍比特",
-      "age": 32,
-      "birthDate": "1994-05-18",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "jame",
-      "name": "Jame",
-      "aliases": [
-        "Jame",
-        "jame",
-        "詹姆斯"
-      ],
-      "team": "PVISION",
-      "nationality": "俄罗斯",
-      "rating": 1.06,
-      "top20Count": 2,
-      "position": "狙击手/指挥",
-      "top20Summary": "2022 #20; 2021 #10;",
-      "wanmeiId": "13776",
-      "displayName": "詹姆斯",
-      "age": 27,
-      "birthDate": "1998-08-23",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
-    },
-    {
-      "id": "slaxejezzz",
-      "name": "slaxejezzz",
-      "aliases": [
-        "slaxejezzz"
-      ],
-      "team": "PVISION",
-      "nationality": "-",
-      "rating": 1.25,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "24807",
-      "age": 18,
-      "birthDate": "2007-11-01",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 5
-    },
-    {
-      "id": "xielo",
-      "name": "xiELO",
-      "aliases": [
-        "xiELO",
-        "xielo"
-      ],
-      "team": "PVISION",
-      "nationality": "俄罗斯",
-      "rating": 0.98,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "22471",
+      "wanmeiId": "20423",
       "age": 20,
-      "birthDate": "2006-01-28",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
+      "birthDate": "2005-07-20",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
       "sniperStat": 0
+    },
+    {
+      "id": "zorte",
+      "name": "zorte",
+      "aliases": [
+        "zorte"
+      ],
+      "team": "BB",
+      "nationality": "俄罗斯",
+      "rating": 1,
+      "top20Count": 0,
+      "position": "狙击手",
+      "wanmeiId": "15662",
+      "age": 28,
+      "birthDate": "1998-05-27",
+      "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
+      "sniperStat": 92
     },
     {
       "id": "zweih",
@@ -2337,370 +2599,11 @@
       "sniperStat": 4
     },
     {
-      "id": "donk",
-      "name": "donk",
-      "aliases": [
-        "donk",
-        "东克",
-        "神童"
-      ],
-      "team": "Spirit",
-      "nationality": "俄罗斯",
-      "rating": 1.43,
-      "top20Count": 2,
-      "position": "步枪手",
-      "top20Summary": "2025 #2; 2024 #1;",
-      "wanmeiId": "21167",
-      "displayName": "东克",
-      "age": 19,
-      "birthDate": "2007-01-25",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "magixx",
-      "name": "magixx",
-      "aliases": [
-        "magixx",
-        "马吉克斯"
-      ],
-      "team": "Spirit",
-      "nationality": "俄罗斯",
-      "rating": 1.03,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "18317",
-      "displayName": "马吉克斯",
-      "age": 23,
-      "birthDate": "2003-06-03",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
-    },
-    {
-      "id": "sh1ro",
-      "name": "sh1ro",
-      "aliases": [
-        "sh1ro",
-        "西若"
-      ],
-      "team": "Spirit",
-      "nationality": "俄罗斯",
-      "rating": 1.17,
-      "top20Count": 5,
-      "position": "狙击手",
-      "top20Summary": "2025 #5; 2024 #6; 2023 #8; 2022 #3; 2021 #4;",
-      "wanmeiId": "16920",
-      "displayName": "西若",
-      "age": 24,
-      "birthDate": "2001-07-15",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
-    },
-    {
-      "id": "tn1r",
-      "name": "tN1R",
-      "aliases": [
-        "tN1R",
-        "tn1r"
-      ],
-      "team": "Spirit",
-      "nationality": "白俄罗斯",
-      "rating": 1.09,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "19808",
-      "age": 25,
-      "birthDate": "2001-02-14",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "zont1x",
-      "name": "zont1x",
-      "aliases": [
-        "zont1x",
-        "宗提克斯"
-      ],
-      "team": "Spirit",
-      "nationality": "乌克兰",
-      "rating": 1,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20423",
-      "displayName": "宗提克斯",
-      "age": 20,
-      "birthDate": "2005-07-20",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "910",
-      "name": "910",
-      "aliases": [
-        "910",
-        "九一零"
-      ],
-      "team": "The MongolZ",
-      "nationality": "蒙古",
-      "rating": 1.14,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "21809",
-      "displayName": "九一零",
-      "age": 23,
-      "birthDate": "2002-07-05",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
-    },
-    {
-      "id": "blitz",
-      "name": "bLitz",
-      "aliases": [
-        "bLitz",
-        "blitz"
-      ],
-      "team": "The MongolZ",
-      "nationality": "蒙古",
-      "rating": 1.01,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "20194",
-      "age": 24,
-      "birthDate": "2001-06-26",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
-    },
-    {
-      "id": "cobrazera",
-      "name": "cobrazera",
-      "aliases": [
-        "cobrazera"
-      ],
-      "team": "The MongolZ",
-      "nationality": "蒙古",
-      "rating": 1.01,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "23402",
-      "age": 20,
-      "birthDate": "2005-08-03",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 6
-    },
-    {
-      "id": "mzinho",
-      "name": "mzinho",
-      "aliases": [
-        "mzinho"
-      ],
-      "team": "The MongolZ",
-      "nationality": "蒙古",
-      "rating": 1.03,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "21001",
-      "age": 18,
-      "birthDate": "2007-06-28",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "techno",
-      "name": "Techno",
-      "aliases": [
-        "Techno",
-        "techno"
-      ],
-      "team": "The MongolZ",
-      "nationality": "蒙古",
-      "rating": 0.94,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "20275",
-      "age": 21,
-      "birthDate": "2005-05-20",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "jamyoung",
-      "name": "JamYoung",
-      "aliases": [
-        "JamYoung",
-        "jamyoung"
-      ],
-      "team": "TYLOO",
-      "nationality": "中国",
-      "rating": 1.2,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "19645",
-      "age": 24,
-      "birthDate": "2001-07-23",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "jee",
-      "name": "Jee",
-      "aliases": [
-        "Jee",
-        "jee"
-      ],
-      "team": "TYLOO",
-      "nationality": "中国",
-      "rating": 1.13,
-      "top20Count": 0,
-      "position": "狙击手",
-      "wanmeiId": "20702",
-      "age": 21,
-      "birthDate": "2004-12-21",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
-    },
-    {
-      "id": "mercury",
-      "name": "Mercury",
-      "aliases": [
-        "Mercury",
-        "mercury"
-      ],
-      "team": "TYLOO",
-      "nationality": "中国",
-      "rating": 1.05,
-      "top20Count": 0,
-      "position": "指挥",
-      "wanmeiId": "20895",
-      "age": 25,
-      "birthDate": "2000-12-15",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "moseyuh",
-      "name": "Moseyuh",
-      "aliases": [
-        "Moseyuh",
-        "moseyuh"
-      ],
-      "team": "TYLOO",
-      "nationality": "中国",
-      "rating": 1.11,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "21621",
-      "age": 21,
-      "birthDate": "2004-12-21",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "zero",
-      "name": "Zero",
-      "aliases": [
-        "Zero",
-        "zero"
-      ],
-      "team": "TYLOO",
-      "nationality": "中国",
-      "rating": 1.09,
-      "top20Count": 0,
-      "position": "步枪手",
-      "wanmeiId": "24857",
-      "age": 20,
-      "birthDate": "2005-08-31",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "apex",
-      "name": "apEX",
-      "aliases": [
-        "apEX",
-        "apex",
-        "豆豆"
-      ],
-      "team": "Vitality",
-      "nationality": "法国",
-      "rating": 0.97,
-      "top20Count": 2,
-      "position": "指挥",
-      "top20Summary": "2015 #18; 2014 #15;",
-      "wanmeiId": "7322",
-      "displayName": "豆豆",
-      "age": 33,
-      "birthDate": "1993-02-22",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "flamez",
-      "name": "flameZ",
-      "aliases": [
-        "flameZ",
-        "flamez",
-        "火焰"
-      ],
-      "team": "Vitality",
-      "nationality": "以色列",
-      "rating": 1.11,
-      "top20Count": 2,
-      "position": "步枪手",
-      "top20Summary": "2025 #7; 2024 #7;",
-      "wanmeiId": "16693",
-      "displayName": "火焰",
-      "age": 23,
-      "birthDate": "2003-06-22",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "mezii",
-      "name": "mezii",
-      "aliases": [
-        "mezii",
-        "梅西"
-      ],
-      "team": "Vitality",
-      "nationality": "英国",
-      "rating": 1.01,
-      "top20Count": 1,
-      "position": "步枪手",
-      "top20Summary": "2025 #12;",
-      "wanmeiId": "18462",
-      "displayName": "梅西",
-      "age": 27,
-      "birthDate": "1998-10-15",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
-    },
-    {
-      "id": "ropz",
-      "name": "ropz",
-      "aliases": [
-        "ropz",
-        "罗宾"
-      ],
-      "team": "Vitality",
-      "nationality": "爱沙尼亚",
-      "rating": 1.17,
-      "top20Count": 8,
-      "position": "步枪手",
-      "top20Summary": "2025 #3; 2024 #18; 2023 #3; 2022 #8; 2021 #18; 2020 #7; 2019 #10; 2018 #19;",
-      "wanmeiId": "11816",
-      "displayName": "罗宾",
-      "age": 26,
-      "birthDate": "1999-12-22",
-      "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 3
-    },
-    {
       "id": "zywoo",
       "name": "ZywOo",
       "aliases": [
-        "ZywOo",
         "zywoo",
-        "载物"
+        "ZywOo"
       ],
       "team": "Vitality",
       "nationality": "法国",
@@ -2709,7 +2612,6 @@
       "position": "狙击手",
       "top20Summary": "2025 #1; 2024 #3; 2023 #1; 2022 #2; 2021 #2; 2020 #1; 2019 #1;",
       "wanmeiId": "11893",
-      "displayName": "载物",
       "age": 25,
       "birthDate": "2000-11-09",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
