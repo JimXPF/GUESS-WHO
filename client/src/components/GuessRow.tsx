@@ -67,6 +67,13 @@ const COL_WIDTH: Record<string, string> = {
   evolutionStage: 'w-[72px]',
   category: 'w-[80px]',
   ability: 'w-[72px]',
+  hp: 'w-[56px]',
+  attack: 'w-[56px]',
+  defense: 'w-[56px]',
+  spAttack: 'w-[56px]',
+  spDefense: 'w-[56px]',
+  speed: 'w-[56px]',
+  learnableMove: 'w-[88px]',
   baseStatTotal: 'w-[72px]',
 };
 

@@ -1,4 +1,5 @@
-export type Theme = 'csgo' | 'football' | 'nba' | 'anime';
+export type Theme = 'csgo' | 'football' | 'nba' | 'anime' | 'pokemon';
+export type GameMode = 'classic-six';
 export type CompareResult = 'hit' | 'close' | 'miss';
 export type SessionStatus = 'playing' | 'question_done' | 'game_over' | 'quit';
 
@@ -28,7 +29,7 @@ export interface CorrectAnswerRecord {
   guessId: string;
   imageUrl: string | null;
   questionIndex: number;
-  fieldResults?: FieldCompare[]; // hover 时显示完整字段
+  fieldResults?: FieldCompare[];
 }
 
 export interface HintInfo {
@@ -41,6 +42,8 @@ export interface GameSession {
   sessionId: string;
   playerName: string;
   theme: Theme;
+  gameMode: GameMode;
+  activeFields: string[];
   attemptsLeft: number;
   score: number;
   correctCount: number;
@@ -65,11 +68,16 @@ export interface LeaderboardEntry {
   createdAt: string;
 }
 
+export const GAME_MODE_LABELS: Record<GameMode, string> = {
+  'classic-six': '经典：六项提示',
+};
+
 export const THEME_LABELS: Record<Theme, string> = {
   csgo: 'CS 选手',
-  football: '足球运动员',
-  nba: 'NBA 球员',
-  anime: '动漫角色',
+  football: '2026世界杯',
+  nba: 'NBA',
+  anime: '动漫人物',
+  pokemon: '宝可梦',
 };
 
 export const THEME_ICONS: Record<Theme, string> = {
@@ -77,6 +85,7 @@ export const THEME_ICONS: Record<Theme, string> = {
   football: '⚽',
   nba: '🏀',
   anime: '🎌',
+  pokemon: '⚡',
 };
 
 export const MAX_ATTEMPTS = 10;

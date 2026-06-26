@@ -79,6 +79,15 @@ export async function initDatabase(): Promise<void> {
   try {
     _db.run("ALTER TABLE sessions ADD COLUMN used_answer_ids TEXT NOT NULL DEFAULT '[]'");
   } catch { /* exists */ }
+  try {
+    _db.run("ALTER TABLE sessions ADD COLUMN active_fields TEXT NOT NULL DEFAULT '[]'");
+  } catch { /* exists */ }
+  try {
+    _db.run("ALTER TABLE sessions ADD COLUMN game_mode TEXT NOT NULL DEFAULT 'classic-six'");
+  } catch { /* exists */ }
+  try {
+    _db.run('ALTER TABLE sessions ADD COLUMN question_compare_move TEXT');
+  } catch { /* exists */ }
 
   saveDb();
 }
@@ -111,7 +120,6 @@ function execute(sql: string, params: SqlValue[] = []): void {
   _db.run(sql, params);
   saveDb();
 }
-
 export function saveDb(): void {
   const data = _db.export();
   fs.writeFileSync(dbPath, Buffer.from(data));

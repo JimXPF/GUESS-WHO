@@ -4,13 +4,15 @@ import {
   CharacterEntry,
   CorrectAnswerRecord,
   FieldCompare,
+  GameMode,
   GameSession,
   GuessRecord,
   HintInfo,
   MAX_ATTEMPTS,
   SessionStatus,
-  THEME_FIELDS,
   Theme,
+  getFieldLabel,
+  getThemeFields,
   scoreForQuestion,
 } from '../types';
 import {
@@ -38,14 +40,28 @@ import {
   getNBAHintFields,
   isNBAHintFieldExcluded,
 } from './nbaHints';
+import { parseActiveFields, pickActiveFields } from './activeFields';
+import {
+  buildPokemonMoveHint,
+  buildPokemonPrimaryHint,
+  buildPokemonWeaknessHint,
+  getPokemonBonusHintFields,
+  guessKnowsMove,
+  isPokemonHintFieldExcluded,
+  pickCompareMove,
+  shouldShowWeaknessHint,
+} from './pokemonHints';
 
 interface SessionRow {
   id: string;
   player_name: string;
   theme: Theme;
+  game_mode: GameMode;
   answer_id: string;
   hint_field: string;
   extra_hint_fields: string;
+  active_fields: string;
+  question_compare_move: string | null;
   used_answer_ids: string;
   attempts_left: number;
   score: number;
@@ -66,10 +82,15 @@ function shuffleFields(fields: string[]): string[] {
   return copy;
 }
 
-function pickQuestionHints(theme: Theme): { primary: string; extra: string[] } {
+function pickQuestionHints(
+  theme: Theme,
+  activeFields: string[]
+): { primary: string; extra: string[] } {
   if (theme === 'anime') {
     const rest = shuffleFields(
-      getHintFields(theme).filter((f) => f !== 'name' && f !== 'anime' && f !== 'affiliation')
+      getHintFields(theme, activeFields).filter(
+        (f) => f !== 'name' && f !== 'anime' && f !== 'affiliation'
+      )
     );
     return { primary: 'anime', extra: rest.slice(0, BONUS_HINT_THRESHOLDS.length) };
   }
@@ -81,8 +102,14 @@ function pickQuestionHints(theme: Theme): { primary: string; extra: string[] } {
     const extra = shuffleFields(getNBAHintFields());
     return { primary: 'division', extra: extra.slice(0, BONUS_HINT_THRESHOLDS.length) };
   }
+  if (theme === 'pokemon') {
+    const extra = shuffleFields(getPokemonBonusHintFields(activeFields));
+    return { primary: 'category', extra: extra.slice(0, BONUS_HINT_THRESHOLDS.length) };
+  }
   const shuffled = shuffleFields(
-    getHintFields(theme).filter((f) => f !== 'name' && !isHintFieldExcluded(f) && !isNBAHintFieldExcluded(f))
+    getHintFields(theme, activeFields).filter(
+      (f) => f !== 'name' && !isHintFieldExcluded(f) && !isNBAHintFieldExcluded(f)
+    )
   );
   return {
     primary: shuffled[0],
@@ -124,6 +151,7 @@ function buildSessionHints(
   hintField: string,
   extraHintFields: string[],
   questionAttempts: number,
+  activeFields: string[],
   hitFields: Set<string> = new Set()
 ): HintInfo[] {
   const hints =
@@ -131,7 +159,9 @@ function buildSessionHints(
       ? [buildFootballPrimaryHint(answer)]
       : theme === 'nba'
         ? [buildNBAPrimaryHint(answer)]
-        : [buildHint(theme, answer, hintField)];
+        : theme === 'pokemon'
+          ? [buildPokemonPrimaryHint(answer)]
+          : [buildHint(theme, answer, hintField, activeFields)];
 
   const shownFields = new Set(hints.map((h) => h.field));
 
@@ -139,24 +169,44 @@ function buildSessionHints(
     if (questionAttempts < BONUS_HINT_THRESHOLDS[i]) continue;
     const field = extraHintFields[i];
     if (hitFields.has(field) || shownFields.has(field)) continue;
-    hints.push(buildHint(theme, answer, field));
+
+    if (theme === 'pokemon') {
+      if (field === 'moveHint') {
+        hints.push(buildPokemonMoveHint(answer));
+      } else if (field === 'weaknessHint') {
+        if (shouldShowWeaknessHint(activeFields)) {
+          hints.push(buildPokemonWeaknessHint(answer));
+        }
+      } else if (!activeFields.includes(field) && !isPokemonHintFieldExcluded(field)) {
+        hints.push(buildHint(theme, answer, field, activeFields));
+      }
+    } else {
+      hints.push(buildHint(theme, answer, field, activeFields));
+    }
     shownFields.add(field);
   }
   return hints;
 }
 
-function buildHint(theme: Theme, answer: CharacterEntry, hintField: string): HintInfo {
+function buildHint(
+  theme: Theme,
+  answer: CharacterEntry,
+  hintField: string,
+  activeFields: string[]
+): HintInfo {
+  if (theme === 'pokemon' && isPokemonHintFieldExcluded(hintField)) {
+    throw new Error(`Field "${hintField}" cannot be used as a hint`);
+  }
   if (isHintFieldExcluded(hintField)) {
     throw new Error(`Field "${hintField}" cannot be used as a hint`);
   }
-  const fieldDef = THEME_FIELDS[theme].find((f) => f.field === hintField);
   let value = getCharacterField(answer, hintField, theme);
   if (theme === 'nba' && hintField === 'team') {
     value = getNBATeamDisplay(String(value || ''));
   }
   return {
     field: hintField,
-    label: fieldDef?.label ?? hintField,
+    label: getFieldLabel(theme, hintField),
     value: formatValue(value, hintField),
   };
 }
@@ -164,10 +214,28 @@ function buildHint(theme: Theme, answer: CharacterEntry, hintField: string): Hin
 function compareAllFields(
   theme: Theme,
   guess: CharacterEntry,
-  answer: CharacterEntry
+  answer: CharacterEntry,
+  activeFields: string[],
+  compareMove: string | null
 ): FieldCompare[] {
-  const fields = THEME_FIELDS[theme];
+  const fields = getThemeFields(theme, activeFields);
   return fields.map(({ field, label }) => {
+    if (theme === 'pokemon' && field === 'learnableMove') {
+      const knows = compareMove ? guessKnowsMove(guess, compareMove) : false;
+      const guessValue = formatValue(knows ? '会' : '不会');
+      const answerValue = formatValue('会');
+      const result = knows ? 'hit' : 'miss';
+      return {
+        field,
+        label: compareMove ? `可学习：${compareMove}` : label,
+        guessValue,
+        answerValue: result === 'hit' ? answerValue : null,
+        result,
+        showAnswer: result === 'hit',
+        direction: null,
+      };
+    }
+
     const guessCompare =
       field === 'name' ? getNameFieldValue(guess, theme) : getCharacterField(guess, field, theme);
     const answerCompare =
@@ -176,13 +244,11 @@ function compareAllFields(
     let guessDisplay = guessCompare;
     let answerDisplay = answerCompare;
 
-    // For NBA team field, show Chinese team name instead of English code
     if (theme === 'nba' && field === 'team') {
       guessDisplay = getNBATeamDisplay(String(guessCompare || ''));
       answerDisplay = getNBATeamDisplay(String(answerCompare || ''));
     }
 
-    // NBA position: compare raw codes (G-F); display Chinese + English subtitle separately
     if (theme === 'nba' && field === 'position') {
       const gPos = getNBAPositionDisplay(String(guessCompare || ''));
       const aPos = getNBAPositionDisplay(String(answerCompare || ''));
@@ -282,6 +348,8 @@ function rowToSession(row: SessionRow): Omit<GameSession, 'hint' | 'hints' | 'gu
     sessionId: row.id,
     playerName: row.player_name,
     theme: row.theme,
+    gameMode: row.game_mode || 'classic-six',
+    activeFields: parseActiveFields(row.active_fields, row.theme),
     attemptsLeft: row.attempts_left,
     score: row.score,
     correctCount: row.correct_count,
@@ -289,6 +357,11 @@ function rowToSession(row: SessionRow): Omit<GameSession, 'hint' | 'hints' | 'gu
     questionAttempts: row.question_attempts,
     questionIndex: row.question_index,
   };
+}
+
+function resolveCompareMove(theme: Theme, answer: CharacterEntry, activeFields: string[]): string | null {
+  if (theme !== 'pokemon' || !activeFields.includes('learnableMove')) return null;
+  return pickCompareMove(answer);
 }
 
 function getSessionRow(sessionId: string): SessionRow | undefined {
@@ -309,31 +382,49 @@ function saveToLeaderboard(
   ).run(playerName, theme, totalScore, correctCount);
 }
 
-export function startGame(playerName: string, theme: Theme): GameSession {
+export function startGame(
+  playerName: string,
+  theme: Theme,
+  gameMode: GameMode = 'classic-six'
+): GameSession {
+  const activeFields = pickActiveFields(theme);
   const answer = pickRandomCharacter(theme);
-  const { primary: hintField, extra: extraHintFields } = pickQuestionHints(theme);
+  const { primary: hintField, extra: extraHintFields } = pickQuestionHints(theme, activeFields);
+  const compareMove = resolveCompareMove(theme, answer, activeFields);
   const sessionId = uuidv4();
 
   db.prepare(
-    `INSERT INTO sessions (id, player_name, theme, answer_id, hint_field, extra_hint_fields, used_answer_ids, attempts_left, score, correct_count, question_attempts, question_index, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0, 'playing')`
+    `INSERT INTO sessions (id, player_name, theme, game_mode, answer_id, hint_field, extra_hint_fields, active_fields, question_compare_move, used_answer_ids, attempts_left, score, correct_count, question_attempts, question_index, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0, 'playing')`
   ).run(
     sessionId,
     playerName.trim(),
     theme,
+    gameMode,
     answer.id,
     hintField,
     JSON.stringify(extraHintFields),
+    JSON.stringify(activeFields),
+    compareMove,
     JSON.stringify([answer.id]),
     MAX_ATTEMPTS
   );
 
-  const hints = buildSessionHints(theme, answer, hintField, extraHintFields, 0);
+  const hints = buildSessionHints(
+    theme,
+    answer,
+    hintField,
+    extraHintFields,
+    0,
+    activeFields
+  );
 
   return {
     sessionId,
     playerName: playerName.trim(),
     theme,
+    gameMode,
+    activeFields,
     attemptsLeft: MAX_ATTEMPTS,
     score: 0,
     correctCount: 0,
@@ -382,8 +473,15 @@ export function submitGuess(
   }
 
   const answer = getCharacter(row.theme, row.answer_id)!;
+  const activeFields = parseActiveFields(row.active_fields, row.theme);
   const isCorrect = character.id === answer.id;
-  const fieldResults = compareAllFields(row.theme, character, answer);
+  const fieldResults = compareAllFields(
+    row.theme,
+    character,
+    answer,
+    activeFields,
+    row.question_compare_move
+  );
 
   let attemptsLeft = row.attempts_left - 1;
   let questionAttempts = row.question_attempts + 1;
@@ -451,15 +549,18 @@ export function nextQuestion(sessionId: string): GameSession {
   }
 
   const used = parseUsedAnswerIds(row.used_answer_ids);
+  const activeFields = parseActiveFields(row.active_fields, row.theme);
   const answer = pickRandomCharacter(row.theme, used);
-  const { primary: hintField, extra: extraHintFields } = pickQuestionHints(row.theme);
+  const { primary: hintField, extra: extraHintFields } = pickQuestionHints(row.theme, activeFields);
+  const compareMove = resolveCompareMove(row.theme, answer, activeFields);
 
   db.prepare(
-    `UPDATE sessions SET answer_id = ?, hint_field = ?, extra_hint_fields = ?, used_answer_ids = ?, question_attempts = 0, question_index = question_index + 1, status = 'playing', updated_at = datetime('now') WHERE id = ?`
+    `UPDATE sessions SET answer_id = ?, hint_field = ?, extra_hint_fields = ?, question_compare_move = ?, used_answer_ids = ?, question_attempts = 0, question_index = question_index + 1, status = 'playing', updated_at = datetime('now') WHERE id = ?`
   ).run(
     answer.id,
     hintField,
     JSON.stringify(extraHintFields),
+    compareMove,
     JSON.stringify([...used, answer.id]),
     sessionId
   );
@@ -487,6 +588,7 @@ export function getGameSession(sessionId: string): GameSession | null {
 
   const answer = getCharacter(row.theme, row.answer_id)!;
   const base = rowToSession(row);
+  const activeFields = parseActiveFields(row.active_fields, row.theme);
   const extraHintFields = parseExtraHintFields(row.extra_hint_fields);
   const guesses = loadGuesses(sessionId, row.question_index).map((g) => {
     if (g.guessId) {
@@ -502,6 +604,7 @@ export function getGameSession(sessionId: string): GameSession | null {
     row.hint_field,
     extraHintFields,
     row.question_attempts,
+    activeFields,
     hitFields
   );
 

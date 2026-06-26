@@ -64,6 +64,7 @@ const banks: Record<Theme, CharacterEntry[]> = {
   football: [],
   nba: [],
   anime: [],
+  pokemon: [],
 };
 
 function loadBank(theme: Theme): CharacterEntry[] {
@@ -179,6 +180,10 @@ export function searchCharacters(
             fallbackSublabel = String(entry.team || '');
           } else if (theme === 'nba' && entry.team) {
             fallbackSublabel = getNBATeamDisplay(String(entry.team));
+          } else if (theme === 'pokemon') {
+            const t1 = entry.type1 ? String(entry.type1) : '';
+            const t2 = entry.type2 ? String(entry.type2) : '';
+            fallbackSublabel = t2 ? `${t1}/${t2}` : t1 || String(entry.category || '');
           } else {
             fallbackSublabel = String(entry.anime || entry.team || '');
           }
@@ -252,7 +257,7 @@ export function pickRandomCharacter(
   return bank[Math.floor(Math.random() * bank.length)];
 }
 
-export function getHintFields(theme: Theme): string[] {
+export function getHintFields(theme: Theme, activeFields?: string[]): string[] {
   const exclude = new Set([
     'name',
     'id',
@@ -261,11 +266,15 @@ export function getHintFields(theme: Theme): string[] {
     'imageUrl',
     'englishName',
     'xhsPlayerId',
+    'dexNumber',
+    'hiddenAbility',
+    'gen3LevelMoves',
+    'learnableMove',
   ]);
-  const fromTheme = THEME_FIELDS[theme]?.map((f) => f.field) ?? [];
-  if (fromTheme.length) {
-    return fromTheme.filter((k) => !exclude.has(k));
-  }
+  const fromTheme = (activeFields ?? THEME_FIELDS[theme]?.map((f) => f.field) ?? []).filter(
+    (k) => !exclude.has(k)
+  );
+  if (fromTheme.length) return fromTheme;
   const sample = getBank(theme)[0];
   if (!sample) return [];
   return Object.keys(sample).filter((k) => !exclude.has(k));
@@ -278,5 +287,7 @@ export function getCharacterImage(entry: CharacterEntry): string | null {
 }
 
 export function getGuessPlaceholder(theme: Theme): string {
-  return theme === 'csgo' ? '输入选手 ID，如 NiKo、donk...' : '输入人物中文名...';
+  if (theme === 'csgo') return '输入选手 ID，如 NiKo、donk...';
+  if (theme === 'pokemon') return '输入宝可梦中文名，如 皮卡丘...';
+  return '输入人物中文名...';
 }

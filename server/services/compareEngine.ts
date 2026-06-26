@@ -137,11 +137,30 @@ const NUMERIC_RULES: Record<
     height: { absolute: 10 },
     powerLevel: { absolute: 8 },
   },
+  pokemon: {
+    baseStatTotal: { absolute: 30 },
+    hp: { absolute: 15 },
+    attack: { absolute: 15 },
+    defense: { absolute: 15 },
+    spAttack: { absolute: 15 },
+    spDefense: { absolute: 15 },
+    speed: { absolute: 15 },
+  },
 };
 
 const POSITION_FIELDS = new Set(['position']);
 const NATIONALITY_FIELDS = new Set(['nationality', 'nationalTeam']);
-const NULLABLE_FIELDS = new Set(['club', 'school']);
+const NULLABLE_FIELDS = new Set(['club', 'school', 'type2']);
+
+const POKEMON_STAT_FIELDS = new Set([
+  'baseStatTotal',
+  'hp',
+  'attack',
+  'defense',
+  'spAttack',
+  'spDefense',
+  'speed',
+]);
 
 export function compareField(
   theme: Theme,
@@ -222,7 +241,13 @@ export function formatValue(val: unknown, field?: string): string | number | nul
     val === null || val === undefined || (typeof val === 'string' && val.trim() === '');
   if (field === 'club' && empty) return '无';
   if (field === 'school' && empty) return '无';
+  if (field === 'type2' && empty) return '无';
   if (empty) return null;
+  if (typeof val === 'boolean') return val ? '会' : '不会';
   if (typeof val === 'number') return val;
   return String(val);
+}
+
+export function isPokemonStatField(field: string): boolean {
+  return POKEMON_STAT_FIELDS.has(field);
 }

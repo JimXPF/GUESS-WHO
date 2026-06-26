@@ -1,4 +1,4 @@
-import type { GameSession, LeaderboardEntry, Theme } from './types';
+import type { GameSession, GameMode, LeaderboardEntry, Theme } from './types';
 
 const API = '/api';
 
@@ -12,10 +12,10 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   return data as T;
 }
 
-export function startGame(playerName: string, theme: Theme) {
+export function startGame(playerName: string, theme: Theme, gameMode: GameMode = 'classic-six') {
   return request<GameSession>('/game/start', {
     method: 'POST',
-    body: JSON.stringify({ playerName, theme }),
+    body: JSON.stringify({ playerName, theme, gameMode }),
   });
 }
 

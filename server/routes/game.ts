@@ -11,13 +11,15 @@ import { Theme } from '../types';
 
 export const gameRouter = Router();
 
-const VALID_THEMES: Theme[] = ['csgo', 'football', 'nba', 'anime'];
+const VALID_THEMES: Theme[] = ['csgo', 'football', 'nba', 'anime', 'pokemon'];
+const VALID_MODES = ['classic-six'] as const;
 
 gameRouter.post('/start', (req, res) => {
   try {
-    const { playerName, theme } = req.body as {
+    const { playerName, theme, gameMode } = req.body as {
       playerName?: string;
       theme?: Theme;
+      gameMode?: (typeof VALID_MODES)[number];
     };
     if (!playerName?.trim()) {
       return res.status(400).json({ error: '请输入昵称' });
@@ -25,7 +27,8 @@ gameRouter.post('/start', (req, res) => {
     if (!theme || !VALID_THEMES.includes(theme)) {
       return res.status(400).json({ error: '请选择有效主题' });
     }
-    const session = startGame(playerName, theme);
+    const mode = gameMode && VALID_MODES.includes(gameMode) ? gameMode : 'classic-six';
+    const session = startGame(playerName, theme, mode);
     res.json(session);
   } catch (e) {
     res.status(500).json({ error: (e as Error).message });

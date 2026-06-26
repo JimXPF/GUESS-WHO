@@ -23,6 +23,7 @@ const GUESS_PLACEHOLDER: Record<GameSession['theme'], string> = {
   football: '输入人物中文名...',
   nba: '输入人物中文名...',
   anime: '输入人物中文名...',
+  pokemon: '输入宝可梦中文名，如 皮卡丘...',
 };
 
 export default function GamePage() {

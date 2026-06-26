@@ -26,6 +26,7 @@
     "reinfer:csgo:positions": "node scripts/reinfer-csgo-positions.js",
     "backfill:csgo:sniper-stats": "node scripts/backfill-csgo-sniper-stats.js --only-missing",
     "patch:csgo:positions": "node scripts/patch-csgo-liquipedia.js --positions-only",
+    "sync:pokemon": "node scripts/sync-pokemon-pokeapi.js",
     "filter:football:leagues": "node scripts/filter-football-club-leagues.js"
   },
   "dependencies": {

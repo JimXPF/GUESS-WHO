@@ -2,14 +2,16 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { startGame, SESSION_KEY } from '../api';
-import { THEME_ICONS, THEME_LABELS, Theme } from '../types';
+import { GAME_MODE_LABELS, GameMode, THEME_LABELS, Theme } from '../types';
 
-const THEMES: Theme[] = ['csgo', 'football', 'nba', 'anime'];
+const MODES: GameMode[] = ['classic-six'];
+const THEMES: Theme[] = ['csgo', 'football', 'nba', 'pokemon', 'anime'];
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [name, setName] = useState('');
-  const [theme, setTheme] = useState<Theme | null>(null);
+  const [gameMode, setGameMode] = useState<GameMode>('classic-six');
+  const [theme, setTheme] = useState<Theme>('csgo');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,14 +20,10 @@ export default function HomePage() {
       setError('请输入昵称');
       return;
     }
-    if (!theme) {
-      setError('请选择一个主题');
-      return;
-    }
     setLoading(true);
     setError('');
     try {
-      const session = await startGame(name.trim(), theme);
+      const session = await startGame(name.trim(), theme, gameMode);
       localStorage.setItem(SESSION_KEY, session.sessionId);
       navigate('/game');
     } catch (e) {
@@ -70,27 +68,40 @@ export default function HomePage() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-3">
-              选择主题
-            </label>
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
-              {THEMES.map((t) => (
-                <motion.button
-                  key={t}
-                  type="button"
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setTheme(t)}
-                  className={`min-h-[76px] sm:min-h-[84px] p-3.5 sm:p-4 rounded-xl border-2 text-left transition-all duration-200 ${
-                    theme === t
-                      ? 'border-apple-blue bg-apple-blue/5 shadow-soft'
-                      : 'border-gray-100 bg-white active:bg-gray-50 sm:hover:border-gray-200'
-                  }`}
-                >
-                  <span className="text-2xl leading-none">{THEME_ICONS[t]}</span>
-                  <p className="font-medium mt-1.5 text-sm sm:text-base">{THEME_LABELS[t]}</p>
-                </motion.button>
-              ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="game-mode" className="block text-sm font-medium text-gray-600 mb-2">
+                玩法
+              </label>
+              <select
+                id="game-mode"
+                className="input-field"
+                value={gameMode}
+                onChange={(e) => setGameMode(e.target.value as GameMode)}
+              >
+                {MODES.map((m) => (
+                  <option key={m} value={m}>
+                    {GAME_MODE_LABELS[m]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="theme" className="block text-sm font-medium text-gray-600 mb-2">
+                主题
+              </label>
+              <select
+                id="theme"
+                className="input-field"
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as Theme)}
+              >
+                {THEMES.map((t) => (
+                  <option key={t} value={t}>
+                    {THEME_LABELS[t]}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
