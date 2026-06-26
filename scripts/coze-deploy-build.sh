@@ -13,7 +13,7 @@ pnpm install --ignore-scripts
 pnpm install --dir client --ignore-scripts
 
 # 构建前端
-pnpm --dir client run build
+cd client && pnpm exec vite build && cd ..
 
 # 编译后端 TypeScript
 pnpm exec tsc -p server/tsconfig.json
