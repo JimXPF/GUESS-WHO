@@ -26,7 +26,14 @@ export function useGameRoom() {
   const [room, setRoom] = useState<RoomState | null>(null);
 
   useEffect(() => {
-    const socket = io({ path: '/socket.io', transports: ['websocket', 'polling'] });
+    const socket = io({ 
+      path: '/socket.io', 
+      transports: ['polling', 'websocket'], // 优先使用 polling，兼容 FaaS 环境
+      timeout: 20000,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
     socketRef.current = socket;
 
     socket.on('connect', () => setConnected(true));

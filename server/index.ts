@@ -54,6 +54,10 @@ async function start() {
   const io = new Server(httpServer, {
     cors: { origin: '*' },
     path: '/socket.io',
+    transports: ['polling', 'websocket'],
+    pingTimeout: 60000,
+    pingInterval: 25000,
+    connectTimeout: 20000,
   });
   registerRoomHandlers(io);
 
