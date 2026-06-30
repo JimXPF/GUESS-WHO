@@ -19,6 +19,7 @@ import {
   QuestionSetup,
   SessionStatus,
   REVERSE_QUERY_ATTEMPTS,
+  REVERSE_ROUNDS_PER_GAME,
   REVERSE_ACCURATE_HINT_AFTER,
   ReverseCondition,
   ReverseQueryRecord,
@@ -157,14 +158,6 @@ function pickQuestionHints(
   activeFields: string[],
   answer: CharacterEntry
 ): { primary: string; extra: string[] } {
-  if (theme === 'anime') {
-    const rest = shuffleFields(
-      getHintFields(theme, activeFields).filter(
-        (f) => f !== 'name' && f !== 'anime' && f !== 'affiliation'
-      )
-    );
-    return { primary: 'anime', extra: rest.slice(0, BONUS_HINT_THRESHOLDS.length) };
-  }
   if (theme === 'football') {
     const primaryHint = buildFootballPrimaryHint(answer);
     const extra = shuffleFields(
@@ -494,6 +487,36 @@ function getSessionRow(sessionId: string): SessionRow | undefined {
   return db
     .prepare('SELECT * FROM sessions WHERE id = ?')
     .get(sessionId) as SessionRow | undefined;
+}
+
+function isQuestionAnsweredCorrectly(sessionId: string, questionIndex: number): boolean {
+  const row = db
+    .prepare(
+      `SELECT 1 FROM guesses WHERE session_id = ? AND question_index = ? AND is_correct = 1 LIMIT 1`
+    )
+    .get(sessionId, questionIndex) as { 1: number } | undefined;
+  return Boolean(row);
+}
+
+function buildRevealedAnswer(row: SessionRow): { name: string; imageUrl: string | null } | undefined {
+  if (row.status !== 'game_over' && row.status !== 'failed' && row.status !== 'quit') {
+    return undefined;
+  }
+  if (row.game_mode === 'reverse-bomb') {
+    const reverseState = parseReverseState(row.progressive_state);
+    if (reverseState.roundHistory.some((r) => r.questionIndex === row.question_index)) {
+      return undefined;
+    }
+  }
+  if (isQuestionAnsweredCorrectly(row.id, row.question_index)) {
+    return undefined;
+  }
+  const answer = getCharacter(row.theme, row.answer_id);
+  if (!answer) return undefined;
+  return {
+    name: getDisplayName(answer, row.theme),
+    imageUrl: getCharacterImage(answer),
+  };
 }
 
 function saveToLeaderboard(
@@ -915,10 +938,16 @@ function finishReverseRound(
 
   const newScore = row.score + opts.score;
   const newCorrect = row.correct_count + (opts.success ? 1 : 0);
+  const isLastRound = row.question_index + 1 >= REVERSE_ROUNDS_PER_GAME;
+  const status = isLastRound ? 'game_over' : 'question_done';
 
   db.prepare(
-    `UPDATE sessions SET score = ?, correct_count = ?, status = 'question_done', progressive_state = ?, updated_at = datetime('now') WHERE id = ?`
-  ).run(newScore, newCorrect, JSON.stringify(newState), row.id);
+    `UPDATE sessions SET score = ?, correct_count = ?, status = ?, progressive_state = ?, updated_at = datetime('now') WHERE id = ?`
+  ).run(newScore, newCorrect, status, JSON.stringify(newState), row.id);
+
+  if (isLastRound) {
+    handleGameEndLeaderboard(row, newScore, newCorrect);
+  }
 
   if (opts.guessedId) {
     db.prepare(
@@ -1237,8 +1266,17 @@ function submitProgressiveGuess(
   }
 
   const session = getGameSession(row.id)!;
+  let correctAnswer: { name: string; imageUrl: string | null } | undefined;
+  if (status === 'game_over' && !isCorrect) {
+    correctAnswer = {
+      name: getDisplayName(answer, row.theme),
+      imageUrl: getCharacterImage(answer),
+    };
+  }
+
   return {
     session: { ...session, lastGuessCorrect: isCorrect, lastQuestionScore },
+    correctAnswer,
   };
 }
 
@@ -1490,6 +1528,9 @@ export function nextQuestion(sessionId: string): GameSession {
   }
 
   if (row.game_mode === 'reverse-bomb') {
+    if (row.question_index >= REVERSE_ROUNDS_PER_GAME - 1) {
+      throw new Error('已完成全部轮次');
+    }
     setup.hintField = '_reverse';
     setup.extraHintFields = [];
     setup.activeFields = getReverseQueryableFields(row.theme);
@@ -1627,6 +1668,7 @@ export function getGameSession(sessionId: string): GameSession | null {
     reverseFieldChoices: reverseState?.fieldChoices,
     reverseRoundHistory: reverseState?.roundHistory,
     reversePhase: reverseState?.phase,
+    revealedAnswer: buildRevealedAnswer(row),
   };
 }
 

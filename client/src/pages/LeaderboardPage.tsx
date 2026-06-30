@@ -13,7 +13,7 @@ import {
   Theme,
 } from '../types';
 
-const THEMES: Theme[] = ['csgo', 'football', 'nba', 'pokemon', 'anime'];
+const THEMES: Theme[] = ['csgo', 'football', 'nba', 'pokemon'];
 
 export default function LeaderboardPage() {
   const [entries, setEntries] = useState<LeaderboardRow[]>([]);
@@ -30,6 +30,8 @@ export default function LeaderboardPage() {
   }, [gameMode, theme]);
 
   const isDaily = gameMode === 'daily-one';
+  const isReverseLb = gameMode === 'reverse-bomb';
+  const isProgressiveLb = gameMode === 'progressive-hint';
 
   return (
     <div className="min-h-screen p-6">
@@ -85,7 +87,9 @@ export default function LeaderboardPage() {
                   ) : (
                     <>
                       <th className="py-4 px-4 text-right font-medium">分数</th>
-                      <th className="py-4 px-4 text-right font-medium">答对</th>
+                      <th className="py-4 px-4 text-right font-medium">
+                        {isReverseLb ? '猜对轮' : isProgressiveLb ? '答对' : '答对'}
+                      </th>
                     </>
                   )}
                 </tr>

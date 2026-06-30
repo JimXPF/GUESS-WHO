@@ -64,7 +64,6 @@ const banks: Record<Theme, CharacterEntry[]> = {
   csgo: [],
   football: [],
   nba: [],
-  anime: [],
   pokemon: [],
 };
 
@@ -181,8 +180,6 @@ export function getSearchSublabel(entry: CharacterEntry, theme: Theme): string |
       if (t1 && t2) return `${t1}/${t2}`;
       return t1 || undefined;
     }
-    case 'anime':
-      return String(entry.anime || '') || undefined;
     default:
       return undefined;
   }
@@ -223,7 +220,7 @@ export function searchCharacters(
       for (const a of entry.aliases || []) {
         keys.push({ key: normalizeText(a), label: entry.name, raw: String(a) });
       }
-      // 仅匹配名字，不再匹配 anime / team 等字段，避免输入“咒术”“湖人”等泄露大量角色
+      // 仅匹配名字，不再匹配 team 等字段，避免输入“湖人”等泄露大量角色
     }
 
     const sublabel = getSearchSublabel(entry, theme);

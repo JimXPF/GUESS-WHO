@@ -15,7 +15,7 @@ import { getClientKey } from '../utils/clientKey';
 
 export const gameRouter = Router();
 
-const VALID_THEMES: Theme[] = ['csgo', 'football', 'nba', 'anime', 'pokemon'];
+const VALID_THEMES: Theme[] = ['csgo', 'football', 'nba', 'pokemon'];
 const VALID_MODES: GameMode[] = [
   'classic-six',
   'daily-one',

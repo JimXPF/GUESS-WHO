@@ -18,6 +18,7 @@ import ReverseDualFieldPicker from '../components/reverse/ReverseDualFieldPicker
 import ReverseCardGrid from '../components/reverse/ReverseCardGrid';
 import ReverseIntroBanner from '../components/reverse/ReverseIntroBanner';
 import ReverseRoundHistory from '../components/reverse/ReverseRoundHistory';
+import ReverseRoundProgress from '../components/reverse/ReverseRoundProgress';
 import {
   ELIM_MOVE_MS,
   ELIM_RESIZE_MS,
@@ -30,15 +31,13 @@ import CorrectHistory from '../components/CorrectHistory';
 import StatSidebar, { AttemptsBadge } from '../components/StatSidebar';
 import GameTopStats from '../components/GameTopStats';
 import MobileGuessFooter from '../components/MobileGuessFooter';
-import LivesHearts from '../components/LivesHearts';
 import CharacterAvatar from '../components/CharacterAvatar';
-import { GameSession, THEME_LABELS, scoreForQuestion, formatElapsedUs, PROGRESSIVE_LIVES, REVERSE_QUERY_ATTEMPTS, PlayableCardSummary } from '../types';
+import { GameSession, THEME_LABELS, scoreForQuestion, formatElapsedUs, PROGRESSIVE_LIVES, REVERSE_QUERY_ATTEMPTS, REVERSE_ROUNDS_PER_GAME, reverseRoundLabel, PlayableCardSummary } from '../types';
 
 const GUESS_PLACEHOLDER: Record<GameSession['theme'], string> = {
   csgo: '输入选手 ID，如 NiKo、donk...',
   football: '输入人物中文名...',
   nba: '输入人物中文名...',
-  anime: '输入人物中文名...',
   pokemon: '输入宝可梦中文名，如 皮卡丘...',
 };
 
@@ -167,7 +166,7 @@ export default function GamePage() {
             }
           } else if (
             result.session.gameMode === 'reverse-bomb' &&
-            result.session.status === 'question_done'
+            (result.session.status === 'question_done' || result.session.status === 'game_over')
           ) {
             const last = result.session.reverseRoundHistory?.slice(-1)[0];
             if (last) {
@@ -181,8 +180,8 @@ export default function GamePage() {
               });
             }
           } else if (
-            result.session.status === 'game_over' ||
-            result.session.status === 'failed'
+            result.session.gameMode !== 'reverse-bomb' &&
+            (result.session.status === 'game_over' || result.session.status === 'failed')
           ) {
             navigate('/result');
           }
@@ -329,8 +328,22 @@ export default function GamePage() {
     setShowSurvivorsOnly(true);
     setGuessText('');
     setSelectedCharacterId(undefined);
+    if (!session) return;
+
+    let fresh = session;
+    try {
+      fresh = await getSession(session.sessionId);
+      setSession(fresh);
+    } catch {
+      /* use cached session */
+    }
+
+    if (fresh.status === 'game_over') {
+      navigate('/result');
+      return;
+    }
     await handleNext();
-  }, [handleNext]);
+  }, [handleNext, session, navigate]);
 
   useEffect(() => () => elimAbortRef.current?.abort(), []);
 
@@ -399,6 +412,18 @@ export default function GamePage() {
       (reversePhase === 'guessing' || session.attemptsLeft <= 0);
     const showFieldPicker =
       session.status === 'playing' && reversePhase === 'filtering' && session.attemptsLeft > 0;
+
+    const reverseCompletedRounds = session.reverseRoundHistory?.length ?? 0;
+    const reverseCurrentRound =
+      session.status === 'playing'
+        ? (session.questionIndex ?? 0) + 1
+        : Math.min(reverseCompletedRounds + 1, REVERSE_ROUNDS_PER_GAME);
+    const reverseRoundProgress = {
+      totalRounds: REVERSE_ROUNDS_PER_GAME,
+      completedRounds: reverseCompletedRounds,
+      currentRound: reverseCurrentRound,
+    };
+    const reverseRoundName = reverseRoundLabel(session.questionIndex ?? 0);
 
     const bottomBar =
       questionDone ? (
@@ -500,7 +525,6 @@ export default function GamePage() {
           score={session.score}
           correctCount={session.correctCount}
           attemptsLeft={session.attemptsLeft}
-          questionAttempts={session.questionAttempts}
           themeLabel={THEME_LABELS[session.theme]}
           playerName={session.playerName}
           correctAnswers={session.correctAnswers ?? []}
@@ -508,6 +532,9 @@ export default function GamePage() {
           onToggle={() => setStatsExpanded((v) => !v)}
           pulseAttempts={pulseAttempts}
           maxAttempts={maxAttempts}
+          attemptsLabel="剩余筛选"
+          roundLabel={reverseRoundName}
+          roundProgress={reverseRoundProgress}
         />
 
         <div className="flex-1 min-h-0 max-w-[1520px] mx-auto w-full px-3 sm:px-4 py-2 sm:py-3 grid grid-cols-1 lg:grid-cols-[200px_1fr_220px] gap-3 lg:gap-4 overflow-hidden">
@@ -544,16 +571,22 @@ export default function GamePage() {
           </main>
 
           <aside className="hidden lg:flex lg:flex-col gap-4 shrink-0 min-h-0 overflow-hidden">
-            <AttemptsBadge
-              attemptsLeft={session.attemptsLeft}
-              maxAttempts={maxAttempts}
-              pulse={pulseAttempts}
-              variant="attempts"
-            />
             <div className="glass-card p-4 shrink-0">
               <p className="text-xs text-apple-gray mb-1">剩余筛选</p>
-              <p className="text-2xl font-bold">{session.attemptsLeft}</p>
-              <p className="text-xs text-apple-gray mt-1">每题补满 {maxAttempts} 次</p>
+              <motion.p
+                key={session.attemptsLeft}
+                initial={{ scale: pulseAttempts ? 1.2 : 1 }}
+                animate={{ scale: 1 }}
+                className="text-2xl font-bold leading-tight"
+              >
+                {session.attemptsLeft}
+                <span className="text-sm text-apple-gray font-normal">/{maxAttempts}</span>
+              </motion.p>
+            </div>
+            <div className="glass-card p-4 shrink-0">
+              <p className="text-xs text-apple-gray mb-1">轮次</p>
+              <p className="text-2xl font-bold text-gray-800 mb-2">{reverseRoundName}</p>
+              <ReverseRoundProgress {...reverseRoundProgress} />
             </div>
             <ReverseRoundHistory rounds={session.reverseRoundHistory ?? []} />
           </aside>
@@ -591,11 +624,17 @@ export default function GamePage() {
                 className="glass-card p-6 max-w-sm w-full text-center"
               >
                 <p className="text-lg font-medium mb-1">
+                  {reverseRoundLabel(
+                    Math.max(0, (session.reverseRoundHistory?.length ?? 1) - 1)
+                  )}{' '}
+                  结算
+                </p>
+                <p className="text-sm text-apple-gray mb-1">
                   {roundModal.autoDeduced
                     ? '筛选至唯一答案！'
                     : roundModal.success
                       ? '猜对了！'
-                      : '本题结束'}
+                      : '未猜中'}
                 </p>
                 <p className="text-sm text-apple-gray mb-4">
                   答案：{roundModal.answer.name}
@@ -609,7 +648,9 @@ export default function GamePage() {
                   <p className="text-3xl font-bold text-apple-blue">+{roundModal.score}</p>
                 </div>
                 <button className="btn-primary w-full" onClick={handleReverseNext}>
-                  下一题 →
+                  {session.status === 'game_over'
+                    ? '查看总成绩'
+                    : `进入${reverseRoundLabel((session.questionIndex ?? 0) + 1)} →`}
                 </button>
               </motion.div>
             </div>
@@ -685,16 +726,6 @@ export default function GamePage() {
             )}
           </h1>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {isProgressive && (
-              <div className="lg:hidden">
-                <LivesHearts
-                  lives={session.attemptsLeft}
-                  maxLives={maxAttempts}
-                  size="sm"
-                  pulse={pulseAttempts}
-                />
-              </div>
-            )}
             <button
               type="button"
               className="btn-pill-danger shrink-0"
@@ -710,7 +741,6 @@ export default function GamePage() {
         score={session.score}
         correctCount={session.correctCount}
         attemptsLeft={session.attemptsLeft}
-        questionAttempts={session.questionAttempts}
         themeLabel={THEME_LABELS[session.theme]}
         playerName={session.playerName}
         correctAnswers={session.correctAnswers ?? []}
@@ -851,7 +881,9 @@ export default function GamePage() {
                   navigate('/result');
                 }}
               >
-                查看排行榜
+                {session.status === 'game_over' || session.status === 'failed'
+                  ? '查看结算'
+                  : '查看排行榜'}
               </button>
             </div>
           </div>

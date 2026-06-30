@@ -2,12 +2,18 @@ import { AnimatePresence, motion } from 'framer-motion';
 import type { CorrectAnswerRecord } from '../types';
 import CorrectHistory from './CorrectHistory';
 import LivesHearts from './LivesHearts';
+import ReverseRoundProgress from './reverse/ReverseRoundProgress';
+
+interface RoundProgressProps {
+  totalRounds: number;
+  completedRounds: number;
+  currentRound: number;
+}
 
 interface Props {
   score: number;
   correctCount: number;
   attemptsLeft: number;
-  questionAttempts: number;
   themeLabel: string;
   playerName: string;
   correctAnswers: CorrectAnswerRecord[];
@@ -16,13 +22,18 @@ interface Props {
   pulseAttempts?: boolean;
   maxAttempts?: number;
   useLivesHearts?: boolean;
+  /** Collapsed bar label for attempts (default 剩余机会) */
+  attemptsLabel?: string;
+  /** 居中栏显示轮次标签（如「第一轮」），替代答对数 */
+  roundLabel?: string;
+  /** 逆向轰炸轮次进度条 */
+  roundProgress?: RoundProgressProps;
 }
 
 export default function GameTopStats({
   score,
   correctCount,
   attemptsLeft,
-  questionAttempts,
   themeLabel,
   playerName,
   correctAnswers,
@@ -31,7 +42,11 @@ export default function GameTopStats({
   pulseAttempts,
   maxAttempts = 10,
   useLivesHearts = false,
+  attemptsLabel = '剩余机会',
+  roundLabel,
+  roundProgress,
 }: Props) {
+  const showRoundCenter = roundLabel != null;
   return (
     <div className="lg:hidden shrink-0 border-b border-gray-200/60 bg-white/90 backdrop-blur-xl">
       <button
@@ -46,12 +61,33 @@ export default function GameTopStats({
             <p className="text-lg font-bold text-apple-blue truncate">{score}</p>
           </div>
           <div className="min-w-0 text-center">
-            <p className="text-[10px] text-apple-gray leading-none mb-0.5">答对</p>
-            <p className="text-lg font-bold text-apple-green">{correctCount}</p>
+            {showRoundCenter ? (
+              <>
+                <p className="text-[10px] text-apple-gray leading-none mb-0.5">轮次</p>
+                <p className="text-lg font-bold text-gray-800 truncate">{roundLabel}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-[10px] text-apple-gray leading-none mb-0.5">答对</p>
+                <p className="text-lg font-bold text-apple-green">{correctCount}</p>
+              </>
+            )}
           </div>
-          <div className="min-w-0 text-right">
-            <p className="text-[10px] text-apple-gray leading-none mb-0.5">本题</p>
-            <p className="text-lg font-bold">{questionAttempts} 次</p>
+          <div className="min-w-0 text-right flex flex-col items-end justify-center">
+            <p className="text-[10px] text-apple-gray leading-none mb-0.5">{attemptsLabel}</p>
+            {useLivesHearts ? (
+              <LivesHearts lives={attemptsLeft} maxLives={maxAttempts} size="sm" pulse={pulseAttempts} />
+            ) : (
+              <motion.p
+                key={attemptsLeft}
+                initial={{ scale: pulseAttempts ? 1.25 : 1 }}
+                animate={{ scale: 1 }}
+                className="text-lg font-bold leading-tight"
+              >
+                {attemptsLeft}
+                <span className="text-sm text-apple-gray font-normal">/{maxAttempts}</span>
+              </motion.p>
+            )}
           </div>
         </div>
         <span
@@ -61,6 +97,16 @@ export default function GameTopStats({
           ▾
         </span>
       </button>
+
+      {roundProgress && (
+        <div className="px-4 pb-2.5 -mt-0.5">
+          <ReverseRoundProgress
+            totalRounds={roundProgress.totalRounds}
+            completedRounds={roundProgress.completedRounds}
+            currentRound={roundProgress.currentRound}
+          />
+        </div>
+      )}
 
       <AnimatePresence initial={false}>
         {expanded && (
@@ -81,25 +127,6 @@ export default function GameTopStats({
                   <p className="text-xs text-apple-gray">主题</p>
                   <p className="font-medium">{themeLabel}</p>
                 </div>
-              </div>
-
-              <div className="rounded-xl bg-apple-bg/80 px-3 py-2 flex items-center justify-between">
-                <span className="text-xs text-apple-gray">
-                  {useLivesHearts ? '剩余生命' : '剩余机会（本局）'}
-                </span>
-                {useLivesHearts ? (
-                  <LivesHearts lives={attemptsLeft} maxLives={maxAttempts} size="sm" pulse={pulseAttempts} />
-                ) : (
-                  <motion.span
-                    key={attemptsLeft}
-                    initial={{ scale: pulseAttempts ? 1.25 : 1 }}
-                    animate={{ scale: 1 }}
-                    className="text-xl font-bold"
-                  >
-                    {attemptsLeft}
-                    <span className="text-sm text-apple-gray font-normal">/{maxAttempts}</span>
-                  </motion.span>
-                )}
               </div>
 
               <div className="max-h-48 overflow-y-auto rounded-xl border border-gray-100 bg-white/70 p-3">

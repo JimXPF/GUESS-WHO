@@ -38,14 +38,6 @@ function pickQuestionHintsWithRng(
   answer: CharacterEntry,
   rng: SeededRng
 ): { primary: string; extra: string[] } {
-  if (theme === 'anime') {
-    const rest = rng.shuffle(
-      getHintFields(theme, activeFields).filter(
-        (f) => f !== 'name' && f !== 'anime' && f !== 'affiliation'
-      )
-    );
-    return { primary: 'anime', extra: rest.slice(0, BONUS_HINT_THRESHOLDS.length) };
-  }
   if (theme === 'football') {
     const primaryHint = buildFootballPrimaryHint(answer, rng);
     const extra = rng.shuffle(

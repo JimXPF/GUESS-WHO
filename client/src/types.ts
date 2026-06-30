@@ -1,4 +1,4 @@
-export type Theme = 'csgo' | 'football' | 'nba' | 'anime' | 'pokemon';
+export type Theme = 'csgo' | 'football' | 'nba' | 'pokemon';
 export type GameMode =
   | 'classic-six'
   | 'daily-one'
@@ -139,6 +139,7 @@ export interface GameSession {
   reverseFieldChoices?: ReverseFieldMeta[];
   reverseRoundHistory?: ReverseRoundRecord[];
   reversePhase?: 'filtering' | 'guessing';
+  revealedAnswer?: { name: string; imageUrl: string | null };
 }
 
 export interface ReverseRoundRecord {
@@ -220,13 +221,17 @@ export const GAME_MODE_LABELS: Record<GameMode, string> = {
   'relay-chain': '接龙模式',
 };
 
-export const LEADERBOARD_MODES: GameMode[] = ['classic-six', 'daily-one'];
+export const LEADERBOARD_MODES: GameMode[] = [
+  'classic-six',
+  'daily-one',
+  'progressive-hint',
+  'reverse-bomb',
+];
 
 export const THEME_LABELS: Record<Theme, string> = {
   csgo: 'CS 选手',
   football: '2026世界杯',
   nba: 'NBA',
-  anime: '动漫人物',
   pokemon: '宝可梦',
 };
 
@@ -234,7 +239,6 @@ export const THEME_ICONS: Record<Theme, string> = {
   csgo: '🎯',
   football: '⚽',
   nba: '🏀',
-  anime: '🎌',
   pokemon: '⚡',
 };
 
@@ -249,6 +253,13 @@ export const MODE_ICONS: Record<GameMode, string> = {
 
 export const PROGRESSIVE_LIVES = 3;
 export const REVERSE_QUERY_ATTEMPTS = 5;
+export const REVERSE_ROUNDS_PER_GAME = 3;
+
+const REVERSE_ROUND_CN = ['第一轮', '第二轮', '第三轮'] as const;
+
+export function reverseRoundLabel(roundIndex: number): string {
+  return REVERSE_ROUND_CN[roundIndex] ?? `第${roundIndex + 1}轮`;
+}
 
 export function scoreForQuestion(attemptsUsed: number): number {
   if (attemptsUsed <= 1) return 500;

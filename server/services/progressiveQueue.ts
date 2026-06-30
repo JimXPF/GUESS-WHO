@@ -66,16 +66,6 @@ export function buildProgressiveHintQueueFromSetup(
     };
   }
 
-  if (theme === 'anime') {
-    const pool = getHintFields(theme, setup.activeFields).filter(
-      (f) => f !== 'name' && f !== 'anime' && f !== 'affiliation' && f !== setup.hintField
-    );
-    return {
-      firstField: setup.hintField,
-      pendingQueue: shuffle(pool, rng),
-    };
-  }
-
   const pool = getHintFields(theme, setup.activeFields).filter(
     (f) =>
       f !== 'name' &&

@@ -19,7 +19,7 @@ const SINGLE_PLAYER_MODES: GameMode[] = [
 ];
 const MULTI_MODES: GameMode[] = ['battle', 'relay-chain'];
 const MODES: GameMode[] = [...SINGLE_PLAYER_MODES, ...MULTI_MODES];
-const THEMES: Theme[] = ['csgo', 'football', 'nba', 'pokemon', 'anime'];
+const THEMES: Theme[] = ['csgo', 'football', 'nba', 'pokemon'];
 
 function optionClass(selected: boolean, compact = false) {
   return `${

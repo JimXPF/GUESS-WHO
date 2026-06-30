@@ -194,11 +194,6 @@ const NUMERIC_RULES: Record<
     height: { absolute: 3 },
     playoffCount: { absolute: 1 },
   },
-  anime: {
-    age: { absolute: 5 },
-    height: { absolute: 10 },
-    powerLevel: { absolute: 8 },
-  },
   pokemon: {
     baseStatTotal: { absolute: 30 },
     hp: { absolute: 15 },
@@ -286,7 +281,7 @@ export function compareField(
 
   const rule = NUMERIC_RULES[theme]?.[field];
   if (rule) {
-    // Handle string ages like "千年" for anime
+    // Handle non-numeric string values (e.g. special age labels)
     if (typeof guessValue === 'string' || typeof answerValue === 'string') {
       return compareExact(guessValue, answerValue);
     }
@@ -298,19 +293,12 @@ export function compareField(
     );
   }
 
-  // string enum fields: team, anime, genre, race, occupation
+  // string enum fields: team, club, race, occupation, etc.
   const exact = compareExact(guessValue, answerValue);
   if (exact === 'hit') return 'hit';
 
-  // race/occupation same category close for anime
-  if (theme === 'anime' && ['race', 'occupation'].includes(field)) {
-    const gGroup = getPositionGroup('anime', String(guessValue));
-    const aGroup = getPositionGroup('anime', String(answerValue));
-    if (gGroup && aGroup && gGroup === aGroup) return 'close';
-  }
-
   // team close: same first word or substring (weaker)
-  if (field === 'team' || field === 'anime' || field === 'club') {
+  if (field === 'team' || field === 'club') {
     const g = normalizeStr(guessValue);
     const a = normalizeStr(answerValue);
     if (g.includes(a) || a.includes(g)) return 'close';

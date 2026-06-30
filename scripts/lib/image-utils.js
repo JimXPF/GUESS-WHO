@@ -78,7 +78,7 @@ const {
 
 function printCoverage() {
   console.log('\n=== Coverage ===');
-  for (const theme of ['csgo', 'football', 'nba', 'anime']) {
+  for (const theme of ['csgo', 'football', 'nba', 'pokemon']) {
     const data = loadPlayers(theme);
     console.log(`${theme}.json: ${data.filter((e) => e.imageUrl).length}/${data.length}`);
   }

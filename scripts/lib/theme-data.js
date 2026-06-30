@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_DIR = path.join(__dirname, '..', '..', 'server', 'data');
-const THEMES = ['csgo', 'football', 'nba', 'anime'];
+const THEMES = ['csgo', 'football', 'nba', 'pokemon'];
 
 function themePath(theme) {
   const name = String(theme).replace(/\.json$/, '');

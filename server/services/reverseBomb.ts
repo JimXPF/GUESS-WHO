@@ -46,7 +46,6 @@ const EXTRA_REVERSE_FIELD_DEFS: Record<Theme, { field: string; label: string }[]
     { field: 'currentSeasonGp', label: '本赛季出场' },
     { field: 'maxCareerGpSince2025', label: '2025来最高出场' },
   ],
-  anime: [],
   pokemon: [],
 };
 
@@ -55,7 +54,6 @@ const SYNTHETIC_REVERSE_FIELDS: Record<Theme, string[]> = {
   csgo: [],
   football: ['clubLeague', 'confederation'],
   nba: ['division'],
-  anime: [],
   pokemon: [],
 };
 const NULLABLE_FIELDS = new Set(['type2', 'club', 'school']);
@@ -74,7 +72,6 @@ const NUMERIC_FIELDS: Record<Theme, Set<string>> = {
   ]),
   football: new Set(['age', 'marketValue', 'height']),
   nba: new Set(['age', 'height', 'playoffCount', 'currentSeasonGp', 'maxCareerGpSince2025']),
-  anime: new Set(['age', 'powerLevel', 'height']),
   pokemon: new Set([
     'baseStatTotal',
     'hp',

@@ -2,7 +2,30 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getSession, getLeaderboard, SESSION_KEY } from '../api';
-import { GameSession, THEME_LABELS, formatElapsedUs, isDailyEntry, LeaderboardRow } from '../types';
+import CharacterAvatar from '../components/CharacterAvatar';
+import {
+  GameMode,
+  GameSession,
+  THEME_LABELS,
+  formatElapsedUs,
+  isDailyEntry,
+  LeaderboardRow,
+  reverseRoundLabel,
+} from '../types';
+
+function leaderboardModeFor(session: GameSession): GameMode {
+  if (session.gameMode === 'daily-one') return 'daily-one';
+  if (session.gameMode === 'progressive-hint') return 'progressive-hint';
+  if (session.gameMode === 'reverse-bomb') return 'reverse-bomb';
+  return 'classic-six';
+}
+
+function leaderboardTitleFor(session: GameSession): string {
+  if (session.gameMode === 'reverse-bomb') return '逆向轰炸排行榜';
+  if (session.gameMode === 'progressive-hint') return '逐步提示排行榜';
+  if (session.gameMode === 'daily-one') return '今日挑战排行榜';
+  return '经典模式排行榜';
+}
 
 export default function ResultPage() {
   const navigate = useNavigate();
@@ -22,12 +45,13 @@ export default function ResultPage() {
           return;
         }
         setSession(s);
-        const lb = await getLeaderboard(
-          s.gameMode === 'daily-one' ? 'daily-one' : 'classic-six',
-          s.theme,
-          15
-        );
-        setLeaderboard(lb);
+        const lbMode = leaderboardModeFor(s);
+        try {
+          const lb = await getLeaderboard(lbMode, s.theme, 15);
+          setLeaderboard(lb);
+        } catch {
+          /* 排行榜加载失败仍展示结算页 */
+        }
       })
       .catch(() => navigate('/'));
   }, [navigate]);
@@ -41,6 +65,9 @@ export default function ResultPage() {
   }
 
   const isDaily = session.gameMode === 'daily-one';
+  const isReverse = session.gameMode === 'reverse-bomb';
+  const reverseRounds = session.reverseRoundHistory ?? [];
+  const revealed = session.revealedAnswer;
 
   return (
     <div className="min-h-[100dvh] overflow-y-auto px-4 py-6 safe-top safe-bottom sm:p-6">
@@ -66,12 +93,30 @@ export default function ResultPage() {
               : session.status === 'game_over'
                 ? isDaily
                   ? '今日挑战完成'
-                  : '游戏结束'
+                  : isReverse
+                    ? '三轮挑战完成'
+                    : '游戏结束'
                 : '已退出游戏'}
           </h1>
           <p className="text-apple-gray text-sm sm:text-base mb-5 sm:mb-6">
-            {session.playerName}，本轮成绩
+            {session.playerName}，{isReverse ? '三轮总分' : '本轮成绩'}
           </p>
+
+          {revealed && (
+            <div className="bg-apple-bg rounded-xl p-4 sm:p-5 mb-5 sm:mb-6">
+              <p className="text-xs sm:text-sm text-apple-gray mb-3">
+                {session.status === 'failed' ? '正确答案' : '本局最后一题答案'}
+              </p>
+              <div className="flex flex-col items-center gap-2">
+                <CharacterAvatar
+                  name={revealed.name}
+                  imageUrl={revealed.imageUrl}
+                  size="lg"
+                />
+                <p className="text-xl sm:text-2xl font-semibold text-apple-red">{revealed.name}</p>
+              </div>
+            </div>
+          )}
 
           {isDaily ? (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
@@ -86,6 +131,24 @@ export default function ResultPage() {
                 </p>
               </div>
             </div>
+          ) : isReverse ? (
+            <>
+              <div className="bg-apple-bg rounded-xl p-4 sm:p-5 mb-4">
+                <p className="text-xs sm:text-sm text-apple-gray mb-1">三轮总分</p>
+                <p className="text-3xl sm:text-4xl font-bold text-apple-blue">{session.score}</p>
+              </div>
+              {reverseRounds.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-5 sm:mb-6 text-left">
+                  {reverseRounds.map((r, i) => (
+                    <div key={`${r.questionIndex}-${r.answerId}`} className="bg-apple-bg rounded-xl p-3 sm:p-4">
+                      <p className="text-[10px] sm:text-xs text-apple-gray mb-1">{reverseRoundLabel(i)}</p>
+                      <p className="text-lg sm:text-xl font-bold text-apple-blue">+{r.score}</p>
+                      <p className="text-[10px] text-apple-gray truncate mt-0.5">{r.answerName}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
               <div className="bg-apple-bg rounded-xl p-4 sm:p-5">
@@ -119,7 +182,9 @@ export default function ResultPage() {
           className="glass-card p-4 sm:p-6 shrink-0"
         >
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <p className="text-base sm:text-lg font-semibold">当前排行榜</p>
+            <p className="text-base sm:text-lg font-semibold">
+              {leaderboardTitleFor(session)}
+            </p>
             <span className="text-xs text-apple-gray">Top {leaderboard.length}</span>
           </div>
 
@@ -168,7 +233,11 @@ export default function ResultPage() {
                             {'totalScore' in entry ? entry.totalScore : '-'}
                           </span>
                           <span className="text-apple-green text-xs sm:w-12 sm:text-right">
-                            {'correctCount' in entry ? `${entry.correctCount} 题` : ''}
+                            {'correctCount' in entry
+                              ? isReverse
+                                ? `${entry.correctCount} 轮`
+                                : `${entry.correctCount} 题`
+                              : ''}
                           </span>
                         </>
                       )}

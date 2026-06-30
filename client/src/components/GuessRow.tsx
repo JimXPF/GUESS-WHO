@@ -9,7 +9,6 @@ const COL_WIDTH: Record<string, string> = {
   name: 'w-[120px]',
   team: 'w-[88px]',
   club: 'w-[88px]',
-  anime: 'w-[96px]',
   affiliation: 'w-[92px]',
   nationality: 'w-[72px]',
   nationalTeam: 'w-[72px]',

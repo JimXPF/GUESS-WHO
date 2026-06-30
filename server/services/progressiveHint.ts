@@ -244,7 +244,6 @@ export function updateProgressiveSatisfiedFields(
   return {
     ...state,
     satisfiedFields,
-    pendingQueue: state.pendingQueue.filter((f) => !satisfied.has(f)),
   };
 }
 
@@ -298,13 +297,11 @@ export function unlockNextProgressiveHint(
 ): ProgressiveState {
   if (state.pendingQueue.length === 0) return state;
 
-  const satisfied = new Set(state.satisfiedFields ?? []);
   const usedValues = new Set(state.hints.map((h) => `${h.field}:${h.value}`));
   let nextField: string | undefined;
   const rest: string[] = [];
 
   for (const field of state.pendingQueue) {
-    if (satisfied.has(field)) continue;
     if (nextField) {
       rest.push(field);
       continue;

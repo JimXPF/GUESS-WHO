@@ -6,7 +6,6 @@ export function pickActiveFields(theme: Theme): string[] {
     csgo: ['team', 'nationality', 'age', 'rating', 'top20Count', 'position'],
     football: ['club', 'nationalTeam', 'age', 'marketValue', 'height', 'position'],
     nba: ['team', 'age', 'height', 'draft', 'playoffCount', 'position'],
-    anime: ['anime', 'affiliation', 'race', 'occupation', 'age', 'powerLevel'],
   };
 
   if (theme === 'pokemon') {

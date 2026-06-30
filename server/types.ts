@@ -1,4 +1,4 @@
-export type Theme = 'csgo' | 'football' | 'nba' | 'anime' | 'pokemon';
+export type Theme = 'csgo' | 'football' | 'nba' | 'pokemon';
 export type GameMode =
   | 'classic-six'
   | 'daily-one'
@@ -135,7 +135,7 @@ export interface ProgressiveState {
   hintFields: string[];
   hints: HintInfo[];
   pendingQueue: string[];
-  /** 已被某次猜测命中的提示字段，不再解锁为提示 */
+  /** 已被某次猜测命中的提示字段（含未解锁队列字段）；仅记录，不阻止后续正式解锁 */
   satisfiedFields?: string[];
   questionAttempts: number;
   rounds: ProgressiveRound[];
@@ -187,6 +187,8 @@ export interface GameSession {
   reverseFieldChoices?: ReverseFieldMeta[];
   reverseRoundHistory?: ReverseRoundRecord[];
   reversePhase?: 'filtering' | 'guessing';
+  /** 本局结束时当前题未答对时揭晓的答案（结算页展示） */
+  revealedAnswer?: { name: string; imageUrl: string | null };
 }
 
 export interface LeaderboardEntry {
@@ -271,7 +273,6 @@ export const THEME_LABELS: Record<Theme, string> = {
   csgo: 'CS 选手',
   football: '2026世界杯',
   nba: 'NBA',
-  anime: '动漫人物',
   pokemon: '宝可梦',
 };
 
@@ -300,14 +301,6 @@ export const THEME_FIELD_DEFS: Record<Theme, { field: string; label: string }[]>
     { field: 'draft', label: '选秀' },
     { field: 'playoffCount', label: '季后赛次数' },
     { field: 'position', label: '位置' },
-  ],
-  anime: [
-    { field: 'anime', label: '作品' },
-    { field: 'affiliation', label: '组织' },
-    { field: 'race', label: '种族' },
-    { field: 'occupation', label: '职业' },
-    { field: 'age', label: '年龄' },
-    { field: 'powerLevel', label: '战斗力' },
   ],
   pokemon: [
     { field: 'type1', label: '属性1' },
@@ -386,6 +379,8 @@ export const MAX_ATTEMPTS = 10;
 export const DAILY_MAX_ATTEMPTS = 20;
 export const PROGRESSIVE_LIVES = 3;
 export const REVERSE_QUERY_ATTEMPTS = 5;
+/** 逆向轰炸每局固定轮数，三轮总分计入排行榜 */
+export const REVERSE_ROUNDS_PER_GAME = 3;
 /** 完成该次数筛选后解锁准确提示（即第 4 次筛选时可见） */
 export const REVERSE_ACCURATE_HINT_AFTER = 3;
 /** 逆向轰炸每题随机展示的候选数量（含隐藏答案） */

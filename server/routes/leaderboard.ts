@@ -5,8 +5,8 @@ import { getClientKey } from '../utils/clientKey';
 
 export const leaderboardRouter = Router();
 
-const VALID_THEMES: Theme[] = ['csgo', 'football', 'nba', 'anime', 'pokemon'];
-const VALID_MODES: GameMode[] = ['classic-six', 'daily-one'];
+const VALID_THEMES: Theme[] = ['csgo', 'football', 'nba', 'pokemon'];
+const VALID_MODES: GameMode[] = ['classic-six', 'daily-one', 'progressive-hint', 'reverse-bomb'];
 
 leaderboardRouter.get('/', (req, res) => {
   try {
