@@ -36,6 +36,22 @@ import { buildHint as buildThemeHint } from './gameServiceHelpers';
 import { getPokemonBonusHintFields } from './pokemonHints';
 import { buildProgressiveHintQueueFromSetup } from './progressiveQueue';
 
+function normalizeHintCheck(
+  raw: Partial<ProgressiveGuessEntry['hintChecks'][number]>
+): ProgressiveGuessEntry['hintChecks'][number] {
+  const fieldLabel = raw.fieldLabel ?? raw.field ?? '';
+  const targetValue = raw.targetValue ?? (raw.hit ? raw.label : undefined) ?? raw.label ?? '—';
+  const guessValue = raw.guessValue ?? (!raw.hit ? raw.label : undefined) ?? raw.label ?? '—';
+  return {
+    field: raw.field ?? '',
+    label: raw.hit ? targetValue : guessValue,
+    fieldLabel,
+    targetValue,
+    guessValue,
+    hit: Boolean(raw.hit),
+  };
+}
+
 export function parseProgressiveState(raw: string | undefined): ProgressiveState {
   try {
     const parsed = JSON.parse(raw || '{}');
@@ -51,7 +67,7 @@ export function parseProgressiveState(raw: string | undefined): ProgressiveState
                   guessId: (g as ProgressiveGuessEntry).guessId ?? null,
                   imageUrl: (g as ProgressiveGuessEntry).imageUrl ?? null,
                   hintChecks: Array.isArray((g as ProgressiveGuessEntry).hintChecks)
-                    ? (g as ProgressiveGuessEntry).hintChecks
+                    ? (g as ProgressiveGuessEntry).hintChecks.map((c) => normalizeHintCheck(c))
                     : [],
                   allHintsHit: Boolean((g as ProgressiveGuessEntry).allHintsHit),
                   livesLost: Boolean((g as ProgressiveGuessEntry).livesLost),
@@ -152,14 +168,50 @@ export function buildProgressiveHintInfo(
   return buildThemeHint(theme, answer, field, []);
 }
 
-function hintLabelForField(theme: Theme, field: string, answer: CharacterEntry): string {
-  const info = buildProgressiveHintInfo(theme, answer, field, null);
+function hintLabelForField(theme: Theme, field: string, _answer: CharacterEntry): string {
   if (field === 'divisionPosition') return '赛区·选秀轮次';
   if (field === 'clubLeague') return '联赛';
   if (field === 'confederation') return '足联';
   if (field === 'team' && theme === 'nba') return '球队';
   if (field === 'position') return '位置';
+  const info = buildProgressiveHintInfo(theme, _answer, field, null);
   return info.label;
+}
+
+export function progressiveFieldDisplayValue(
+  theme: Theme,
+  field: string,
+  character: CharacterEntry,
+  compareMove: string | null,
+  footballPrimaryField?: 'confederation' | 'clubLeague'
+): string {
+  if (field === 'divisionPosition') {
+    return String(buildNBAPrimaryHint(character).value ?? '—');
+  }
+  if (field === 'clubLeague' || field === 'confederation') {
+    const info = buildProgressiveHintInfo(
+      theme,
+      character,
+      field,
+      compareMove,
+      footballPrimaryField
+    );
+    return String(info.value ?? '—');
+  }
+  if (field === 'team' && theme === 'nba') {
+    return getNBATeamDisplay(String(character.team || ''));
+  }
+  if (field === 'position') {
+    return getNBAPositionLabel(character);
+  }
+  const info = buildProgressiveHintInfo(
+    theme,
+    character,
+    field,
+    compareMove,
+    footballPrimaryField
+  );
+  return String(info.value ?? info.label ?? '—');
 }
 
 export function evaluateHintHit(
@@ -264,27 +316,29 @@ export function evaluateAllHintsForGuess(
       compareMove,
       footballPrimaryField
     );
-    let label = hintLabelForField(theme, field, answer);
-    if (field === 'divisionPosition') {
-      label = String(buildNBAPrimaryHint(answer).value ?? label);
-    } else if (field === 'clubLeague' || field === 'confederation') {
-      const info = buildProgressiveHintInfo(
-        theme,
-        answer,
-        field,
-        compareMove,
-        footballPrimaryField
-      );
-      label = String(info.value ?? label);
-    } else if (field === 'team' && theme === 'nba') {
-      label = getNBATeamDisplay(String(answer.team || ''));
-    } else if (field === 'position') {
-      label = getNBAPositionLabel(answer);
-    } else {
-      const info = buildProgressiveHintInfo(theme, answer, field, compareMove, footballPrimaryField);
-      label = String(info.value ?? info.label);
-    }
-    return { field, label, hit };
+    const fieldLabel = hintLabelForField(theme, field, answer);
+    const targetValue = progressiveFieldDisplayValue(
+      theme,
+      field,
+      answer,
+      compareMove,
+      footballPrimaryField
+    );
+    const guessValue = progressiveFieldDisplayValue(
+      theme,
+      field,
+      guess,
+      compareMove,
+      footballPrimaryField
+    );
+    return {
+      field,
+      fieldLabel,
+      targetValue,
+      guessValue,
+      label: hit ? targetValue : guessValue,
+      hit,
+    };
   });
   return { checks, allHintsHit: checks.every((c) => c.hit) };
 }

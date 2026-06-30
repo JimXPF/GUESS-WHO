@@ -195,6 +195,9 @@ export async function initDatabase(): Promise<void> {
   try {
     _db.run('ALTER TABLE sessions ADD COLUMN room_code TEXT');
   } catch { /* exists */ }
+  try {
+    _db.run('ALTER TABLE guesses ADD COLUMN score_delta INTEGER');
+  } catch { /* exists */ }
 
   _db.run(`
     CREATE TABLE IF NOT EXISTS daily_challenges (

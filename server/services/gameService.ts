@@ -7,6 +7,7 @@ import {
   DailyLeaderboardEntry,
   DailyTodayInfo,
   FieldCompare,
+  FieldClaim,
   GameMode,
   GameSession,
   GuessRecord,
@@ -17,7 +18,14 @@ import {
   ProgressiveRound,
   ProgressiveState,
   QuestionSetup,
+  RelayGuessRecord,
+  RelayCorrectRecord,
+  BATTLE_INTERMISSION_SECONDS,
+  BATTLE_PARTIAL_POINTS_PER_HIT,
+  BattlePartialScore,
+  BattleRoundResult,
   SessionStatus,
+  RELAY_TIMEOUT_PENALTY,
   REVERSE_QUERY_ATTEMPTS,
   REVERSE_ROUNDS_PER_GAME,
   REVERSE_ACCURATE_HINT_AFTER,
@@ -360,7 +368,7 @@ function compareAllFields(
 function loadGuesses(sessionId: string, questionIndex?: number): GuessRecord[] {
   const rows = db
     .prepare(
-      `SELECT id, guess_name, guess_id, is_correct, field_results, created_at, question_index
+      `SELECT id, guess_name, guess_id, is_correct, field_results, created_at, question_index, score_delta
        FROM guesses WHERE session_id = ? ORDER BY id ASC`
     )
     .all(sessionId) as Array<{
@@ -371,6 +379,7 @@ function loadGuesses(sessionId: string, questionIndex?: number): GuessRecord[] {
     field_results: string | null;
     created_at: string;
     question_index: number;
+    score_delta: number | null;
   }>;
 
   return rows
@@ -397,8 +406,114 @@ function loadGuesses(sessionId: string, questionIndex?: number): GuessRecord[] {
         createdAt: r.created_at,
         questionIndex: r.question_index,
         imageUrl: null as string | null,
+        scoreDelta: r.score_delta ?? undefined,
       };
     });
+}
+
+export function getRelayGuessesForRoom(
+  playerOrder: string[],
+  playerNames: Map<string, string>,
+  theme: Theme,
+  questionIndex: number
+): RelayGuessRecord[] {
+  const result: RelayGuessRecord[] = [];
+  for (const sid of playerOrder) {
+    const playerName = playerNames.get(sid);
+    if (!playerName) continue;
+    const guesses = loadGuesses(sid, questionIndex).filter((g) => g.fieldResults !== null);
+    for (const g of guesses) {
+      const char = g.guessId ? getCharacter(theme, g.guessId) : null;
+      result.push({
+        ...g,
+        sessionId: sid,
+        playerName,
+        imageUrl: char ? getCharacterImage(char) : g.imageUrl ?? null,
+      });
+    }
+  }
+  return result.sort((a, b) => a.id - b.id);
+}
+
+export function getRelayCorrectHistory(
+  playerOrder: string[],
+  playerNames: Map<string, string>,
+  theme: Theme
+): RelayCorrectRecord[] {
+  const result: RelayCorrectRecord[] = [];
+  for (const sid of playerOrder) {
+    const playerName = playerNames.get(sid);
+    if (!playerName) continue;
+    for (const answer of loadCorrectAnswers(sid, theme)) {
+      result.push({
+        guessName: answer.guessName,
+        guessId: answer.guessId,
+        imageUrl: answer.imageUrl,
+        questionIndex: answer.questionIndex,
+        sessionId: sid,
+        playerName,
+      });
+    }
+  }
+  return result.sort((a, b) => a.questionIndex - b.questionIndex);
+}
+
+export function countRelayQuestionAttempts(
+  playerOrder: string[],
+  questionIndex: number
+): number {
+  let total = 0;
+  for (const sid of playerOrder) {
+    total += loadGuesses(sid, questionIndex).filter((g) => g.fieldResults !== null).length;
+  }
+  return total;
+}
+
+function collectRelayHitFields(
+  playerOrder: string[],
+  questionIndex: number
+): Set<string> {
+  const allGuesses: GuessRecord[] = [];
+  for (const sid of playerOrder) {
+    allGuesses.push(...loadGuesses(sid, questionIndex));
+  }
+  return collectHitFields(allGuesses);
+}
+
+function getRelayRoomPlayerOrder(roomCode: string): string[] {
+  const rows = db
+    .prepare(`SELECT id FROM sessions WHERE room_code = ? ORDER BY rowid ASC`)
+    .all(roomCode) as { id: string }[];
+  return rows.map((r) => r.id);
+}
+
+export function buildRelayHintsForRoom(
+  playerOrder: string[],
+  theme: Theme,
+  questionIndex: number
+): HintInfo[] {
+  const anchorId = playerOrder[0];
+  if (!anchorId) return [];
+  const row = getSessionRow(anchorId);
+  if (!row) return [];
+  const answer = getCharacter(theme, row.answer_id);
+  if (!answer) return [];
+
+  const activeFields = parseActiveFields(row.active_fields, theme);
+  const extraHintFields = parseExtraHintFields(row.extra_hint_fields);
+  const sharedAttempts = countRelayQuestionAttempts(playerOrder, questionIndex);
+  const hitFields = collectRelayHitFields(playerOrder, questionIndex);
+
+  return buildSessionHints(
+    theme,
+    answer,
+    row.hint_field,
+    extraHintFields,
+    sharedAttempts,
+    activeFields,
+    hitFields,
+    row.question_compare_move
+  );
 }
 
 function loadCorrectAnswers(sessionId: string, theme: Theme): CorrectAnswerRecord[] {
@@ -496,6 +611,24 @@ function isQuestionAnsweredCorrectly(sessionId: string, questionIndex: number): 
     )
     .get(sessionId, questionIndex) as { 1: number } | undefined;
   return Boolean(row);
+}
+
+export function buildRoomRevealedAnswer(
+  theme: Theme,
+  answerId: string
+): { name: string; imageUrl: string | null } {
+  const answer = getCharacter(theme, answerId);
+  if (!answer) return { name: '—', imageUrl: null };
+  return {
+    name: getDisplayName(answer, theme),
+    imageUrl: getCharacterImage(answer),
+  };
+}
+
+export function getSharedRoomAnswerId(playerOrder: string[]): string | null {
+  if (!playerOrder.length) return null;
+  const row = getSessionRow(playerOrder[0]);
+  return row?.answer_id ?? null;
 }
 
 function buildRevealedAnswer(row: SessionRow): { name: string; imageUrl: string | null } | undefined {
@@ -614,11 +747,26 @@ function insertSession(
 export function applySessionFromSetup(
   sessionId: string,
   setup: QuestionSetup,
-  options?: { resetQuestionIndex?: boolean; questionIndex?: number }
+  options?: { resetQuestionIndex?: boolean; questionIndex?: number; resetAttempts?: boolean }
 ) {
   const row = getSessionRow(sessionId);
   if (!row) return;
   const qIndex = options?.questionIndex ?? (options?.resetQuestionIndex ? 0 : row.question_index);
+  if (options?.resetAttempts) {
+    db.prepare(
+      `UPDATE sessions SET answer_id = ?, hint_field = ?, extra_hint_fields = ?, active_fields = ?, question_compare_move = ?, question_attempts = 0, question_index = ?, attempts_left = ?, status = 'playing', progressive_state = '{}', updated_at = datetime('now') WHERE id = ?`
+    ).run(
+      setup.answerId,
+      setup.hintField,
+      JSON.stringify(setup.extraHintFields),
+      JSON.stringify(setup.activeFields),
+      setup.compareMove,
+      qIndex,
+      MAX_ATTEMPTS,
+      sessionId
+    );
+    return;
+  }
   db.prepare(
     `UPDATE sessions SET answer_id = ?, hint_field = ?, extra_hint_fields = ?, active_fields = ?, question_compare_move = ?, question_attempts = 0, question_index = ?, status = 'playing', progressive_state = '{}', updated_at = datetime('now') WHERE id = ?`
   ).run(
@@ -1280,11 +1428,178 @@ function submitProgressiveGuess(
   };
 }
 
+export function getBestHitCountForQuestion(sessionId: string, questionIndex: number): number {
+  const guesses = loadGuesses(sessionId, questionIndex).filter((g) => g.fieldResults !== null);
+  let max = 0;
+  for (const g of guesses) {
+    const hits = g.fieldResults!.filter((fr) => fr.result === 'hit').length;
+    max = Math.max(max, hits);
+  }
+  return max;
+}
+
+export function computeBattlePartialScore(hitCount: number): number {
+  if (hitCount <= 0) return 0;
+  return hitCount * BATTLE_PARTIAL_POINTS_PER_HIT;
+}
+
+export function applyBattlePartialScores(partialScores: BattlePartialScore[]): void {
+  for (const p of partialScores) {
+    if (p.score <= 0) continue;
+    db.prepare(
+      `UPDATE sessions SET score = score + ?, updated_at = datetime('now') WHERE id = ?`
+    ).run(p.score, p.sessionId);
+  }
+}
+
+export function settleBattleRound(
+  room: {
+    currentQuestionIndex: number;
+    playerOrder: string[];
+    players: Map<string, { playerName: string }>;
+  },
+  winnerSessionId: string,
+  winnerResult: GuessResponse
+): BattleRoundResult {
+  const winnerEntry = room.players.get(winnerSessionId);
+  if (!winnerEntry) throw new Error('Winner not found');
+
+  const row = getSessionRow(winnerSessionId);
+  if (!row) throw new Error('Winner session not found');
+
+  const answer = getCharacter(row.theme, row.answer_id)!;
+  const partialScores: BattlePartialScore[] = [];
+
+  for (const sid of room.playerOrder) {
+    if (sid === winnerSessionId) continue;
+    const entry = room.players.get(sid);
+    if (!entry) continue;
+    const hitCount = getBestHitCountForQuestion(sid, room.currentQuestionIndex);
+    const score = computeBattlePartialScore(hitCount);
+    partialScores.push({
+      sessionId: sid,
+      playerName: entry.playerName,
+      hitCount,
+      score,
+    });
+  }
+
+  applyBattlePartialScores(partialScores);
+
+  const winnerSession = winnerResult.session!;
+  return {
+    kind: 'winner',
+    questionIndex: room.currentQuestionIndex,
+    winnerSessionId,
+    winnerPlayerName: winnerEntry.playerName,
+    answerName: getDisplayName(answer, row.theme),
+    answerImageUrl: getCharacterImage(answer),
+    winnerScore: winnerSession.lastQuestionScore ?? 0,
+    winnerAttempts: winnerSession.questionAttempts,
+    partialScores,
+  };
+}
+
+export function settleBattleDrawRound(room: {
+  currentQuestionIndex: number;
+  playerOrder: string[];
+  players: Map<string, { playerName: string }>;
+  theme: Theme;
+}): BattleRoundResult {
+  const anchorId = room.playerOrder[0];
+  const row = anchorId ? getSessionRow(anchorId) : undefined;
+  if (!row) throw new Error('Room session not found');
+
+  const answer = getCharacter(room.theme, row.answer_id)!;
+  const partialScores: BattlePartialScore[] = [];
+
+  for (const sid of room.playerOrder) {
+    const entry = room.players.get(sid);
+    if (!entry) continue;
+    const hitCount = getBestHitCountForQuestion(sid, room.currentQuestionIndex);
+    const score = computeBattlePartialScore(hitCount);
+    partialScores.push({
+      sessionId: sid,
+      playerName: entry.playerName,
+      hitCount,
+      score,
+    });
+  }
+
+  applyBattlePartialScores(partialScores);
+
+  return {
+    kind: 'draw',
+    questionIndex: room.currentQuestionIndex,
+    winnerSessionId: null,
+    winnerPlayerName: null,
+    answerName: getDisplayName(answer, room.theme),
+    answerImageUrl: getCharacterImage(answer),
+    winnerScore: 0,
+    winnerAttempts: 0,
+    partialScores,
+  };
+}
+
+export function buildRelayRoundResult(
+  room: {
+    currentQuestionIndex: number;
+    relayRound: number;
+    players: Map<string, { playerName: string }>;
+  },
+  winnerSessionId: string,
+  scoreBreakdown?: FieldClaim[]
+): BattleRoundResult {
+  const winnerEntry = room.players.get(winnerSessionId);
+  const row = getSessionRow(winnerSessionId);
+  if (!winnerEntry || !row) throw new Error('Winner not found');
+
+  const answer = getCharacter(row.theme, row.answer_id)!;
+  const winnerScore =
+    scoreBreakdown?.reduce((sum, item) => sum + item.points, 0) ?? 0;
+
+  return {
+    kind: 'winner',
+    questionIndex: room.currentQuestionIndex,
+    winnerSessionId,
+    winnerPlayerName: winnerEntry.playerName,
+    answerName: getDisplayName(answer, row.theme),
+    answerImageUrl: getCharacterImage(answer),
+    winnerScore,
+    winnerAttempts: row.question_attempts,
+    partialScores: [],
+    roundLabel: `第 ${room.relayRound} 轮`,
+  };
+}
+
+export function isBattleQuestionExhausted(room: {
+  playerOrder: string[];
+}): boolean {
+  return room.playerOrder.every((sid) => {
+    const s = getGameSession(sid);
+    return !s || s.attemptsLeft <= 0;
+  });
+}
+
+export function isBattleQuestionWon(room: { playerOrder: string[] }): boolean {
+  return room.playerOrder.some((sid) => {
+    const row = getSessionRow(sid);
+    return row?.status === 'question_done';
+  });
+}
+
+export interface RoomGuessContext {
+  questionQueue: QuestionSetup[];
+  currentQuestionIndex: number;
+  playerOrder: string[];
+  mode?: 'battle';
+}
+
 export function processRoomGuess(
   sessionId: string,
   guessText: string,
   characterId?: string,
-  room?: { questionQueue: QuestionSetup[]; currentQuestionIndex: number; playerOrder: string[] }
+  room?: RoomGuessContext
 ): GuessResponse {
   const row = getSessionRow(sessionId);
   if (!row) throw new Error('Session not found');
@@ -1322,9 +1637,11 @@ export function processRoomGuess(
     lastQuestionScore = scoreForQuestion(questionAttempts);
     score += lastQuestionScore;
     correctCount += 1;
-    attemptsLeft = Math.min(MAX_ATTEMPTS, attemptsLeft + 2);
+    if (room?.mode !== 'battle') {
+      attemptsLeft = Math.min(MAX_ATTEMPTS, attemptsLeft + 2);
+    }
     status = 'question_done';
-  } else if (attemptsLeft <= 0) {
+  } else if (attemptsLeft <= 0 && room?.mode !== 'battle') {
     status = 'game_over';
   }
 
@@ -1344,7 +1661,7 @@ export function processRoomGuess(
     row.question_index
   );
 
-  if (isCorrect && status === 'question_done') {
+  if (isCorrect && status === 'question_done' && room?.mode !== 'battle') {
     if (room) {
       const nextIndex = row.question_index + 1;
       const nextSetup = room.questionQueue[nextIndex];
@@ -1451,10 +1768,7 @@ export function processRelayGuess(
   }
 
   if (!relayResult.fullCorrect) {
-    const order = room.playerOrder;
-    const idx = order.indexOf(sessionId);
-    const nextIdx = (idx + 1) % order.length;
-    room.relayTurnSessionId = order[nextIdx];
+    // turn advanced in roomService via advanceRelayTurn
   }
 
   db.prepare(
@@ -1469,15 +1783,16 @@ export function processRelayGuess(
   );
 
   db.prepare(
-    `INSERT INTO guesses (session_id, guess_name, guess_id, is_correct, field_results, question_index)
-     VALUES (?, ?, ?, ?, ?, ?)`
+    `INSERT INTO guesses (session_id, guess_name, guess_id, is_correct, field_results, question_index, score_delta)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
   ).run(
     sessionId,
     getDisplayName(character, row.theme),
     character.id,
     isCorrect ? 1 : 0,
     JSON.stringify(fieldResults),
-    row.question_index
+    row.question_index,
+    relayResult.scoreDelta
   );
 
   if (relayResult.fullCorrect) {
@@ -1494,6 +1809,37 @@ export function processRelayGuess(
     scoreBreakdown: relayResult.breakdown,
     fullCorrect: relayResult.fullCorrect,
   };
+}
+
+export function processRelayTurnTimeout(
+  sessionId: string,
+  room: RelayRoomContext
+): FieldClaim[] {
+  const row = getSessionRow(sessionId);
+  if (!row) return [];
+
+  const penalty = RELAY_TIMEOUT_PENALTY;
+  const attemptsLeft = row.attempts_left - 1;
+  const score = row.score - penalty;
+  let status: SessionStatus = row.status;
+  if (attemptsLeft <= 0) {
+    status = 'game_over';
+  }
+
+  const breakdown: FieldClaim = {
+    sessionId,
+    playerName: row.player_name,
+    round: room.relayRound,
+    points: -penalty,
+    field: '__timeout__',
+    fieldLabel: '超时未答',
+  };
+
+  db.prepare(
+    `UPDATE sessions SET attempts_left = ?, score = ?, status = ?, updated_at = datetime('now') WHERE id = ?`
+  ).run(attemptsLeft, score, status, sessionId);
+
+  return [breakdown];
 }
 
 export function nextQuestion(sessionId: string): GameSession {
@@ -1624,7 +1970,15 @@ export function getGameSession(sessionId: string): GameSession | null {
     }
     return g;
   });
-  const hitFields = collectHitFields(guesses);
+
+  let questionAttemptsForHints = row.question_attempts;
+  let hitFields = collectHitFields(guesses);
+  if (row.game_mode === 'relay-chain' && row.room_code) {
+    const playerOrder = getRelayRoomPlayerOrder(row.room_code);
+    questionAttemptsForHints = countRelayQuestionAttempts(playerOrder, row.question_index);
+    hitFields = collectRelayHitFields(playerOrder, row.question_index);
+  }
+
   const hints =
     row.game_mode === 'reverse-bomb'
       ? reverseState?.accurateHint
@@ -1635,7 +1989,7 @@ export function getGameSession(sessionId: string): GameSession | null {
           answer,
           row.hint_field,
           extraHintFields,
-          row.question_attempts,
+          questionAttemptsForHints,
           activeFields,
           hitFields,
           row.question_compare_move,

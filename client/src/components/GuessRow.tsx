@@ -93,6 +93,10 @@ interface Props {
   fieldResults: FieldCompare[];
   isCorrect: boolean;
   index: number;
+  playerName?: string;
+  isActivePlayer?: boolean;
+  scoreDelta?: number;
+  showRelayScoring?: boolean;
 }
 
 export default function GuessRow({
@@ -101,10 +105,16 @@ export default function GuessRow({
   fieldResults,
   isCorrect,
   index,
+  playerName,
+  isActivePlayer,
+  scoreDelta,
+  showRelayScoring,
 }: Props) {
   const cardClass = isCorrect
     ? 'rounded-xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 via-green-50/80 to-white shadow-md shadow-emerald-200/50'
-    : 'glass-card';
+    : isActivePlayer
+      ? 'rounded-xl border border-blue-200/80 bg-blue-50/70 shadow-md shadow-blue-100/60'
+      : 'glass-card';
 
   return (
     <motion.div
@@ -113,12 +123,25 @@ export default function GuessRow({
       transition={{ delay: index * 0.04, type: 'spring', stiffness: 280 }}
       className={cardClass}
     >
+      {scoreDelta != null && (
+        <div
+          className={`px-3 pt-2 text-right text-xs font-bold ${
+            scoreDelta >= 0 ? 'text-apple-green' : 'text-apple-red'
+          }`}
+        >
+          {scoreDelta > 0 ? '+' : ''}
+          {scoreDelta} 分
+        </div>
+      )}
       {/* Mobile: compact header + wrapped field grid */}
       <div className="lg:hidden p-2">
         <div className="flex items-center gap-2 min-w-0 mb-2">
           <span className="text-[10px] font-semibold text-apple-gray shrink-0 tabular-nums">
             猜测{index + 1}
           </span>
+          {playerName && (
+            <span className="text-[10px] font-medium text-apple-blue shrink-0">{playerName}</span>
+          )}
           <CharacterAvatar name={guessName} imageUrl={imageUrl} size="xs" />
           <span className="text-sm font-semibold truncate min-w-0 flex-1" title={guessName}>
             {guessName}
@@ -135,7 +158,18 @@ export default function GuessRow({
         </div>
         <div className="grid grid-cols-3 gap-1">
           {fieldResults.map((field, fi) => (
-            <FieldCell key={field.field} field={field} index={fi} rowIndex={index} />
+            <div key={field.field} className="relative">
+              <FieldCell field={field} index={fi} rowIndex={index} />
+              {showRelayScoring && field.claimedBy && (
+                <p className="text-[8px] text-center mt-0.5 text-apple-gray truncate px-0.5">
+                  {field.result === 'hit'
+                    ? field.claimedBy === playerName
+                      ? '首认领'
+                      : '已被认领'
+                    : '已认领·答错'}
+                </p>
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -169,6 +203,11 @@ export default function GuessRow({
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-[10px] text-apple-gray shrink-0">#{index + 1}</span>
+                  {playerName && (
+                    <span className="text-[10px] font-medium text-apple-blue shrink-0 max-w-[56px] truncate">
+                      {playerName}
+                    </span>
+                  )}
                   <CharacterAvatar name={guessName} imageUrl={imageUrl} />
                   <span className="truncate" title={guessName}>
                     {guessName}

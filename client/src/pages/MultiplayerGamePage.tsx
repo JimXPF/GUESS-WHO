@@ -6,16 +6,39 @@ import GuessRow from '../components/GuessRow';
 import GuessInput from '../components/GuessInput';
 import HintCard from '../components/HintCard';
 import PlayerProgressBar from '../components/PlayerProgressBar';
-import { GameSession, THEME_LABELS } from '../types';
+import RelayTurnCountdown from '../components/RelayTurnCountdown';
+import RelayCorrectHistory from '../components/RelayCorrectHistory';
+import BattleRoundBanner from '../components/BattleRoundBanner';
+import BattleNextCountdown from '../components/BattleNextCountdown';
+import CorrectHistory from '../components/CorrectHistory';
+import RelayOpponentExhaustedModal from '../components/RelayOpponentExhaustedModal';
+import GameEndRevealModal from '../components/GameEndRevealModal';
+import { AttemptsBadge } from '../components/StatSidebar';
+import type { GameSession, GuessRecord, RelayGuessRecord } from '../types';
+import {
+  RELAY_FIELD_POINTS,
+  RELAY_FULL_CORRECT_BONUS,
+  RELAY_TIMEOUT_PENALTY,
+  RELAY_WRONG_CLAIM_PENALTY,
+  FULL_CORRECT_MIN_SCORE,
+  BATTLE_PARTIAL_POINTS_PER_HIT,
+  BATTLE_QUESTION_COUNT,
+  THEME_LABELS,
+} from '../types';
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
-  const { room, submitRoomGuess, leaveRoom } = useGameRoom();
+  const { room, submitRoomGuess, leaveRoom, rejoinRoom } = useGameRoom();
   const [session, setSession] = useState<GameSession | null>(null);
   const [guessText, setGuessText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
+  const [relayNoticeOpen, setRelayNoticeOpen] = useState(false);
+  const [relayNoticeName, setRelayNoticeName] = useState('');
+  const [seenRelayNoticeId, setSeenRelayNoticeId] = useState(0);
+  const [showEndReveal, setShowEndReveal] = useState(false);
+  const [wentToSettlement, setWentToSettlement] = useState(false);
   const sessionId = localStorage.getItem(SESSION_KEY) || '';
   const roomCode = localStorage.getItem(ROOM_KEY) || '';
 
@@ -37,14 +60,30 @@ export default function MultiplayerGamePage() {
   }, [loadSession]);
 
   useEffect(() => {
-    if (room?.status === 'finished') {
-      navigate('/settlement');
+    if (!room && sessionId && roomCode) {
+      rejoinRoom(roomCode, sessionId);
     }
-  }, [room?.status, navigate]);
+  }, [room, sessionId, roomCode, rejoinRoom]);
+
+  useEffect(() => {
+    if (room?.status === 'finished' && !wentToSettlement) {
+      setShowEndReveal(true);
+    }
+  }, [room?.status, wentToSettlement]);
+
+  useEffect(() => {
+    const notice = room?.relayNotice;
+    if (!notice || room.mode !== 'relay-chain') return;
+    if (notice.id <= seenRelayNoticeId) return;
+    if (notice.targetSessionId !== sessionId) return;
+    setRelayNoticeName(notice.exhaustedPlayerName);
+    setRelayNoticeOpen(true);
+    setSeenRelayNoticeId(notice.id);
+  }, [room?.relayNotice, room?.mode, sessionId, seenRelayNoticeId]);
 
   useEffect(() => {
     if (room) loadSession();
-  }, [room?.players, loadSession]);
+  }, [room?.relayRound, room?.players, room?.battlePhase, room?.relayPhase, room?.currentQuestionIndex, loadSession, room]);
 
   const handleGuess = async (text?: string, characterId?: string) => {
     const guess = (text ?? guessText).trim();
@@ -72,8 +111,21 @@ export default function MultiplayerGamePage() {
     }
   };
 
+  const handleContinueSettlement = () => {
+    setShowEndReveal(false);
+    setWentToSettlement(true);
+    if (room) {
+      const { revealedAnswer: _omit, ...settlementRoom } = room;
+      sessionStorage.setItem('guess-who-last-room', JSON.stringify(settlementRoom));
+    }
+    navigate('/settlement');
+  };
+
   const handleQuit = () => {
     leaveRoom(sessionId);
+    if (room?.revealedAnswer) {
+      sessionStorage.setItem('guess-who-last-room', JSON.stringify(room));
+    }
     navigate('/settlement');
   };
 
@@ -86,77 +138,233 @@ export default function MultiplayerGamePage() {
   }
 
   const isRelay = room.mode === 'relay-chain';
-  const isMyTurn = !isRelay || room.currentTurnSessionId === sessionId;
-  const currentGuesses = session.guesses.filter((g) => g.fieldResults !== null);
-  const inputDisabled = session.attemptsLeft <= 0 || !isMyTurn;
+  const isBattle = room.mode === 'battle';
+  const isBattleIntermission = isBattle && room.battlePhase === 'intermission';
+  const isRelayIntermission = isRelay && room.relayPhase === 'intermission';
+  const isIntermission = isBattleIntermission || isRelayIntermission;
+  const roundResult =
+    (isBattleIntermission ? room.battleResult : null) ||
+    (isRelayIntermission ? room.relayRoundResult : null);
+  const myPlayer = room.players.find((p) => p.sessionId === sessionId);
+  const myAttemptsLeft = myPlayer?.attemptsLeft ?? session.attemptsLeft;
+  const isMyTurn =
+    !isRelay ||
+    (room.currentTurnSessionId === sessionId && myAttemptsLeft > 0);
+  const battleGuesses = session.guesses.filter(
+    (g) =>
+      g.fieldResults !== null &&
+      (isIntermission && roundResult
+        ? roundResult.questionIndex
+        : g.questionIndex === session.questionIndex)
+  );
+  const relayGuesses: RelayGuessRecord[] = room.relayGuesses ?? [];
+  const displayGuesses: Array<GuessRecord & { playerName?: string; sessionId?: string }> =
+    isRelay ? relayGuesses : battleGuesses;
+  const inputDisabled =
+    myAttemptsLeft <= 0 || !isMyTurn || isIntermission;
+  const turnPlayerName = room.currentTurnPlayer || '其他玩家';
 
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden">
-      <PlayerProgressBar
-        players={room.players}
-        mySessionId={sessionId}
-        mode={room.mode}
-        currentTurnPlayer={room.currentTurnPlayer}
-      />
-
-      <header className="shrink-0 z-40 bg-apple-bg/90 backdrop-blur-xl border-b border-gray-200/50">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <span className="text-sm font-semibold">{room.code}</span>
-          <h1 className="text-lg font-bold">{THEME_LABELS[session.theme]}</h1>
-          <button className="text-sm text-apple-red" onClick={handleQuit}>
+      <header className="shrink-0 z-40 bg-apple-bg/90 backdrop-blur-xl border-b border-gray-200/50 safe-top">
+        <div className="max-w-[1520px] mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
+          <span className="text-sm font-semibold text-apple-gray truncate">{room.code}</span>
+          <h1 className="text-base sm:text-lg font-bold tracking-wide shrink-0">
+            {THEME_LABELS[session.theme]}
+            {isBattle && (
+              <span className="block text-xs font-normal text-apple-gray text-center">
+                对战 · 第 {(room.currentQuestionIndex ?? 0) + 1} / {room.battleTotalQuestions ?? BATTLE_QUESTION_COUNT} 题
+              </span>
+            )}
+            {isRelay && (
+              <span className="block text-xs font-normal text-apple-gray text-center">
+                接龙 · 第 {room.relayRound ?? 1} 轮
+              </span>
+            )}
+          </h1>
+          <button type="button" className="text-sm text-apple-red shrink-0" onClick={handleQuit}>
             退出
           </button>
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 max-w-3xl mx-auto w-full px-4 py-3 flex flex-col overflow-hidden">
-        <div className="shrink-0 mb-2">
-          <HintCard hints={session.hints ?? [session.hint]} />
-          {toast && (
-            <div className="bg-apple-orange/10 text-apple-orange rounded-lg px-3 py-1.5 text-xs text-center mt-2">
-              {toast}
-            </div>
-          )}
-          {error && (
-            <div className="bg-apple-red/10 text-apple-red rounded-lg px-3 py-1.5 text-xs text-center mt-2">
-              {error}
-            </div>
-          )}
-        </div>
-
-        <div className="flex-1 min-h-0 overflow-y-auto space-y-2">
-          {currentGuesses.map((guess, i) => (
-            <GuessRow
-              key={guess.id}
-              guessName={guess.guessName}
-              imageUrl={guess.imageUrl}
-              fieldResults={guess.fieldResults!}
-              isCorrect={guess.isCorrect}
-              index={i}
-            />
-          ))}
-        </div>
-
-        <div className="shrink-0 glass-card p-3 flex gap-3 mt-2">
-          <GuessInput
-            theme={session.theme}
-            value={guessText}
-            placeholder={session.guessPlaceholder || '输入猜测...'}
-            onChange={setGuessText}
-            onSubmit={handleGuess}
-            disabled={inputDisabled}
-            loading={loading}
-            suggestionsPlacement="top"
+      <div className="flex-1 min-h-0 max-w-[1520px] mx-auto w-full px-3 sm:px-4 py-2 sm:py-3 grid grid-cols-1 lg:grid-cols-[200px_1fr_220px] gap-3 lg:gap-4 overflow-hidden">
+        <aside className="hidden lg:flex lg:flex-col min-h-0 shrink-0 overflow-hidden order-2 lg:order-1">
+          <PlayerProgressBar
+            players={room.players}
+            mySessionId={sessionId}
+            mode={room.mode}
+            currentTurnSessionId={room.currentTurnSessionId}
+            currentTurnPlayer={room.currentTurnPlayer}
           />
-          <button
-            className="btn-primary shrink-0 px-6"
-            onClick={() => handleGuess()}
-            disabled={loading || !guessText.trim() || inputDisabled}
-          >
-            猜测
-          </button>
-        </div>
-      </main>
+        </aside>
+
+        <main className="flex flex-col min-h-0 min-w-0 overflow-hidden order-1 lg:order-2">
+          <div className="lg:hidden shrink-0 mb-2 space-y-2">
+            <PlayerProgressBar
+              players={room.players}
+              mySessionId={sessionId}
+              mode={room.mode}
+              currentTurnSessionId={room.currentTurnSessionId}
+              currentTurnPlayer={room.currentTurnPlayer}
+            />
+            {isRelay && !isRelayIntermission && (
+              <RelayTurnCountdown
+                deadlineAt={room.turnDeadlineAt}
+                turnSeconds={room.relayTurnSeconds ?? 30}
+                currentTurnPlayer={room.currentTurnPlayer}
+                isMyTurn={isMyTurn}
+              />
+            )}
+          </div>
+
+          <div className="shrink-0 mb-2 space-y-2">
+            {isIntermission && roundResult && (
+              <BattleRoundBanner result={roundResult} mySessionId={sessionId} />
+            )}
+            {!isIntermission && (
+              <HintCard hints={isRelay && room.relayHints ? room.relayHints : session.hints} />
+            )}
+            {isBattle && !isIntermission && (
+              <p className="text-[11px] text-apple-gray text-center leading-relaxed">
+                对战：固定 {BATTLE_QUESTION_COUNT} 题，每题各 {session.maxAttempts ?? 10} 次机会；
+                先猜对得本题高分（最低 {FULL_CORRECT_MIN_SCORE} 分），平局按字段命中加分（每项 +{BATTLE_PARTIAL_POINTS_PER_HIT}）
+              </p>
+            )}
+            {isRelay && (
+              <p className="text-[11px] text-apple-gray text-center mt-2 leading-relaxed">
+                接龙计分：字段首次认领 +{RELAY_FIELD_POINTS}，已被认领字段再猜对不加分，
+                已认领字段答错 -{RELAY_WRONG_CLAIM_PENALTY}，完全猜对 +{RELAY_FULL_CORRECT_BONUS}，超时 -
+                {RELAY_TIMEOUT_PENALTY}
+              </p>
+            )}
+            {toast && (
+              <div className="bg-apple-orange/10 text-apple-orange rounded-lg px-3 py-1.5 text-xs text-center mt-2">
+                {toast}
+              </div>
+            )}
+            {error && (
+              <div className="bg-apple-red/10 text-apple-red rounded-lg px-3 py-1.5 text-xs text-center mt-2">
+                {error}
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-hidden relative">
+            <div className="absolute inset-0 overflow-y-auto overflow-x-hidden space-y-2 overscroll-contain [scrollbar-gutter:stable]">
+            {displayGuesses.length === 0 ? (
+              <div className="glass-card p-6 sm:p-8 text-center text-apple-gray">
+                <p className="font-medium">还没有猜测记录</p>
+                <p className="text-sm mt-1">
+                  {isRelay && !isMyTurn
+                    ? `等待 ${turnPlayerName} 作答`
+                    : session.guessPlaceholder || '输入猜测开始接龙'}
+                </p>
+              </div>
+            ) : (
+              displayGuesses.map((guess, i) => (
+                <GuessRow
+                  key={`${guess.sessionId ?? 'self'}-${guess.id}`}
+                  guessName={guess.guessName}
+                  imageUrl={guess.imageUrl}
+                  fieldResults={guess.fieldResults!}
+                  isCorrect={guess.isCorrect}
+                  index={i}
+                  playerName={guess.playerName}
+                  isActivePlayer={
+                    isRelay && guess.sessionId === room.currentTurnSessionId
+                  }
+                  scoreDelta={guess.scoreDelta}
+                  showRelayScoring={isRelay}
+                />
+              ))
+            )}
+            </div>
+          </div>
+
+          {isIntermission ? (
+            <div className="relative z-30 shrink-0 pt-2 bg-apple-bg/95 backdrop-blur-md border-t border-gray-200/50">
+            <BattleNextCountdown
+              deadlineAt={room.intermissionDeadlineAt}
+              seconds={room.battleIntermissionSeconds ?? 5}
+            />
+            </div>
+          ) : isRelay && !isMyTurn ? (
+            <div className="relative z-30 shrink-0 pt-2 bg-apple-bg/95 backdrop-blur-md border-t border-gray-200/50">
+            <div className="rounded-xl border border-blue-200/80 bg-blue-50/90 px-4 py-4 text-center shadow-md shadow-blue-100/60">
+              <p className="text-base font-semibold text-apple-blue">
+                {myAttemptsLeft <= 0
+                  ? '你的机会已用尽，等待对方作答'
+                  : `现在轮到 ${turnPlayerName} 作答`}
+              </p>
+              <p className="text-xs text-apple-gray mt-1">
+                {myAttemptsLeft <= 0
+                  ? '请查看上方猜测记录'
+                  : '请查看上方猜测记录，等待轮到你'}
+              </p>
+            </div>
+            </div>
+          ) : myAttemptsLeft > 0 ? (
+            <div className="relative z-30 shrink-0 pt-2 bg-apple-bg/95 backdrop-blur-md border-t border-gray-200/50">
+            <div className="glass-card p-3 flex gap-3 overflow-visible">
+              <GuessInput
+                theme={session.theme}
+                value={guessText}
+                placeholder={session.guessPlaceholder || '输入猜测...'}
+                onChange={setGuessText}
+                onSubmit={handleGuess}
+                disabled={inputDisabled}
+                loading={loading}
+                suggestionsPlacement="top"
+              />
+              <button
+                className="btn-primary shrink-0 px-6"
+                onClick={() => handleGuess()}
+                disabled={loading || !guessText.trim() || inputDisabled}
+              >
+                猜测
+              </button>
+            </div>
+            </div>
+          ) : null}
+        </main>
+
+        <aside className="hidden lg:flex lg:flex-col gap-3 shrink-0 order-3 overflow-hidden min-h-0">
+          {isRelay && !isRelayIntermission && (
+            <RelayTurnCountdown
+              deadlineAt={room.turnDeadlineAt}
+              turnSeconds={room.relayTurnSeconds ?? 30}
+              currentTurnPlayer={room.currentTurnPlayer}
+              isMyTurn={isMyTurn}
+            />
+          )}
+          <AttemptsBadge
+            attemptsLeft={myAttemptsLeft}
+            maxAttempts={session.maxAttempts ?? 10}
+          />
+          <div className="glass-card p-4 flex flex-col min-h-0 flex-1 overflow-hidden">
+            {isRelay ? (
+              <RelayCorrectHistory records={room.relayCorrectHistory ?? []} />
+            ) : (
+              <CorrectHistory answers={session.correctAnswers ?? []} />
+            )}
+          </div>
+        </aside>
+      </div>
+
+      <RelayOpponentExhaustedModal
+        open={relayNoticeOpen}
+        exhaustedPlayerName={relayNoticeName}
+        onClose={() => setRelayNoticeOpen(false)}
+      />
+
+      <GameEndRevealModal
+        open={showEndReveal}
+        answerName={room.revealedAnswer?.name ?? '—'}
+        answerImageUrl={room.revealedAnswer?.imageUrl}
+        finishReason={room.finishReason}
+        onContinue={handleContinueSettlement}
+      />
     </div>
   );
 }

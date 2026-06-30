@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getSession, getLeaderboard, SESSION_KEY } from '../api';
-import CharacterAvatar from '../components/CharacterAvatar';
+import AnswerRevealPanel from '../components/AnswerRevealPanel';
 import {
   GameMode,
   GameSession,
@@ -103,18 +103,14 @@ export default function ResultPage() {
           </p>
 
           {revealed && (
-            <div className="bg-apple-bg rounded-xl p-4 sm:p-5 mb-5 sm:mb-6">
-              <p className="text-xs sm:text-sm text-apple-gray mb-3">
-                {session.status === 'failed' ? '正确答案' : '本局最后一题答案'}
-              </p>
-              <div className="flex flex-col items-center gap-2">
-                <CharacterAvatar
-                  name={revealed.name}
-                  imageUrl={revealed.imageUrl}
-                  size="lg"
-                />
-                <p className="text-xl sm:text-2xl font-semibold text-apple-red">{revealed.name}</p>
-              </div>
+            <div className="mb-5 sm:mb-6">
+              <AnswerRevealPanel
+                name={revealed.name}
+                imageUrl={revealed.imageUrl}
+                subtitle={
+                  session.status === 'failed' ? '正确答案' : '本局最后一题答案'
+                }
+              />
             </div>
           )}
 

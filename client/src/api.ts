@@ -135,5 +135,13 @@ export function getDailyToday(theme: Theme) {
 
 export const SESSION_KEY = 'guess-who-session-id';
 export const ROOM_KEY = 'guess-who-room-code';
+export const PLAYER_NAME_KEY = 'guess-who-player-name';
+export const ROOM_INVITE_PARAM = 'code';
+
+export function buildLobbyInviteUrl(roomCode: string): string {
+  const url = new URL('/lobby', window.location.origin);
+  url.searchParams.set(ROOM_INVITE_PARAM, roomCode.trim().toUpperCase());
+  return url.toString();
+}
 
 export type { GameSession, RoomState, LeaderboardEntry, DailyLeaderboardEntry };

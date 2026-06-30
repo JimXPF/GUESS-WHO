@@ -100,6 +100,20 @@ export interface GuessRecord {
   scoreDelta?: number;
 }
 
+export interface RelayCorrectRecord {
+  guessName: string;
+  guessId: string;
+  imageUrl: string | null;
+  questionIndex: number;
+  sessionId: string;
+  playerName: string;
+}
+
+export interface RelayGuessRecord extends GuessRecord {
+  sessionId: string;
+  playerName: string;
+}
+
 export interface CorrectAnswerRecord {
   guessName: string;
   guessId: string;
@@ -114,11 +128,21 @@ export interface HintInfo {
   value: string | number | null;
 }
 
+export interface ProgressiveHintCheck {
+  field: string;
+  /** @deprecated use fieldLabel + targetValue/guessValue */
+  label: string;
+  fieldLabel: string;
+  targetValue: string;
+  guessValue: string;
+  hit: boolean;
+}
+
 export interface ProgressiveGuessEntry {
   guessName: string;
   guessId: string | null;
   imageUrl?: string | null;
-  hintChecks: Array<{ field: string; label: string; hit: boolean }>;
+  hintChecks: ProgressiveHintCheck[];
   allHintsHit: boolean;
   livesLost: boolean;
   isCorrect: boolean;
@@ -256,6 +280,33 @@ export interface RoomState {
   fieldClaims?: FieldClaim[];
   relayRound?: number;
   finishReason?: string;
+  relayGuesses?: RelayGuessRecord[];
+  relayCorrectHistory?: RelayCorrectRecord[];
+  turnDeadlineAt?: number | null;
+  relayTurnSeconds?: number;
+  battlePhase?: 'playing' | 'intermission';
+  battleResult?: BattleRoundResult | null;
+  intermissionDeadlineAt?: number | null;
+  battleIntermissionSeconds?: number;
+  relayPhase?: 'playing' | 'intermission';
+  relayRoundResult?: BattleRoundResult | null;
+  battleTotalQuestions?: number;
+  currentQuestionIndex?: number;
+  relaySharedQuestionAttempts?: number;
+  relayHints?: HintInfo[];
+  relayNotice?: RelayNotice | null;
+  revealedAnswer?: RevealedAnswerInfo;
+}
+
+export interface RelayNotice {
+  id: number;
+  targetSessionId: string;
+  exhaustedPlayerName: string;
+}
+
+export interface RevealedAnswerInfo {
+  name: string;
+  imageUrl: string | null;
 }
 
 export const GAME_MODE_LABELS: Record<GameMode, string> = {
@@ -391,15 +442,46 @@ export const REVERSE_SCORE_CORRECT_GUESS = 500;
 export const REVERSE_SCORE_AUTO_BASE = 600;
 export const REVERSE_SCORE_AUTO_REMAINING_BONUS = 50;
 
-export const RELAY_FIELD_POINTS = 100;
+export const RELAY_FIELD_POINTS = 60;
 export const RELAY_WRONG_CLAIM_PENALTY = 50;
 export const RELAY_FULL_CORRECT_BONUS = 300;
+export const RELAY_TURN_SECONDS = 30;
+export const RELAY_TIMEOUT_PENALTY = 50;
+
+export const BATTLE_QUESTION_COUNT = 10;
+export const BATTLE_INTERMISSION_SECONDS = 5;
+export const BATTLE_PARTIAL_POINTS_PER_HIT = 40;
+
+export interface BattlePartialScore {
+  sessionId: string;
+  playerName: string;
+  hitCount: number;
+  score: number;
+}
+
+export interface BattleRoundResult {
+  kind: 'winner' | 'draw';
+  questionIndex: number;
+  winnerSessionId: string | null;
+  winnerPlayerName: string | null;
+  answerName: string;
+  answerImageUrl: string | null;
+  winnerScore: number;
+  winnerAttempts: number;
+  partialScores: BattlePartialScore[];
+  roundLabel?: string;
+}
+
+/** 经典 / 对战完全猜对时的最低本题得分（须高于字段部分分累计） */
+export const FULL_CORRECT_MIN_SCORE = 300;
 
 export function scoreForQuestion(attemptsUsed: number): number {
-  if (attemptsUsed <= 1) return 500;
-  if (attemptsUsed === 2) return 420;
-  if (attemptsUsed === 3) return 340;
-  return Math.max(100, 340 - (attemptsUsed - 3) * 55);
+  let score: number;
+  if (attemptsUsed <= 1) score = 500;
+  else if (attemptsUsed === 2) score = 420;
+  else if (attemptsUsed === 3) score = 340;
+  else score = 340 - (attemptsUsed - 3) * 55;
+  return Math.max(FULL_CORRECT_MIN_SCORE, score);
 }
 
 export function formatElapsedUs(us: number): string {

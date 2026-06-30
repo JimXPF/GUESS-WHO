@@ -35,6 +35,22 @@ export default function GuessInput({
   const [activeIndex, setActiveIndex] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const prevLoadingRef = useRef(loading);
+
+  const focusInput = useCallback(() => {
+    if (disabled) return;
+    requestAnimationFrame(() => {
+      inputRef.current?.focus({ preventScroll: true });
+    });
+  }, [disabled]);
+
+  useEffect(() => {
+    const wasLoading = prevLoadingRef.current;
+    prevLoadingRef.current = loading;
+    if (wasLoading && !loading) {
+      focusInput();
+    }
+  }, [loading, focusInput]);
 
   const fetchSuggestions = useCallback(
     async (q: string) => {
@@ -77,7 +93,10 @@ export default function GuessInput({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!open || !suggestions.length) {
-      if (e.key === 'Enter' && !loading) onSubmit(value);
+      if (e.key === 'Enter' && !loading) {
+        onSubmit(value);
+        focusInput();
+      }
       return;
     }
     if (e.key === 'ArrowDown') {
@@ -95,7 +114,7 @@ export default function GuessInput({
   };
 
   return (
-    <div ref={wrapRef} className="relative flex-1 min-w-0">
+    <div ref={wrapRef} className="relative flex-1 min-w-0 z-40">
       <input
         ref={inputRef}
         className="input-field w-full text-base min-h-[48px]"
@@ -111,7 +130,7 @@ export default function GuessInput({
       />
       {open && suggestions.length > 0 && (
         <ul
-          className={`absolute z-50 left-0 right-0 py-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto ${
+          className={`absolute z-[200] left-0 right-0 py-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-52 overflow-y-auto ${
             suggestionsPlacement === 'top'
               ? 'bottom-full mb-1'
               : 'top-full mt-1'

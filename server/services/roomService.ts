@@ -1,10 +1,12 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 import {
   FieldClaim,
   GameMode,
   GameSession,
   QuestionSetup,
+  RELAY_TURN_SECONDS,
+  BATTLE_INTERMISSION_SECONDS,
+  BATTLE_QUESTION_COUNT,
   RoomPlayerState,
   RoomState,
   Theme,
@@ -13,10 +15,23 @@ import {
   applySessionFromSetup,
   createBattleSession,
   getGameSession,
+  getRelayCorrectHistory,
+  getRelayGuessesForRoom,
+  buildRelayHintsForRoom,
+  countRelayQuestionAttempts,
+  getSharedRoomAnswerId,
+  buildRoomRevealedAnswer,
+  buildRelayRoundResult,
   processRelayGuess,
+  processRelayTurnTimeout,
   processRoomGuess,
+  settleBattleRound,
+  settleBattleDrawRound,
+  isBattleQuestionExhausted,
+  isBattleQuestionWon,
 } from './gameService';
 import { generateQuestionQueue } from './dailyChallenge';
+import { advanceRelayTurn, ensureRelayTurnActive, type RelayNotice } from './relayTurn';
 
 const ROOM_CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const QUESTION_QUEUE_SIZE = 30;
@@ -36,6 +51,20 @@ export interface Room {
   relayRound: number;
   finishReason?: string;
   playerOrder: string[];
+  relayTurnStartedAt: number | null;
+  relayTurnEpoch: number;
+  relayTurnTimer: ReturnType<typeof setTimeout> | null;
+  battlePhase: 'playing' | 'intermission';
+  battleResult: import('../types').BattleRoundResult | null;
+  intermissionDeadlineAt: number | null;
+  battleIntermissionTimer: ReturnType<typeof setTimeout> | null;
+  relayPhase: 'playing' | 'intermission';
+  relayRoundResult: import('../types').BattleRoundResult | null;
+  relayIntermissionTimer: ReturnType<typeof setTimeout> | null;
+  relayIntermissionWinnerId: string | null;
+  relayNotice: RelayNotice | null;
+  relayNoticeSeq: number;
+  revealedAnswer: { name: string; imageUrl: string | null } | null;
 }
 
 interface RoomPlayerEntry {
@@ -55,6 +84,162 @@ function generateRoomCode(): string {
   }
   if (rooms.has(code)) return generateRoomCode();
   return code;
+}
+
+function clearBattleIntermissionTimer(room: Room) {
+  if (room.battleIntermissionTimer) {
+    clearTimeout(room.battleIntermissionTimer);
+    room.battleIntermissionTimer = null;
+  }
+}
+
+function clearRelayIntermissionTimer(room: Room) {
+  if (room.relayIntermissionTimer) {
+    clearTimeout(room.relayIntermissionTimer);
+    room.relayIntermissionTimer = null;
+  }
+}
+
+function advanceBattleRoomQuestion(room: Room): boolean {
+  const nextIndex = room.currentQuestionIndex + 1;
+  if (nextIndex >= BATTLE_QUESTION_COUNT) {
+    endRoom(room, '十道题已完成');
+    return false;
+  }
+
+  room.currentQuestionIndex = nextIndex;
+  const nextSetup = room.questionQueue[nextIndex];
+  for (const sid of room.playerOrder) {
+    applySessionFromSetup(sid, nextSetup, {
+      questionIndex: nextIndex,
+      resetAttempts: true,
+    });
+  }
+
+  room.battlePhase = 'playing';
+  room.battleResult = null;
+  room.intermissionDeadlineAt = null;
+  return true;
+}
+
+function advanceRelayRoomQuestion(room: Room, winnerSessionId: string): boolean {
+  const nextIndex = room.currentQuestionIndex + 1;
+  const nextSetup = room.questionQueue[nextIndex];
+  if (!nextSetup) {
+    endRoom(room, '题目已完成');
+    return false;
+  }
+
+  room.currentQuestionIndex = nextIndex;
+  room.relayFieldClaims = {};
+  room.relayRound++;
+  for (const sid of room.playerOrder) {
+    applySessionFromSetup(sid, nextSetup, { questionIndex: nextIndex });
+  }
+
+  room.relayPhase = 'playing';
+  room.relayRoundResult = null;
+  room.intermissionDeadlineAt = null;
+  room.relayIntermissionWinnerId = null;
+  room.relayNotice = advanceRelayTurn(room, winnerSessionId);
+  return true;
+}
+
+function scheduleRelayIntermission(io: Server, room: Room) {
+  clearRelayIntermissionTimer(room);
+  room.intermissionDeadlineAt = Date.now() + BATTLE_INTERMISSION_SECONDS * 1000;
+
+  room.relayIntermissionTimer = setTimeout(() => {
+    const still = rooms.get(room.code);
+    if (!still || still.relayPhase !== 'intermission') return;
+
+    const winnerId = still.relayIntermissionWinnerId;
+    if (!winnerId) return;
+
+    const advanced = advanceRelayRoomQuestion(still, winnerId);
+    if (!advanced && still.status === 'finished') {
+      io.to(still.code).emit('game:finished', roomToState(still));
+    } else {
+      ensureRelayTurnActive(still);
+      scheduleRelayTurnTimer(io, still, true);
+    }
+    broadcastRoom(io, still);
+  }, BATTLE_INTERMISSION_SECONDS * 1000);
+}
+
+function scheduleBattleIntermission(io: Server, room: Room) {
+  clearBattleIntermissionTimer(room);
+  room.intermissionDeadlineAt = Date.now() + BATTLE_INTERMISSION_SECONDS * 1000;
+
+  room.battleIntermissionTimer = setTimeout(() => {
+    const still = rooms.get(room.code);
+    if (!still || still.battlePhase !== 'intermission') return;
+
+    const advanced = advanceBattleRoomQuestion(still);
+    if (!advanced && still.status === 'finished') {
+      io.to(still.code).emit('game:finished', roomToState(still));
+    }
+    broadcastRoom(io, still);
+  }, BATTLE_INTERMISSION_SECONDS * 1000);
+}
+
+function clearRelayTurnTimer(room: Room) {
+  if (room.relayTurnTimer) {
+    clearTimeout(room.relayTurnTimer);
+    room.relayTurnTimer = null;
+  }
+}
+
+function scheduleRelayTurnTimer(io: Server, room: Room, resetStart = true) {
+  clearRelayTurnTimer(room);
+  if (room.mode !== 'relay-chain' || room.status !== 'playing') {
+    return;
+  }
+
+  ensureRelayTurnActive(room);
+  if (!room.relayTurnSessionId) {
+    return;
+  }
+
+  if (resetStart || !room.relayTurnStartedAt) {
+    room.relayTurnStartedAt = Date.now();
+  }
+
+  room.relayTurnEpoch = (room.relayTurnEpoch ?? 0) + 1;
+  const epoch = room.relayTurnEpoch;
+  const elapsed = Date.now() - (room.relayTurnStartedAt ?? Date.now());
+  const remaining = Math.max(0, RELAY_TURN_SECONDS * 1000 - elapsed);
+
+  room.relayTurnTimer = setTimeout(() => {
+    if (room.relayTurnEpoch !== epoch) return;
+    handleRelayTurnTimeout(io, room.code);
+  }, remaining);
+}
+
+function handleRelayTurnTimeout(io: Server, code: string) {
+  const room = rooms.get(code);
+  if (!room || room.status !== 'playing' || room.mode !== 'relay-chain') return;
+
+  const sessionId = room.relayTurnSessionId;
+  if (!sessionId) return;
+
+  const entry = room.players.get(sessionId);
+  const breakdown = processRelayTurnTimeout(sessionId, room);
+  if (entry && breakdown.length) {
+    entry.scoreBreakdown.push(...breakdown);
+  }
+
+  room.relayNotice = advanceRelayTurn(room, sessionId);
+  ensureRelayTurnActive(room);
+
+  const finished = finishRoomIfNeeded(room);
+  if (finished) {
+    clearRelayTurnTimer(room);
+    io.to(room.code).emit('game:finished', roomToState(room));
+  } else {
+    scheduleRelayTurnTimer(io, room, true);
+  }
+  broadcastRoom(io, room);
 }
 
 function roomToState(room: Room): RoomState {
@@ -78,6 +263,12 @@ function roomToState(room: Room): RoomState {
     ? room.players.get(room.relayTurnSessionId)
     : null;
 
+  const playerNames = new Map(
+    room.playerOrder.map((sid) => [sid, room.players.get(sid)!.playerName])
+  );
+
+  const isRelayPlaying = room.mode === 'relay-chain' && room.status === 'playing';
+
   return {
     code: room.code,
     mode: room.mode,
@@ -90,6 +281,51 @@ function roomToState(room: Room): RoomState {
     fieldClaims: Object.values(room.relayFieldClaims),
     relayRound: room.relayRound,
     finishReason: room.finishReason,
+    relayGuesses: isRelayPlaying
+      ? getRelayGuessesForRoom(
+          room.playerOrder,
+          playerNames,
+          room.theme,
+          room.currentQuestionIndex
+        )
+      : undefined,
+    relayCorrectHistory: isRelayPlaying
+      ? getRelayCorrectHistory(room.playerOrder, playerNames, room.theme)
+      : undefined,
+    turnDeadlineAt:
+      isRelayPlaying && room.relayTurnStartedAt
+        ? room.relayTurnStartedAt + RELAY_TURN_SECONDS * 1000
+        : null,
+    relayTurnSeconds: isRelayPlaying ? RELAY_TURN_SECONDS : undefined,
+    battlePhase: room.mode === 'battle' && room.status === 'playing' ? room.battlePhase : undefined,
+    battleResult:
+      room.mode === 'battle' && room.battlePhase === 'intermission' ? room.battleResult : null,
+    intermissionDeadlineAt:
+      room.status === 'playing' &&
+      ((room.mode === 'battle' && room.battlePhase === 'intermission') ||
+        (room.mode === 'relay-chain' && room.relayPhase === 'intermission'))
+        ? room.intermissionDeadlineAt
+        : null,
+    battleIntermissionSeconds:
+      room.status === 'playing' ? BATTLE_INTERMISSION_SECONDS : undefined,
+    battleTotalQuestions:
+      room.mode === 'battle' && room.status === 'playing' ? BATTLE_QUESTION_COUNT : undefined,
+    relayPhase:
+      room.mode === 'relay-chain' && room.status === 'playing' ? room.relayPhase : undefined,
+    relayRoundResult:
+      room.mode === 'relay-chain' && room.relayPhase === 'intermission'
+        ? room.relayRoundResult
+        : null,
+    currentQuestionIndex: room.status === 'playing' ? room.currentQuestionIndex : undefined,
+    relaySharedQuestionAttempts: isRelayPlaying
+      ? countRelayQuestionAttempts(room.playerOrder, room.currentQuestionIndex)
+      : undefined,
+    relayHints: isRelayPlaying
+      ? buildRelayHintsForRoom(room.playerOrder, room.theme, room.currentQuestionIndex)
+      : undefined,
+    relayNotice: isRelayPlaying ? room.relayNotice : null,
+    revealedAnswer:
+      room.status === 'finished' && room.revealedAnswer ? room.revealedAnswer : undefined,
   };
 }
 
@@ -99,25 +335,52 @@ function broadcastRoom(io: Server, room: Room) {
 
 function startRoomGame(room: Room) {
   room.status = 'playing';
+  const queueSize = room.mode === 'battle' ? BATTLE_QUESTION_COUNT : QUESTION_QUEUE_SIZE;
   room.questionQueue = generateQuestionQueue(
     room.theme,
-    QUESTION_QUEUE_SIZE,
+    queueSize,
     `room:${room.code}`
   );
   room.currentQuestionIndex = 0;
   room.relayRound = 1;
+  room.relayTurnStartedAt = null;
+  room.relayTurnEpoch = 0;
+  room.battlePhase = 'playing';
+  room.battleResult = null;
+  room.relayPhase = 'playing';
+  room.relayRoundResult = null;
+  room.relayIntermissionWinnerId = null;
+  room.intermissionDeadlineAt = null;
+  room.relayNotice = null;
+  room.relayNoticeSeq = 0;
+  room.revealedAnswer = null;
 
   const firstSessionId = room.playerOrder[0];
   room.relayTurnSessionId = firstSessionId;
 
   for (const sessionId of room.playerOrder) {
-    applySessionFromSetup(sessionId, room.questionQueue[0], { resetQuestionIndex: true });
+    applySessionFromSetup(sessionId, room.questionQueue[0], {
+      resetQuestionIndex: true,
+      resetAttempts: room.mode === 'battle',
+    });
+  }
+
+  if (room.mode === 'relay-chain') {
+    ensureRelayTurnActive(room);
   }
 }
 
 function endRoom(room: Room, reason: string) {
   room.status = 'finished';
   room.finishReason = reason;
+  room.relayNotice = null;
+  const answerId = getSharedRoomAnswerId(room.playerOrder);
+  room.revealedAnswer = answerId
+    ? buildRoomRevealedAnswer(room.theme, answerId)
+    : null;
+  clearRelayTurnTimer(room);
+  clearBattleIntermissionTimer(room);
+  clearRelayIntermissionTimer(room);
 }
 
 export function getRoom(code: string): Room | undefined {
@@ -169,12 +432,65 @@ export function registerRoomHandlers(io: Server) {
           relayFieldClaims: {},
           relayRound: 1,
           playerOrder: [sessionId],
+          relayTurnStartedAt: null,
+          relayTurnEpoch: 0,
+          relayTurnTimer: null,
+          battlePhase: 'playing',
+          battleResult: null,
+          intermissionDeadlineAt: null,
+          battleIntermissionTimer: null,
+          relayPhase: 'playing',
+          relayRoundResult: null,
+          relayIntermissionTimer: null,
+          relayIntermissionWinnerId: null,
+          relayNotice: null,
+          relayNoticeSeq: 0,
+          revealedAnswer: null,
         };
 
         rooms.set(code, room);
         socketToRoom.set(socket.id, code);
         socket.join(code);
 
+        ack?.({ room: roomToState(room), sessionId, session });
+        broadcastRoom(io, room);
+      } catch (e) {
+        ack?.({ error: (e as Error).message });
+      }
+    });
+
+    socket.on('room:rejoin', (payload, ack) => {
+      try {
+        const { roomCode, sessionId } = payload as {
+          roomCode?: string;
+          sessionId?: string;
+        };
+        if (!roomCode?.trim() || !sessionId?.trim()) {
+          ack?.({ error: '缺少参数' });
+          return;
+        }
+
+        const code = roomCode.trim().toUpperCase();
+        const room = rooms.get(code);
+        if (!room) {
+          ack?.({ error: '房间不存在' });
+          return;
+        }
+
+        const entry = room.players.get(sessionId);
+        if (!entry) {
+          ack?.({ error: '未找到玩家' });
+          return;
+        }
+
+        entry.socketId = socket.id;
+        socketToRoom.set(socket.id, code);
+        socket.join(code);
+
+        const session = getGameSession(sessionId);
+        if (room.mode === 'relay-chain' && room.status === 'playing') {
+          scheduleRelayTurnTimer(io, room, false);
+        }
         ack?.({ room: roomToState(room), sessionId, session });
         broadcastRoom(io, room);
       } catch (e) {
@@ -229,6 +545,9 @@ export function registerRoomHandlers(io: Server) {
 
         if (room.players.size >= room.maxPlayers) {
           startRoomGame(room);
+          if (room.mode === 'relay-chain') {
+            scheduleRelayTurnTimer(io, room, true);
+          }
           io.to(code).emit('game:start', roomToState(room));
         }
 
@@ -260,6 +579,10 @@ export function registerRoomHandlers(io: Server) {
 
         let result;
         if (room.mode === 'relay-chain') {
+          if (room.relayPhase === 'intermission') {
+            ack?.({ error: '本题已结束，请等待下一题' });
+            return;
+          }
           if (room.relayTurnSessionId !== sessionId) {
             ack?.({ error: '还没轮到你作答' });
             return;
@@ -275,23 +598,50 @@ export function registerRoomHandlers(io: Server) {
             entry.scoreBreakdown.push(...result.scoreBreakdown);
           }
           if (result.fullCorrect) {
-            room.currentQuestionIndex++;
-            room.relayFieldClaims = {};
-            room.relayRound++;
-            room.relayTurnSessionId = sessionId;
-            const nextSetup = room.questionQueue[room.currentQuestionIndex];
-            if (nextSetup) {
-              for (const sid of room.playerOrder) {
-                applySessionFromSetup(sid, nextSetup, { questionIndex: room.currentQuestionIndex });
-              }
-            }
+            room.relayPhase = 'intermission';
+            room.relayIntermissionWinnerId = sessionId;
+            room.relayRoundResult = buildRelayRoundResult(
+              room,
+              sessionId,
+              result.scoreBreakdown
+            );
+            clearRelayTurnTimer(room);
+            scheduleRelayIntermission(io, room);
+          } else {
+            room.relayNotice = advanceRelayTurn(room, sessionId);
+            ensureRelayTurnActive(room);
+            scheduleRelayTurnTimer(io, room, true);
           }
         } else {
-          result = processRoomGuess(sessionId, guessText, characterId, room);
+          if (room.battlePhase === 'intermission') {
+            ack?.({ error: '本题已结束，请等待下一题' });
+            return;
+          }
+          result = processRoomGuess(sessionId, guessText, characterId, {
+            questionQueue: room.questionQueue,
+            currentQuestionIndex: room.currentQuestionIndex,
+            playerOrder: room.playerOrder,
+            mode: 'battle',
+          });
+          if (result.session?.lastGuessCorrect) {
+            room.battlePhase = 'intermission';
+            room.battleResult = settleBattleRound(room, sessionId, result);
+            scheduleBattleIntermission(io, room);
+          } else if (
+            !isBattleQuestionWon(room) &&
+            isBattleQuestionExhausted(room)
+          ) {
+            room.battlePhase = 'intermission';
+            room.battleResult = settleBattleDrawRound(room);
+            scheduleBattleIntermission(io, room);
+          }
         }
 
         const finished = finishRoomIfNeeded(room);
         if (finished) {
+          clearRelayTurnTimer(room);
+          clearBattleIntermissionTimer(room);
+          clearRelayIntermissionTimer(room);
           io.to(room.code).emit('game:finished', roomToState(room));
         }
         broadcastRoom(io, room);
@@ -357,6 +707,9 @@ function handleDisconnect(socket: Socket, io: Server, sessionId?: string) {
   socket.leave(code);
 
   if (room.status === 'playing' && leftSessionId) {
+    clearRelayTurnTimer(room);
+    clearBattleIntermissionTimer(room);
+    clearRelayIntermissionTimer(room);
     endRoom(room, `${room.players.get(leftSessionId)?.playerName ?? '玩家'} 已退出`);
     io.to(code).emit('game:finished', roomToState(room));
   } else if (room.status === 'waiting' && leftSessionId === room.hostSessionId) {
@@ -370,29 +723,17 @@ function handleDisconnect(socket: Socket, io: Server, sessionId?: string) {
 export function finishRoomIfNeeded(room: Room): boolean {
   if (room.status !== 'playing') return false;
 
-  const allOut = room.playerOrder.every((sid) => {
-    const s = getGameSession(sid);
-    return !s || s.attemptsLeft <= 0 || s.status === 'game_over';
-  });
-
-  if (allOut) {
-    endRoom(room, '所有玩家机会已用尽');
-    return true;
-  }
-
-  if (
-    room.mode === 'battle' &&
-    room.currentQuestionIndex >= room.questionQueue.length - 1
-  ) {
-    const allDone = room.playerOrder.every((sid) => {
+  if (room.mode === 'relay-chain') {
+    const allOut = room.playerOrder.every((sid) => {
       const s = getGameSession(sid);
-      return !s || s.attemptsLeft <= 0;
+      return !s || s.attemptsLeft <= 0 || s.status === 'game_over';
     });
-    if (allDone) {
-      endRoom(room, '题目已完成');
+    if (allOut) {
+      endRoom(room, '所有玩家机会已用尽');
       return true;
     }
   }
+
   return false;
 }
 

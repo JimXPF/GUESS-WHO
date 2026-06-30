@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { ApiError, getDailyToday, startGame, SESSION_KEY } from '../api';
+import { ApiError, getDailyToday, PLAYER_NAME_KEY, ROOM_INVITE_PARAM, startGame, SESSION_KEY } from '../api';
 import {
   GAME_MODE_LABELS,
   GameMode,
@@ -33,7 +33,11 @@ function optionClass(selected: boolean, compact = false) {
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [name, setName] = useState('');
+  const [searchParams] = useSearchParams();
+  const inviteCode = (searchParams.get(ROOM_INVITE_PARAM) || '').trim().toUpperCase();
+  const [name, setName] = useState(
+    () => localStorage.getItem(PLAYER_NAME_KEY) || ''
+  );
   const [gameMode, setGameMode] = useState<GameMode>('classic-six');
   const [theme, setTheme] = useState<Theme>('csgo');
   const [loading, setLoading] = useState(false);
@@ -43,6 +47,13 @@ export default function HomePage() {
 
   const isMulti = MULTI_MODES.includes(gameMode);
   const isDaily = gameMode === 'daily-one';
+
+  useEffect(() => {
+    const savedName = localStorage.getItem(PLAYER_NAME_KEY);
+    if (inviteCode && savedName?.trim()) {
+      navigate(`/lobby?${ROOM_INVITE_PARAM}=${inviteCode}`);
+    }
+  }, [inviteCode, navigate]);
 
   useEffect(() => {
     if (!isDaily) {
@@ -78,14 +89,21 @@ export default function HomePage() {
       setError('请输入昵称');
       return;
     }
+    const trimmedName = name.trim();
+    localStorage.setItem(PLAYER_NAME_KEY, trimmedName);
+
     setLoading(true);
     setError('');
     try {
+      if (inviteCode) {
+        navigate(`/lobby?${ROOM_INVITE_PARAM}=${inviteCode}`);
+        return;
+      }
+
       if (isMulti) {
-        localStorage.setItem('guess-who-player-name', name.trim());
         localStorage.setItem('guess-who-lobby-theme', theme);
         localStorage.setItem('guess-who-lobby-mode', gameMode);
-        navigate('/lobby');
+        navigate(inviteCode ? `/lobby?${ROOM_INVITE_PARAM}=${inviteCode}` : '/lobby');
         return;
       }
 
@@ -102,7 +120,7 @@ export default function HomePage() {
         }
       }
 
-      const session = await startGame(name.trim(), theme, gameMode);
+      const session = await startGame(trimmedName, theme, gameMode);
       localStorage.setItem(SESSION_KEY, session.sessionId);
       navigate('/game');
     } catch (e) {
@@ -118,7 +136,9 @@ export default function HomePage() {
 
   const startLabel = loading
     ? '准备中...'
-    : isMulti
+    : inviteCode
+      ? `加入房间 ${inviteCode}`
+      : isMulti
       ? '进入房间'
       : isDaily && dailyCompleted
         ? '查看今日成绩'
@@ -142,6 +162,9 @@ export default function HomePage() {
             Guess Who
           </motion.h1>
           <p className="text-apple-gray text-base sm:text-lg">猜人物 · 比线索 · 争高分</p>
+          {inviteCode && (
+            <p className="text-sm text-apple-blue mt-2">收到房间邀请 · {inviteCode}</p>
+          )}
         </div>
 
         <div className="glass-card p-5 sm:p-8 space-y-5 sm:space-y-6">

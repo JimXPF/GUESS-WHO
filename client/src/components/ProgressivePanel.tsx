@@ -1,21 +1,41 @@
-import type { GameSession } from '../types';
+import type { GameSession, ProgressiveHintCheck } from '../types';
 import CharacterAvatar from './CharacterAvatar';
 
 interface Props {
   session: GameSession;
 }
 
-function HintTag({ hit, label }: { hit: boolean; label: string }) {
+function formatCumulativeHints(
+  hints: GameSession['hints'],
+  throughIndex: number
+): string {
+  return hints
+    .slice(0, throughIndex + 1)
+    .map((h) => `${h.label}：${h.value ?? '—'}`)
+    .join(' + ');
+}
+
+function HintTag({ check }: { check: ProgressiveHintCheck }) {
+  const fieldLabel = check.fieldLabel || check.field;
+  const displayValue = check.hit
+    ? check.targetValue || check.label
+    : check.guessValue || check.label;
+
   return (
     <span
       className={`inline-flex items-center gap-0.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-        hit
+        check.hit
           ? 'bg-apple-green/15 text-apple-green ring-1 ring-apple-green/25'
           : 'bg-apple-red/10 text-apple-red ring-1 ring-apple-red/20'
       }`}
+      title={
+        check.hit
+          ? `条件：${fieldLabel}：${check.targetValue || check.label}`
+          : `你的猜测 ${fieldLabel}：${displayValue}（正确答案：${check.targetValue || '—'}）`
+      }
     >
-      <span aria-hidden>{hit ? '√' : '×'}</span>
-      {label}
+      <span aria-hidden>{check.hit ? '√' : '×'}</span>
+      {fieldLabel}：{displayValue}
     </span>
   );
 }
@@ -39,12 +59,13 @@ function GuessRowContent({
       <span className="font-medium shrink-0">{guess.guessName}</span>
       <div className="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
         {Array.isArray(guess.hintChecks) &&
-          guess.hintChecks.map((c) => (
-            <HintTag key={c.field} hit={c.hit} label={c.label} />
-          ))}
+          guess.hintChecks.map((c) => <HintTag key={c.field} check={c} />)}
       </div>
       {guess.livesLost && (
         <span className="text-xs text-apple-red shrink-0">(-1命)</span>
+      )}
+      {guess.allHintsHit && !guess.isCorrect && (
+        <span className="text-xs text-apple-orange font-medium shrink-0">没猜对名字</span>
       )}
       {guess.isCorrect && (
         <span className="text-xs text-apple-green font-semibold shrink-0">答对啦!!</span>
@@ -55,17 +76,19 @@ function GuessRowContent({
 
 export default function ProgressivePanel({ session }: Props) {
   const rounds = Array.isArray(session.progressiveRounds) ? session.progressiveRounds : [];
+  const hints = session.hints ?? [];
 
   return (
     <div className="space-y-2">
       {rounds.map((round) => {
         const guesses = Array.isArray(round.guesses) ? round.guesses : [];
+        const conditionSummary = formatCumulativeHints(hints, round.hintIndex);
+
         return (
           <div key={round.hintIndex} className="glass-card overflow-hidden">
-            <div className="px-4 py-3 min-h-[48px] flex items-center bg-apple-blue/5 border-b border-apple-blue/10 text-sm">
-              <span className="text-apple-gray mr-2 shrink-0">提示{round.hintIndex + 1}</span>
-              <span className="font-medium shrink-0">{round.hint.label}：</span>
-              <span className="truncate">{round.hint.value}</span>
+            <div className="px-4 py-3 min-h-[48px] flex flex-col justify-center bg-apple-blue/5 border-b border-apple-blue/10 text-sm gap-0.5">
+              <span className="text-apple-gray text-xs">提示 {round.hintIndex + 1}</span>
+              <p className="font-medium leading-snug break-words">{conditionSummary}</p>
             </div>
 
             {guesses.length === 0 ? (

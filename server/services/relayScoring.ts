@@ -54,21 +54,25 @@ export function scoreRelayGuess(
   }
 
   for (const fr of fieldResults) {
-    if (fr.result !== 'hit') continue;
-    const existing = newClaims[fr.field];
-    if (!existing) {
-      scoreDelta += RELAY_FIELD_POINTS;
-      const claim: FieldClaim = {
-        sessionId,
-        playerName,
-        round: roundNumber,
-        points: RELAY_FIELD_POINTS,
-        field: fr.field,
-        fieldLabel: fr.label || getFieldLabel(theme, fr.field),
-      };
-      newClaims[fr.field] = claim;
-      breakdown.push(claim);
-    } else if (existing.sessionId !== sessionId) {
+    const fieldLabel = fr.label || getFieldLabel(theme, fr.field);
+    const wasClaimed = Boolean(claims[fr.field]);
+
+    if (fr.result === 'hit') {
+      if (!claims[fr.field]) {
+        scoreDelta += RELAY_FIELD_POINTS;
+        const claim: FieldClaim = {
+          sessionId,
+          playerName,
+          round: roundNumber,
+          points: RELAY_FIELD_POINTS,
+          field: fr.field,
+          fieldLabel,
+        };
+        newClaims[fr.field] = claim;
+        breakdown.push(claim);
+      }
+      // 已被他人认领的字段再次猜对：不加分也不扣分
+    } else if (wasClaimed) {
       scoreDelta -= RELAY_WRONG_CLAIM_PENALTY;
       breakdown.push({
         sessionId,
@@ -76,7 +80,7 @@ export function scoreRelayGuess(
         round: roundNumber,
         points: -RELAY_WRONG_CLAIM_PENALTY,
         field: fr.field,
-        fieldLabel: fr.label || getFieldLabel(theme, fr.field),
+        fieldLabel: `${fieldLabel}（已认领·答错）`,
       });
     }
   }
