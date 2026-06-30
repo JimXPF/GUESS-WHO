@@ -110,6 +110,34 @@ function isCharSubsequence(key: string, query: string): boolean {
   return false;
 }
 
+const NAME_SEGMENT_SPLIT = /[·・\-—－–]/;
+
+function scoreNameKey(key: string, normalized: string): number {
+  if (!key) return -1;
+  if (key === normalized) return 100;
+  if (key.startsWith(normalized)) return 90 - (key.length - normalized.length);
+  if (isCharSubsequence(key, normalized)) {
+    return 85 - (key.length - normalized.length) * 2;
+  }
+  if (key.includes(normalized)) return 70 - (key.length - normalized.length);
+  if (normalized.includes(key) && key.length >= 2) return 45;
+  return -1;
+}
+
+/** Score a display name and its ·/- segments (suffix queries like 阿伦 → 贾勒特·阿伦). */
+function scoreNameMatch(raw: string, normalized: string): number {
+  let best = scoreNameKey(normalizeText(raw), normalized);
+  for (const seg of raw.split(NAME_SEGMENT_SPLIT)) {
+    const segScore = scoreNameKey(normalizeText(seg), normalized);
+    if (segScore >= 0) {
+      // Exact segment match ranks above full-name subsequence but below full-name exact match.
+      const boosted = segScore === 100 ? 96 : segScore;
+      if (boosted > best) best = boosted;
+    }
+  }
+  return best;
+}
+
 export function getDisplayName(entry: CharacterEntry, theme: Theme): string {
   if (theme === 'csgo') {
     return String(entry.name || entry.id);
@@ -142,8 +170,8 @@ export function getSearchSublabel(entry: CharacterEntry, theme: Theme): string |
       const teamDisplay = getNBATeamDisplay(team);
       const division = getDivisionHint(entry.team);
       if (division) {
-        const divisionShort = division.replace(/赛区球员$/, '');
-        return `${divisionShort}-${teamDisplay}`;
+        const divisionLabel = division.replace(/球员$/, '');
+        return `${divisionLabel}-${teamDisplay}`;
       }
       return teamDisplay;
     }
@@ -172,40 +200,36 @@ export function searchCharacters(
   const scored: Array<{ id: string; label: string; sublabel?: string; score: number }> = [];
 
   for (const entry of bank) {
-    const keys: Array<{ key: string; label: string }> = [];
+    const keys: Array<{ key: string; label: string; raw?: string }> = [];
 
     if (theme === 'csgo') {
       const displayLabel = String(entry.name || entry.id);
       keys.push({ key: normalizeText(entry.id), label: displayLabel });
       if (entry.name && normalizeText(entry.name) !== normalizeText(entry.id)) {
-        keys.push({ key: normalizeText(entry.name), label: displayLabel });
+        keys.push({ key: normalizeText(entry.name), label: displayLabel, raw: String(entry.name) });
       }
       for (const a of entry.aliases || []) {
-        keys.push({ key: normalizeText(a), label: displayLabel });
+        keys.push({ key: normalizeText(a), label: displayLabel, raw: String(a) });
       }
     } else {
-      keys.push({ key: normalizeText(entry.name), label: entry.name });
+      keys.push({ key: normalizeText(entry.name), label: entry.name, raw: entry.name });
       if (entry.englishName) {
-        keys.push({ key: normalizeText(entry.englishName), label: entry.name });
+        keys.push({
+          key: normalizeText(entry.englishName),
+          label: entry.name,
+          raw: String(entry.englishName),
+        });
       }
       for (const a of entry.aliases || []) {
-        keys.push({ key: normalizeText(a), label: entry.name });
+        keys.push({ key: normalizeText(a), label: entry.name, raw: String(a) });
       }
       // 仅匹配名字，不再匹配 anime / team 等字段，避免输入“咒术”“湖人”等泄露大量角色
     }
 
     const sublabel = getSearchSublabel(entry, theme);
 
-    for (const { key, label } of keys) {
-      if (!key) continue;
-      let score = -1;
-      if (key === normalized) score = 100;
-      else if (key.startsWith(normalized)) score = 90 - (key.length - normalized.length);
-      else if (isCharSubsequence(key, normalized)) {
-        // 逐字顺序包含输入字符（中文逐字分词友好）
-        score = 85 - (key.length - normalized.length) * 2;
-      } else if (key.includes(normalized)) score = 70 - (key.length - normalized.length);
-      else if (normalized.includes(key) && key.length >= 2) score = 45;
+    for (const { key, label, raw } of keys) {
+      const score = raw ? scoreNameMatch(raw, normalized) : scoreNameKey(key, normalized);
 
       if (score >= 0) {
         scored.push({
@@ -266,7 +290,8 @@ export function findCharacterById(theme: Theme, id: string): CharacterEntry | nu
 
 export function pickRandomCharacter(
   theme: Theme,
-  excludeIds: string[] = []
+  excludeIds: string[] = [],
+  rng?: { next(): number }
 ): CharacterEntry {
   let bank = getBank(theme).filter((c) => !excludeIds.includes(c.id));
   if (theme === 'football') {
@@ -278,7 +303,8 @@ export function pickRandomCharacter(
   if (bank.length === 0) {
     throw new Error('No characters available');
   }
-  return bank[Math.floor(Math.random() * bank.length)];
+  const r = rng?.next() ?? Math.random();
+  return bank[Math.floor(r * bank.length)];
 }
 
 export function getHintFields(theme: Theme, activeFields?: string[]): string[] {

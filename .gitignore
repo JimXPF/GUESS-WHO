@@ -1,4 +1,5 @@
 node_modules/
+client/node_modules/
 dist/
 client/dist/
 *.db
@@ -11,3 +12,6 @@ client/dist/
 .coze
 AGENTS.md
 /coze-*.sh
+server/data/*-audit.json
+scripts/cache/
+client/tsconfig.tsbuildinfo

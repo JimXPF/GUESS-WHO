@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-26T08:28:10.523Z",
+  "updatedAt": "2026-06-30T05:02:48.170Z",
   "players": [
     {
       "id": "910",
@@ -17,7 +17,13 @@
       "age": 23,
       "birthDate": "2002-07-05",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "sniperStat": 93,
+      "breakthroughStat": 64,
+      "tradeStat": 26,
+      "clutchStat": 52,
+      "utilityStat": 62,
+      "firepowerStat": 78,
+      "gameBreakerStat": 17
     },
     {
       "id": "afro",
@@ -34,14 +40,22 @@
       "age": 27,
       "birthDate": "1999-06-11",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 94
+      "sniperStat": 94,
+      "breakthroughStat": 74,
+      "tradeStat": 25,
+      "clutchStat": 75,
+      "utilityStat": 65,
+      "firepowerStat": 74,
+      "gameBreakerStat": 7
     },
     {
       "id": "aleksib",
       "name": "Aleksib",
       "aliases": [
         "aleksib",
-        "Aleksib"
+        "Aleksib",
+        "小李子",
+        "李神"
       ],
       "team": "Natus Vincere",
       "nationality": "芬兰",
@@ -52,7 +66,13 @@
       "age": 29,
       "birthDate": "1997-03-30",
       "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 11,
+      "tradeStat": 41,
+      "clutchStat": 42,
+      "utilityStat": 90,
+      "firepowerStat": 3,
+      "gameBreakerStat": 80
     },
     {
       "id": "alex",
@@ -69,7 +89,13 @@
       "age": 44,
       "birthDate": "1982-02-28",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 39,
+      "tradeStat": 57,
+      "clutchStat": 37,
+      "utilityStat": 77,
+      "firepowerStat": 57,
+      "gameBreakerStat": 65
     },
     {
       "id": "alex666",
@@ -86,14 +112,23 @@
       "age": 24,
       "birthDate": "2001-08-03",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 26,
+      "tradeStat": 43,
+      "clutchStat": 58,
+      "utilityStat": 61,
+      "firepowerStat": 27,
+      "gameBreakerStat": 44
     },
     {
       "id": "apex",
       "name": "apEX",
       "aliases": [
         "apex",
-        "apEX"
+        "apEX",
+        "豆豆",
+        "憨豆",
+        "法国队长"
       ],
       "team": "Vitality",
       "nationality": "法国",
@@ -105,14 +140,21 @@
       "age": 33,
       "birthDate": "1993-02-22",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 62,
+      "tradeStat": 18,
+      "clutchStat": 30,
+      "utilityStat": 95,
+      "firepowerStat": 43,
+      "gameBreakerStat": 42
     },
     {
       "id": "art",
       "name": "arT",
       "aliases": [
         "art",
-        "arT"
+        "arT",
+        "艺术哥"
       ],
       "team": "Legacy",
       "nationality": "巴西",
@@ -123,7 +165,13 @@
       "age": 30,
       "birthDate": "1996-03-27",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 3
+      "sniperStat": 3,
+      "breakthroughStat": 76,
+      "tradeStat": 21,
+      "clutchStat": 19,
+      "utilityStat": 76,
+      "firepowerStat": 32,
+      "gameBreakerStat": 73
     },
     {
       "id": "aw",
@@ -141,7 +189,13 @@
       "age": 20,
       "birthDate": "2006-01-11",
       "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 31,
+      "tradeStat": 67,
+      "clutchStat": 56,
+      "utilityStat": 69,
+      "firepowerStat": 48,
+      "gameBreakerStat": 34
     },
     {
       "id": "azuwu",
@@ -159,13 +213,20 @@
       "age": 22,
       "birthDate": "2003-11-05",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 72,
+      "tradeStat": 32,
+      "clutchStat": 27,
+      "utilityStat": 45,
+      "firepowerStat": 41,
+      "gameBreakerStat": 75
     },
     {
       "id": "b1t",
       "name": "b1t",
       "aliases": [
-        "b1t"
+        "b1t",
+        "大B哥"
       ],
       "team": "Natus Vincere",
       "nationality": "乌克兰",
@@ -177,7 +238,13 @@
       "age": 23,
       "birthDate": "2003-01-05",
       "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 44,
+      "tradeStat": 75,
+      "clutchStat": 30,
+      "utilityStat": 52,
+      "firepowerStat": 80,
+      "gameBreakerStat": 42
     },
     {
       "id": "biguzera",
@@ -194,14 +261,21 @@
       "age": 29,
       "birthDate": "1997-02-18",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
+      "sniperStat": 1,
+      "breakthroughStat": 45,
+      "tradeStat": 26,
+      "clutchStat": 69,
+      "utilityStat": 84,
+      "firepowerStat": 31,
+      "gameBreakerStat": 58
     },
     {
       "id": "blamef",
       "name": "blameF",
       "aliases": [
         "blamef",
-        "blameF"
+        "blameF",
+        "大壮"
       ],
       "team": "BIG",
       "nationality": "丹麦",
@@ -213,14 +287,21 @@
       "age": 29,
       "birthDate": "1997-06-10",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 63,
+      "tradeStat": 54,
+      "clutchStat": 76,
+      "utilityStat": 64,
+      "firepowerStat": 90,
+      "gameBreakerStat": 8
     },
     {
       "id": "blitz",
       "name": "bLitz",
       "aliases": [
         "blitz",
-        "bLitz"
+        "bLitz",
+        "布里茨"
       ],
       "team": "The MongolZ",
       "nationality": "蒙古",
@@ -231,14 +312,22 @@
       "age": 24,
       "birthDate": "2001-06-26",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
+      "sniperStat": 2,
+      "breakthroughStat": 67,
+      "tradeStat": 37,
+      "clutchStat": 41,
+      "utilityStat": 95,
+      "firepowerStat": 53,
+      "gameBreakerStat": 32
     },
     {
       "id": "boombl4",
       "name": "Boombl4",
       "aliases": [
         "boombl4",
-        "Boombl4"
+        "Boombl4",
+        "胖球",
+        "瘦棍"
       ],
       "team": "BB",
       "nationality": "俄罗斯",
@@ -249,7 +338,13 @@
       "age": 27,
       "birthDate": "1998-12-20",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 38,
+      "tradeStat": 26,
+      "clutchStat": 45,
+      "utilityStat": 72,
+      "firepowerStat": 38,
+      "gameBreakerStat": 76
     },
     {
       "id": "brnz4n",
@@ -266,13 +361,22 @@
       "age": 22,
       "birthDate": "2003-08-26",
       "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 36,
+      "tradeStat": 56,
+      "clutchStat": 41,
+      "utilityStat": 37,
+      "firepowerStat": 12,
+      "gameBreakerStat": 81
     },
     {
       "id": "broky",
       "name": "broky",
       "aliases": [
-        "broky"
+        "broky",
+        "西兰花",
+        "箱子",
+        "箱神"
       ],
       "team": "FaZe",
       "nationality": "拉脱维亚",
@@ -284,14 +388,21 @@
       "age": 25,
       "birthDate": "2001-02-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "sniperStat": 93,
+      "breakthroughStat": 42,
+      "tradeStat": 61,
+      "clutchStat": 89,
+      "utilityStat": 66,
+      "firepowerStat": 49,
+      "gameBreakerStat": 57
     },
     {
       "id": "bymas",
       "name": "Bymas",
       "aliases": [
         "bymas",
-        "Bymas"
+        "Bymas",
+        "白马寺"
       ],
       "team": "Monte",
       "nationality": "立陶宛",
@@ -302,14 +413,21 @@
       "age": 22,
       "birthDate": "2003-08-12",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 21,
+      "tradeStat": 48,
+      "clutchStat": 36,
+      "utilityStat": 33,
+      "firepowerStat": 19,
+      "gameBreakerStat": 16
     },
     {
       "id": "c4llm3su3",
       "name": "C4LLM3SU3",
       "aliases": [
         "c4llm3su3",
-        "C4LLM3SU3"
+        "C4LLM3SU3",
+        "苏神"
       ],
       "team": "Lynn Vision",
       "nationality": "中国",
@@ -320,7 +438,13 @@
       "age": 22,
       "birthDate": "2004-03-09",
       "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 26,
+      "tradeStat": 40,
+      "clutchStat": 77,
+      "utilityStat": 36,
+      "firepowerStat": 33,
+      "gameBreakerStat": 38
     },
     {
       "id": "cmtry",
@@ -337,7 +461,13 @@
       "age": 18,
       "birthDate": "2007-09-27",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
+      "sniperStat": 91,
+      "breakthroughStat": 46,
+      "tradeStat": 48,
+      "clutchStat": 47,
+      "utilityStat": 68,
+      "firepowerStat": 28,
+      "gameBreakerStat": 24
     },
     {
       "id": "cobrazera",
@@ -354,7 +484,13 @@
       "age": 20,
       "birthDate": "2005-08-03",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 6
+      "sniperStat": 7,
+      "breakthroughStat": 50,
+      "tradeStat": 39,
+      "clutchStat": 52,
+      "utilityStat": 34,
+      "firepowerStat": 55,
+      "gameBreakerStat": 35
     },
     {
       "id": "d1ledez",
@@ -372,7 +508,13 @@
       "age": 22,
       "birthDate": "2003-07-03",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 30,
+      "tradeStat": 75,
+      "clutchStat": 66,
+      "utilityStat": 34,
+      "firepowerStat": 74,
+      "gameBreakerStat": 50
     },
     {
       "id": "dav1g",
@@ -389,7 +531,13 @@
       "age": 25,
       "birthDate": "2001-06-06",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 54,
+      "tradeStat": 64,
+      "clutchStat": 33,
+      "utilityStat": 55,
+      "firepowerStat": 31,
+      "gameBreakerStat": 65
     },
     {
       "id": "dem0n",
@@ -406,13 +554,20 @@
       "age": 18,
       "birthDate": "2007-10-02",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 34,
+      "tradeStat": 75,
+      "clutchStat": 46,
+      "utilityStat": 34,
+      "firepowerStat": 61,
+      "gameBreakerStat": 58
     },
     {
       "id": "dgt",
       "name": "dgt",
       "aliases": [
-        "dgt"
+        "dgt",
+        "冬瓜汤"
       ],
       "team": "9z",
       "nationality": "乌拉圭",
@@ -423,13 +578,22 @@
       "age": 25,
       "birthDate": "2001-05-12",
       "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 74,
+      "tradeStat": 55,
+      "clutchStat": 70,
+      "utilityStat": 42,
+      "firepowerStat": 78,
+      "gameBreakerStat": 31
     },
     {
       "id": "donk",
       "name": "donk",
       "aliases": [
-        "donk"
+        "donk",
+        "小驴",
+        "驴",
+        "洞"
       ],
       "team": "Spirit",
       "nationality": "俄罗斯",
@@ -441,13 +605,20 @@
       "age": 19,
       "birthDate": "2007-01-25",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 97,
+      "tradeStat": 71,
+      "clutchStat": 42,
+      "utilityStat": 35,
+      "firepowerStat": 100,
+      "gameBreakerStat": 84
     },
     {
       "id": "dumau",
       "name": "dumau",
       "aliases": [
-        "dumau"
+        "dumau",
+        "肚毛"
       ],
       "team": "Legacy",
       "nationality": "巴西",
@@ -458,7 +629,13 @@
       "age": 22,
       "birthDate": "2003-11-09",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 89,
+      "tradeStat": 58,
+      "clutchStat": 34,
+      "utilityStat": 79,
+      "firepowerStat": 89,
+      "gameBreakerStat": 45
     },
     {
       "id": "dziugss",
@@ -475,14 +652,22 @@
       "age": 17,
       "birthDate": "2008-09-12",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 52,
+      "tradeStat": 63,
+      "clutchStat": 47,
+      "utilityStat": 43,
+      "firepowerStat": 76,
+      "gameBreakerStat": 70
     },
     {
       "id": "elige",
       "name": "EliGE",
       "aliases": [
         "elige",
-        "EliGE"
+        "EliGE",
+        "鸡哥",
+        "压枪教官"
       ],
       "team": "Liquid",
       "nationality": "美国",
@@ -494,14 +679,22 @@
       "age": 28,
       "birthDate": "1997-07-16",
       "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 73,
+      "tradeStat": 68,
+      "clutchStat": 25,
+      "utilityStat": 43,
+      "firepowerStat": 54,
+      "gameBreakerStat": 77
     },
     {
       "id": "emiliaqaq",
       "name": "EmiliaQAQ",
       "aliases": [
         "emiliaqaq",
-        "EmiliaQAQ"
+        "EmiliaQAQ",
+        "花",
+        "小花"
       ],
       "team": "Lynn Vision",
       "nationality": "中国",
@@ -512,7 +705,13 @@
       "age": 21,
       "birthDate": "2004-08-23",
       "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 44,
+      "tradeStat": 74,
+      "clutchStat": 47,
+      "utilityStat": 52,
+      "firepowerStat": 61,
+      "gameBreakerStat": 44
     },
     {
       "id": "esenthial",
@@ -529,14 +728,22 @@
       "age": 20,
       "birthDate": "2006-02-26",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 22,
+      "tradeStat": 79,
+      "clutchStat": 61,
+      "utilityStat": 23,
+      "firepowerStat": 31,
+      "gameBreakerStat": 40
     },
     {
       "id": "fallen",
       "name": "FalleN",
       "aliases": [
         "fallen",
-        "FalleN"
+        "FalleN",
+        "教父",
+        "巴西教父"
       ],
       "team": "FURIA",
       "nationality": "巴西",
@@ -548,7 +755,13 @@
       "age": 35,
       "birthDate": "1991-05-30",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 3
+      "sniperStat": 3,
+      "breakthroughStat": 25,
+      "tradeStat": 30,
+      "clutchStat": 33,
+      "utilityStat": 77,
+      "firepowerStat": 15,
+      "gameBreakerStat": 69
     },
     {
       "id": "faven",
@@ -566,14 +779,22 @@
       "age": 26,
       "birthDate": "2000-02-08",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 23,
+      "tradeStat": 62,
+      "clutchStat": 60,
+      "utilityStat": 24,
+      "firepowerStat": 36,
+      "gameBreakerStat": 40
     },
     {
       "id": "flamez",
       "name": "flameZ",
       "aliases": [
         "flamez",
-        "flameZ"
+        "flameZ",
+        "火仔",
+        "小火"
       ],
       "team": "Vitality",
       "nationality": "以色列",
@@ -585,13 +806,20 @@
       "age": 23,
       "birthDate": "2003-06-22",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 87,
+      "tradeStat": 34,
+      "clutchStat": 23,
+      "utilityStat": 55,
+      "firepowerStat": 66,
+      "gameBreakerStat": 96
     },
     {
       "id": "frozen",
       "name": "frozen",
       "aliases": [
-        "frozen"
+        "frozen",
+        "寒王"
       ],
       "team": "FaZe",
       "nationality": "斯洛伐克",
@@ -603,7 +831,13 @@
       "age": 23,
       "birthDate": "2002-07-18",
       "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 51,
+      "tradeStat": 80,
+      "clutchStat": 67,
+      "utilityStat": 43,
+      "firepowerStat": 85,
+      "gameBreakerStat": 57
     },
     {
       "id": "gizmy",
@@ -621,7 +855,13 @@
       "age": 22,
       "birthDate": "2004-02-20",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 57,
+      "tradeStat": 30,
+      "clutchStat": 47,
+      "utilityStat": 93,
+      "firepowerStat": 28,
+      "gameBreakerStat": 64
     },
     {
       "id": "gr1ks",
@@ -638,7 +878,13 @@
       "age": 20,
       "birthDate": "2005-10-24",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 94
+      "sniperStat": 94,
+      "breakthroughStat": 61,
+      "tradeStat": 56,
+      "clutchStat": 68,
+      "utilityStat": 64,
+      "firepowerStat": 72,
+      "gameBreakerStat": 24
     },
     {
       "id": "graviti",
@@ -656,14 +902,22 @@
       "age": 22,
       "birthDate": "2003-11-08",
       "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 60,
+      "tradeStat": 88,
+      "clutchStat": 30,
+      "utilityStat": 67,
+      "firepowerStat": 38,
+      "gameBreakerStat": 88
     },
     {
       "id": "heavygod",
       "name": "HeavyGod",
       "aliases": [
         "heavygod",
-        "HeavyGod"
+        "HeavyGod",
+        "重尬",
+        "重神"
       ],
       "team": "G2",
       "nationality": "以色列",
@@ -674,14 +928,21 @@
       "age": 23,
       "birthDate": "2002-07-24",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 39,
+      "tradeStat": 30,
+      "clutchStat": 75,
+      "utilityStat": 56,
+      "firepowerStat": 76,
+      "gameBreakerStat": 56
     },
     {
       "id": "hobbit",
       "name": "HObbit",
       "aliases": [
         "hobbit",
-        "HObbit"
+        "HObbit",
+        "霍比特"
       ],
       "team": "PVISION",
       "nationality": "哈萨克斯坦",
@@ -693,14 +954,21 @@
       "age": 32,
       "birthDate": "1994-05-18",
       "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 64,
+      "tradeStat": 57,
+      "clutchStat": 51,
+      "utilityStat": 68,
+      "firepowerStat": 88,
+      "gameBreakerStat": 19
     },
     {
       "id": "hooxi",
       "name": "HooXi",
       "aliases": [
         "hooxi",
-        "HooXi"
+        "HooXi",
+        "呼吸"
       ],
       "team": "Astralis",
       "nationality": "丹麦",
@@ -711,7 +979,13 @@
       "age": 31,
       "birthDate": "1995-05-21",
       "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 21,
+      "tradeStat": 37,
+      "clutchStat": 49,
+      "utilityStat": 78,
+      "firepowerStat": 8,
+      "gameBreakerStat": 58
     },
     {
       "id": "huasopeek",
@@ -729,14 +1003,23 @@
       "age": 23,
       "birthDate": "2003-04-29",
       "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 62,
+      "tradeStat": 55,
+      "clutchStat": 33,
+      "utilityStat": 51,
+      "firepowerStat": 53,
+      "gameBreakerStat": 81
     },
     {
       "id": "hunter",
       "name": "huNter-",
       "aliases": [
         "hunter",
-        "huNter-"
+        "huNter-",
+        "表哥",
+        "亨特",
+        "夯特"
       ],
       "team": "G2",
       "nationality": "波黑",
@@ -748,7 +1031,13 @@
       "age": 30,
       "birthDate": "1996-01-03",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 29,
+      "tradeStat": 86,
+      "clutchStat": 30,
+      "utilityStat": 90,
+      "firepowerStat": 57,
+      "gameBreakerStat": 63
     },
     {
       "id": "hypex",
@@ -765,14 +1054,21 @@
       "age": 22,
       "birthDate": "2003-12-22",
       "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
+      "sniperStat": 89,
+      "breakthroughStat": 31,
+      "tradeStat": 84,
+      "clutchStat": 89,
+      "utilityStat": 58,
+      "firepowerStat": 30,
+      "gameBreakerStat": 29
     },
     {
       "id": "im",
       "name": "iM",
       "aliases": [
         "im",
-        "iM"
+        "iM",
+        "一妹"
       ],
       "team": "Natus Vincere",
       "nationality": "罗马尼亚",
@@ -784,13 +1080,20 @@
       "age": 26,
       "birthDate": "1999-07-29",
       "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 59,
+      "tradeStat": 59,
+      "clutchStat": 39,
+      "utilityStat": 43,
+      "firepowerStat": 74,
+      "gameBreakerStat": 77
     },
     {
       "id": "insani",
       "name": "insani",
       "aliases": [
-        "insani"
+        "insani",
+        "小日子"
       ],
       "team": "MIBR",
       "nationality": "巴西",
@@ -801,13 +1104,20 @@
       "age": 22,
       "birthDate": "2004-04-25",
       "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 88,
+      "tradeStat": 50,
+      "clutchStat": 52,
+      "utilityStat": 72,
+      "firepowerStat": 95,
+      "gameBreakerStat": 82
     },
     {
       "id": "jabbi",
       "name": "jabbi",
       "aliases": [
-        "jabbi"
+        "jabbi",
+        "鼠"
       ],
       "team": "Astralis",
       "nationality": "丹麦",
@@ -819,14 +1129,21 @@
       "age": 22,
       "birthDate": "2003-07-23",
       "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 3
+      "sniperStat": 3,
+      "breakthroughStat": 47,
+      "tradeStat": 56,
+      "clutchStat": 34,
+      "utilityStat": 45,
+      "firepowerStat": 72,
+      "gameBreakerStat": 61
     },
     {
       "id": "jame",
       "name": "Jame",
       "aliases": [
         "jame",
-        "Jame"
+        "Jame",
+        "上帝"
       ],
       "team": "PVISION",
       "nationality": "俄罗斯",
@@ -838,14 +1155,21 @@
       "age": 27,
       "birthDate": "1998-08-23",
       "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "sniperStat": 94,
+      "breakthroughStat": 71,
+      "tradeStat": 25,
+      "clutchStat": 59,
+      "utilityStat": 80,
+      "firepowerStat": 53,
+      "gameBreakerStat": 7
     },
     {
       "id": "jamyoung",
       "name": "JamYoung",
       "aliases": [
         "jamyoung",
-        "JamYoung"
+        "JamYoung",
+        "小菊"
       ],
       "team": "TYLOO",
       "nationality": "中国",
@@ -856,7 +1180,13 @@
       "age": 24,
       "birthDate": "2001-07-23",
       "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 80,
+      "tradeStat": 34,
+      "clutchStat": 58,
+      "utilityStat": 65,
+      "firepowerStat": 86,
+      "gameBreakerStat": 78
     },
     {
       "id": "jba",
@@ -874,13 +1204,20 @@
       "age": 22,
       "birthDate": "2004-06-10",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 30,
+      "tradeStat": 69,
+      "clutchStat": 68,
+      "utilityStat": 29,
+      "firepowerStat": 39,
+      "gameBreakerStat": 41
     },
     {
       "id": "jcobbb",
       "name": "jcobbb",
       "aliases": [
-        "jcobbb"
+        "jcobbb",
+        "焦科比"
       ],
       "team": "FaZe",
       "nationality": "波兰",
@@ -891,7 +1228,13 @@
       "age": 22,
       "birthDate": "2004-01-27",
       "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 71,
+      "tradeStat": 58,
+      "clutchStat": 37,
+      "utilityStat": 29,
+      "firepowerStat": 46,
+      "gameBreakerStat": 85
     },
     {
       "id": "jdc",
@@ -909,7 +1252,13 @@
       "age": 26,
       "birthDate": "2000-04-07",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 85,
+      "tradeStat": 8,
+      "clutchStat": 23,
+      "utilityStat": 46,
+      "firepowerStat": 74,
+      "gameBreakerStat": 55
     },
     {
       "id": "jee",
@@ -927,13 +1276,21 @@
       "age": 21,
       "birthDate": "2004-12-21",
       "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
+      "sniperStat": 91,
+      "breakthroughStat": 52,
+      "tradeStat": 66,
+      "clutchStat": 76,
+      "utilityStat": 65,
+      "firepowerStat": 72,
+      "gameBreakerStat": 45
     },
     {
       "id": "karrigan",
       "name": "karrigan",
       "aliases": [
-        "karrigan"
+        "karrigan",
+        "大表哥",
+        "凯瑞甘"
       ],
       "team": "Falcons",
       "nationality": "丹麦",
@@ -944,7 +1301,13 @@
       "age": 36,
       "birthDate": "1990-04-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 27,
+      "tradeStat": 6,
+      "clutchStat": 24,
+      "utilityStat": 75,
+      "firepowerStat": 2,
+      "gameBreakerStat": 78
     },
     {
       "id": "kensizor",
@@ -961,7 +1324,13 @@
       "age": 20,
       "birthDate": "2006-02-02",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 63,
+      "tradeStat": 56,
+      "clutchStat": 37,
+      "utilityStat": 41,
+      "firepowerStat": 70,
+      "gameBreakerStat": 94
     },
     {
       "id": "kl1m",
@@ -978,7 +1347,13 @@
       "age": 20,
       "birthDate": "2005-10-03",
       "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 61
+      "sniperStat": 61,
+      "breakthroughStat": 26,
+      "tradeStat": 96,
+      "clutchStat": 62,
+      "utilityStat": 46,
+      "firepowerStat": 79,
+      "gameBreakerStat": 34
     },
     {
       "id": "krabeni",
@@ -996,14 +1371,22 @@
       "age": 21,
       "birthDate": "2005-04-07",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 75,
+      "tradeStat": 10,
+      "clutchStat": 27,
+      "utilityStat": 82,
+      "firepowerStat": 73,
+      "gameBreakerStat": 26
     },
     {
       "id": "kscerato",
       "name": "KSCERATO",
       "aliases": [
         "kscerato",
-        "KSCERATO"
+        "KSCERATO",
+        "卡斯瑞托",
+        "卡神"
       ],
       "team": "FURIA",
       "nationality": "巴西",
@@ -1015,7 +1398,13 @@
       "age": 26,
       "birthDate": "1999-09-12",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 46,
+      "tradeStat": 40,
+      "clutchStat": 67,
+      "utilityStat": 70,
+      "firepowerStat": 82,
+      "gameBreakerStat": 33
     },
     {
       "id": "kursy",
@@ -1033,13 +1422,22 @@
       "age": 24,
       "birthDate": "2001-08-17",
       "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 59
+      "sniperStat": 59,
+      "breakthroughStat": 52,
+      "tradeStat": 72,
+      "clutchStat": 77,
+      "utilityStat": 55,
+      "firepowerStat": 46,
+      "gameBreakerStat": 30
     },
     {
       "id": "kyousuke",
       "name": "kyousuke",
       "aliases": [
-        "kyousuke"
+        "kyousuke",
+        "京介",
+        "豪哥",
+        "嘉豪"
       ],
       "team": "Falcons",
       "nationality": "俄罗斯",
@@ -1050,7 +1448,13 @@
       "age": 18,
       "birthDate": "2008-01-30",
       "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
+      "sniperStat": 1,
+      "breakthroughStat": 75,
+      "tradeStat": 77,
+      "clutchStat": 31,
+      "utilityStat": 27,
+      "firepowerStat": 85,
+      "gameBreakerStat": 76
     },
     {
       "id": "lake",
@@ -1068,13 +1472,20 @@
       "age": 21,
       "birthDate": "2004-10-19",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 84,
+      "tradeStat": 54,
+      "clutchStat": 27,
+      "utilityStat": 64,
+      "firepowerStat": 71,
+      "gameBreakerStat": 85
     },
     {
       "id": "latto",
       "name": "latto",
       "aliases": [
-        "latto"
+        "latto",
+        "拉图"
       ],
       "team": "Legacy",
       "nationality": "巴西",
@@ -1085,7 +1496,13 @@
       "age": 23,
       "birthDate": "2002-12-21",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 45,
+      "tradeStat": 64,
+      "clutchStat": 70,
+      "utilityStat": 75,
+      "firepowerStat": 89,
+      "gameBreakerStat": 51
     },
     {
       "id": "launx",
@@ -1103,7 +1520,13 @@
       "age": 21,
       "birthDate": "2005-05-10",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BB478C91F64541478AC129EB3F575A3D-1782336562323.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 52,
+      "tradeStat": 72,
+      "clutchStat": 30,
+      "utilityStat": 37,
+      "firepowerStat": 40,
+      "gameBreakerStat": 95
     },
     {
       "id": "lnz",
@@ -1121,7 +1544,13 @@
       "age": 23,
       "birthDate": "2002-10-20",
       "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 26,
+      "tradeStat": 68,
+      "clutchStat": 83,
+      "utilityStat": 89,
+      "firepowerStat": 27,
+      "gameBreakerStat": 69
     },
     {
       "id": "luchov",
@@ -1138,7 +1567,13 @@
       "age": 25,
       "birthDate": "2001-05-11",
       "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 84,
+      "tradeStat": 63,
+      "clutchStat": 33,
+      "utilityStat": 67,
+      "firepowerStat": 91,
+      "gameBreakerStat": 61
     },
     {
       "id": "lucky",
@@ -1156,14 +1591,24 @@
       "age": 22,
       "birthDate": "2003-07-13",
       "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 4
+      "sniperStat": 4,
+      "breakthroughStat": 41,
+      "tradeStat": 87,
+      "clutchStat": 56,
+      "utilityStat": 91,
+      "firepowerStat": 60,
+      "gameBreakerStat": 86
     },
     {
       "id": "m0nesy",
       "name": "m0NESY",
       "aliases": [
         "m0nesy",
-        "m0NESY"
+        "m0NESY",
+        "黄色闪光",
+        "黄闪",
+        "孩神",
+        "小孩"
       ],
       "team": "Falcons",
       "nationality": "俄罗斯",
@@ -1175,13 +1620,21 @@
       "age": 21,
       "birthDate": "2005-05-01",
       "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 95
+      "sniperStat": 95,
+      "breakthroughStat": 84,
+      "tradeStat": 44,
+      "clutchStat": 64,
+      "utilityStat": 57,
+      "firepowerStat": 94,
+      "gameBreakerStat": 31
     },
     {
       "id": "magixx",
       "name": "magixx",
       "aliases": [
-        "magixx"
+        "magixx",
+        "马西西",
+        "马圣"
       ],
       "team": "Spirit",
       "nationality": "俄罗斯",
@@ -1192,7 +1645,13 @@
       "age": 23,
       "birthDate": "2003-06-03",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 30,
+      "tradeStat": 20,
+      "clutchStat": 51,
+      "utilityStat": 94,
+      "firepowerStat": 28,
+      "gameBreakerStat": 76
     },
     {
       "id": "magnojez",
@@ -1210,7 +1669,13 @@
       "age": 21,
       "birthDate": "2004-10-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 3
+      "sniperStat": 3,
+      "breakthroughStat": 83,
+      "tradeStat": 35,
+      "clutchStat": 50,
+      "utilityStat": 80,
+      "firepowerStat": 86,
+      "gameBreakerStat": 46
     },
     {
       "id": "maj3r",
@@ -1228,14 +1693,22 @@
       "age": 35,
       "birthDate": "1991-01-25",
       "imageUrl": "https://cdn.wmpvp.com/appengine/B4D61360CFF24DB9BC74860EB3B37E94-1782336410078.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 15,
+      "tradeStat": 20,
+      "clutchStat": 48,
+      "utilityStat": 85,
+      "firepowerStat": 9,
+      "gameBreakerStat": 9
     },
     {
       "id": "maka",
       "name": "Maka",
       "aliases": [
         "maka",
-        "Maka"
+        "Maka",
+        "玛卡",
+        "马卡"
       ],
       "team": "3DMAX",
       "nationality": "法国",
@@ -1246,13 +1719,21 @@
       "age": 28,
       "birthDate": "1997-07-06",
       "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 88
+      "sniperStat": 88,
+      "breakthroughStat": 47,
+      "tradeStat": 40,
+      "clutchStat": 60,
+      "utilityStat": 91,
+      "firepowerStat": 31,
+      "gameBreakerStat": 61
     },
     {
       "id": "makazze",
       "name": "makazze",
       "aliases": [
-        "makazze"
+        "makazze",
+        "玛卡则",
+        "马卡则"
       ],
       "team": "Natus Vincere",
       "nationality": "塞尔维亚",
@@ -1263,14 +1744,23 @@
       "age": 19,
       "birthDate": "2006-12-21",
       "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 89,
+      "tradeStat": 20,
+      "clutchStat": 43,
+      "utilityStat": 54,
+      "firepowerStat": 72,
+      "gameBreakerStat": 91
     },
     {
       "id": "malbsmd",
       "name": "malbsMd",
       "aliases": [
         "malbsmd",
-        "malbsMd"
+        "malbsMd",
+        "马尔布斯",
+        "小马",
+        "小马哥"
       ],
       "team": "Liquid",
       "nationality": "危地马拉",
@@ -1282,7 +1772,13 @@
       "age": 23,
       "birthDate": "2002-10-17",
       "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 82,
+      "tradeStat": 55,
+      "clutchStat": 38,
+      "utilityStat": 50,
+      "firepowerStat": 81,
+      "gameBreakerStat": 72
     },
     {
       "id": "martinezsa",
@@ -1300,7 +1796,13 @@
       "age": 25,
       "birthDate": "2001-01-29",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 95
+      "sniperStat": 95,
+      "breakthroughStat": 81,
+      "tradeStat": 28,
+      "clutchStat": 75,
+      "utilityStat": 55,
+      "firepowerStat": 84,
+      "gameBreakerStat": 15
     },
     {
       "id": "masval",
@@ -1318,14 +1820,21 @@
       "age": 23,
       "birthDate": "2003-01-17",
       "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 28,
+      "tradeStat": 44,
+      "clutchStat": 49,
+      "utilityStat": 73,
+      "firepowerStat": 73,
+      "gameBreakerStat": 44
     },
     {
       "id": "matys",
       "name": "MATYS",
       "aliases": [
         "matys",
-        "MATYS"
+        "MATYS",
+        "麻袋"
       ],
       "team": "G2",
       "nationality": "斯洛伐克",
@@ -1336,7 +1845,13 @@
       "age": 22,
       "birthDate": "2003-09-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 54,
+      "tradeStat": 46,
+      "clutchStat": 52,
+      "utilityStat": 49,
+      "firepowerStat": 51,
+      "gameBreakerStat": 79
     },
     {
       "id": "max",
@@ -1353,14 +1868,22 @@
       "age": 27,
       "birthDate": "1999-06-15",
       "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 21,
+      "tradeStat": 38,
+      "clutchStat": 40,
+      "utilityStat": 82,
+      "firepowerStat": 13,
+      "gameBreakerStat": 73
     },
     {
       "id": "mercury",
       "name": "Mercury",
       "aliases": [
         "mercury",
-        "Mercury"
+        "Mercury",
+        "汉堡",
+        "大堡哥"
       ],
       "team": "TYLOO",
       "nationality": "中国",
@@ -1371,7 +1894,13 @@
       "age": 25,
       "birthDate": "2000-12-15",
       "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 51,
+      "tradeStat": 48,
+      "clutchStat": 54,
+      "utilityStat": 70,
+      "firepowerStat": 49,
+      "gameBreakerStat": 62
     },
     {
       "id": "meyern",
@@ -1388,13 +1917,22 @@
       "age": 23,
       "birthDate": "2002-09-10",
       "imageUrl": "https://cdn.wmpvp.com/appengine/A6566DA4C3AB4F38BACD8450AC71D25B-1782333893576.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
+      "sniperStat": 91,
+      "breakthroughStat": 39,
+      "tradeStat": 30,
+      "clutchStat": 52,
+      "utilityStat": 55,
+      "firepowerStat": 21,
+      "gameBreakerStat": 29
     },
     {
       "id": "mezii",
       "name": "mezii",
       "aliases": [
-        "mezii"
+        "mezii",
+        "英一步",
+        "妹子",
+        "超级奶爸"
       ],
       "team": "Vitality",
       "nationality": "英国",
@@ -1406,7 +1944,13 @@
       "age": 27,
       "birthDate": "1998-10-15",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 15,
+      "tradeStat": 48,
+      "clutchStat": 53,
+      "utilityStat": 66,
+      "firepowerStat": 26,
+      "gameBreakerStat": 52
     },
     {
       "id": "misutaaa",
@@ -1423,7 +1967,13 @@
       "age": 23,
       "birthDate": "2003-01-15",
       "imageUrl": "https://cdn.wmpvp.com/appengine/19A314740C3B401D8D74D8426FBB76ED-1782333192831.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 58,
+      "tradeStat": 83,
+      "clutchStat": 24,
+      "utilityStat": 34,
+      "firepowerStat": 55,
+      "gameBreakerStat": 93
     },
     {
       "id": "mo0n",
@@ -1441,13 +1991,21 @@
       "age": 20,
       "birthDate": "2005-07-19",
       "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
+      "sniperStat": 91,
+      "breakthroughStat": 69,
+      "tradeStat": 15,
+      "clutchStat": 74,
+      "utilityStat": 71,
+      "firepowerStat": 56,
+      "gameBreakerStat": 10
     },
     {
       "id": "molodoy",
       "name": "molodoy",
       "aliases": [
-        "molodoy"
+        "molodoy",
+        "黑色闪光",
+        "黑闪"
       ],
       "team": "FURIA",
       "nationality": "哈萨克斯坦",
@@ -1459,7 +2017,13 @@
       "age": 21,
       "birthDate": "2005-01-10",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "sniperStat": 93,
+      "breakthroughStat": 77,
+      "tradeStat": 32,
+      "clutchStat": 60,
+      "utilityStat": 50,
+      "firepowerStat": 88,
+      "gameBreakerStat": 18
     },
     {
       "id": "mopoz",
@@ -1476,14 +2040,21 @@
       "age": 29,
       "birthDate": "1996-08-07",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 61,
+      "tradeStat": 18,
+      "clutchStat": 58,
+      "utilityStat": 65,
+      "firepowerStat": 60,
+      "gameBreakerStat": 57
     },
     {
       "id": "moseyuh",
       "name": "Moseyuh",
       "aliases": [
         "moseyuh",
-        "Moseyuh"
+        "Moseyuh",
+        "莫斯雨"
       ],
       "team": "TYLOO",
       "nationality": "中国",
@@ -1494,13 +2065,20 @@
       "age": 21,
       "birthDate": "2004-12-21",
       "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 55,
+      "tradeStat": 67,
+      "clutchStat": 43,
+      "utilityStat": 28,
+      "firepowerStat": 70,
+      "gameBreakerStat": 71
     },
     {
       "id": "mzinho",
       "name": "mzinho",
       "aliases": [
-        "mzinho"
+        "mzinho",
+        "小胖"
       ],
       "team": "The MongolZ",
       "nationality": "蒙古",
@@ -1511,7 +2089,13 @@
       "age": 18,
       "birthDate": "2007-06-28",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 35,
+      "tradeStat": 25,
+      "clutchStat": 27,
+      "utilityStat": 48,
+      "firepowerStat": 53,
+      "gameBreakerStat": 28
     },
     {
       "id": "n0te",
@@ -1528,14 +2112,21 @@
       "age": 20,
       "birthDate": "2006-02-02",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 53,
+      "tradeStat": 43,
+      "clutchStat": 73,
+      "utilityStat": 15,
+      "firepowerStat": 92,
+      "gameBreakerStat": 32
     },
     {
       "id": "naf",
       "name": "NAF",
       "aliases": [
         "naf",
-        "NAF"
+        "NAF",
+        "树懒"
       ],
       "team": "Liquid",
       "nationality": "加拿大",
@@ -1547,7 +2138,13 @@
       "age": 28,
       "birthDate": "1997-11-24",
       "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 5
+      "sniperStat": 5,
+      "breakthroughStat": 20,
+      "tradeStat": 38,
+      "clutchStat": 75,
+      "utilityStat": 57,
+      "firepowerStat": 46,
+      "gameBreakerStat": 11
     },
     {
       "id": "nertz",
@@ -1566,14 +2163,23 @@
       "age": 26,
       "birthDate": "1999-07-12",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 85,
+      "tradeStat": 33,
+      "clutchStat": 44,
+      "utilityStat": 56,
+      "firepowerStat": 68,
+      "gameBreakerStat": 67
     },
     {
       "id": "niko",
       "name": "NiKo",
       "aliases": [
         "niko",
-        "NiKo"
+        "NiKo",
+        "尼尼",
+        "尼",
+        "虾哥"
       ],
       "team": "Falcons",
       "nationality": "波黑",
@@ -1585,13 +2191,20 @@
       "age": 29,
       "birthDate": "1997-02-16",
       "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 58,
+      "tradeStat": 56,
+      "clutchStat": 71,
+      "utilityStat": 72,
+      "firepowerStat": 69,
+      "gameBreakerStat": 38
     },
     {
       "id": "npl",
       "name": "npl",
       "aliases": [
-        "npl"
+        "npl",
+        "拿破仑"
       ],
       "team": "B8",
       "nationality": "乌克兰",
@@ -1602,7 +2215,13 @@
       "age": 20,
       "birthDate": "2005-07-21",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 76,
+      "tradeStat": 60,
+      "clutchStat": 47,
+      "utilityStat": 48,
+      "firepowerStat": 85,
+      "gameBreakerStat": 44
     },
     {
       "id": "phzy",
@@ -1619,7 +2238,13 @@
       "age": 23,
       "birthDate": "2002-09-24",
       "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 92
+      "sniperStat": 92,
+      "breakthroughStat": 65,
+      "tradeStat": 43,
+      "clutchStat": 67,
+      "utilityStat": 65,
+      "firepowerStat": 41,
+      "gameBreakerStat": 31
     },
     {
       "id": "piriajr",
@@ -1636,7 +2261,13 @@
       "age": 23,
       "birthDate": "2002-10-01",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
+      "sniperStat": 1,
+      "breakthroughStat": 85,
+      "tradeStat": 33,
+      "clutchStat": 55,
+      "utilityStat": 19,
+      "firepowerStat": 79,
+      "gameBreakerStat": 5
     },
     {
       "id": "pr",
@@ -1654,7 +2285,13 @@
       "age": 18,
       "birthDate": "2007-09-17",
       "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 68,
+      "tradeStat": 63,
+      "clutchStat": 53,
+      "utilityStat": 53,
+      "firepowerStat": 69,
+      "gameBreakerStat": 33
     },
     {
       "id": "rainwaker",
@@ -1672,14 +2309,21 @@
       "age": 25,
       "birthDate": "2001-04-27",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C51F55AB61CD43798DBB5858164C29E4-1782335997557.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 49,
+      "tradeStat": 20,
+      "clutchStat": 75,
+      "utilityStat": 25,
+      "firepowerStat": 62,
+      "gameBreakerStat": 15
     },
     {
       "id": "rez",
       "name": "REZ",
       "aliases": [
         "rez",
-        "REZ"
+        "REZ",
+        "真大接"
       ],
       "team": "GamerLegion",
       "nationality": "瑞典",
@@ -1690,13 +2334,22 @@
       "age": 28,
       "birthDate": "1998-01-11",
       "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 71,
+      "tradeStat": 66,
+      "clutchStat": 47,
+      "utilityStat": 58,
+      "firepowerStat": 72,
+      "gameBreakerStat": 88
     },
     {
       "id": "ropz",
       "name": "ropz",
       "aliases": [
-        "ropz"
+        "ropz",
+        "911车主",
+        "车主",
+        "楼主"
       ],
       "team": "Vitality",
       "nationality": "爱沙尼亚",
@@ -1708,7 +2361,13 @@
       "age": 26,
       "birthDate": "1999-12-22",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 3
+      "sniperStat": 3,
+      "breakthroughStat": 48,
+      "tradeStat": 43,
+      "clutchStat": 50,
+      "utilityStat": 21,
+      "firepowerStat": 70,
+      "gameBreakerStat": 6
     },
     {
       "id": "ryu",
@@ -1725,13 +2384,20 @@
       "age": 40,
       "birthDate": "1985-08-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 35,
+      "tradeStat": 74,
+      "clutchStat": 31,
+      "utilityStat": 34,
+      "firepowerStat": 44,
+      "gameBreakerStat": 51
     },
     {
       "id": "s1n",
       "name": "s1n",
       "aliases": [
-        "s1n"
+        "s1n",
+        "正弦哥"
       ],
       "team": "M80",
       "nationality": "德国",
@@ -1742,7 +2408,13 @@
       "age": 24,
       "birthDate": "2002-03-18",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 19,
+      "tradeStat": 62,
+      "clutchStat": 46,
+      "utilityStat": 88,
+      "firepowerStat": 14,
+      "gameBreakerStat": 44
     },
     {
       "id": "s1ren",
@@ -1760,7 +2432,13 @@
       "age": 23,
       "birthDate": "2002-07-16",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 19,
+      "tradeStat": 82,
+      "clutchStat": 70,
+      "utilityStat": 32,
+      "firepowerStat": 26,
+      "gameBreakerStat": 67
     },
     {
       "id": "s1zzi",
@@ -1777,7 +2455,13 @@
       "age": 16,
       "birthDate": "2009-12-20",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3EB310BC42074B71B856F8D79E24E226-1782333326227.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "sniperStat": 93,
+      "breakthroughStat": 77,
+      "tradeStat": 32,
+      "clutchStat": 63,
+      "utilityStat": 33,
+      "firepowerStat": 57,
+      "gameBreakerStat": 47
     },
     {
       "id": "saadzin",
@@ -1794,7 +2478,13 @@
       "age": 22,
       "birthDate": "2004-05-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20737CFA5DB54C6F9EC551EF5D90A941-1782335658537.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 92
+      "sniperStat": 92,
+      "breakthroughStat": 42,
+      "tradeStat": 30,
+      "clutchStat": 60,
+      "utilityStat": 68,
+      "firepowerStat": 34,
+      "gameBreakerStat": 21
     },
     {
       "id": "saffee",
@@ -1811,7 +2501,13 @@
       "age": 32,
       "birthDate": "1994-05-17",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 91
+      "sniperStat": 91,
+      "breakthroughStat": 32,
+      "tradeStat": 21,
+      "clutchStat": 75,
+      "utilityStat": 52,
+      "firepowerStat": 37,
+      "gameBreakerStat": 9
     },
     {
       "id": "sausol",
@@ -1828,7 +2524,13 @@
       "age": 26,
       "birthDate": "2000-05-31",
       "imageUrl": "https://cdn.wmpvp.com/appengine/3D1AEAB37D9946FE85502ED0323A441A-1782336624590.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 37,
+      "tradeStat": 45,
+      "clutchStat": 47,
+      "utilityStat": 66,
+      "firepowerStat": 51,
+      "gameBreakerStat": 35
     },
     {
       "id": "sfade8",
@@ -1846,13 +2548,20 @@
       "age": 22,
       "birthDate": "2004-01-26",
       "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 75,
+      "tradeStat": 21,
+      "clutchStat": 21,
+      "utilityStat": 79,
+      "firepowerStat": 58,
+      "gameBreakerStat": 46
     },
     {
       "id": "sh1ro",
       "name": "sh1ro",
       "aliases": [
-        "sh1ro"
+        "sh1ro",
+        "西若"
       ],
       "team": "Spirit",
       "nationality": "俄罗斯",
@@ -1864,13 +2573,20 @@
       "age": 24,
       "birthDate": "2001-07-15",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "sniperStat": 93,
+      "breakthroughStat": 49,
+      "tradeStat": 77,
+      "clutchStat": 78,
+      "utilityStat": 66,
+      "firepowerStat": 81,
+      "gameBreakerStat": 18
     },
     {
       "id": "siuhy",
       "name": "siuhy",
       "aliases": [
-        "siuhy"
+        "siuhy",
+        "小夫"
       ],
       "team": "Liquid",
       "nationality": "波兰",
@@ -1881,7 +2597,13 @@
       "age": 23,
       "birthDate": "2002-08-26",
       "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 28,
+      "tradeStat": 52,
+      "clutchStat": 26,
+      "utilityStat": 85,
+      "firepowerStat": 6,
+      "gameBreakerStat": 83
     },
     {
       "id": "sjuush",
@@ -1898,7 +2620,13 @@
       "age": 27,
       "birthDate": "1999-01-03",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 45,
+      "tradeStat": 24,
+      "clutchStat": 68,
+      "utilityStat": 57,
+      "firepowerStat": 48,
+      "gameBreakerStat": 37
     },
     {
       "id": "slaxejezzz",
@@ -1915,7 +2643,13 @@
       "age": 18,
       "birthDate": "2007-11-01",
       "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 5
+      "sniperStat": 5,
+      "breakthroughStat": 70,
+      "tradeStat": 81,
+      "clutchStat": 68,
+      "utilityStat": 71,
+      "firepowerStat": 95,
+      "gameBreakerStat": 62
     },
     {
       "id": "slaxz-",
@@ -1932,7 +2666,13 @@
       "age": 27,
       "birthDate": "1998-11-25",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "sniperStat": 93,
+      "breakthroughStat": 70,
+      "tradeStat": 36,
+      "clutchStat": 38,
+      "utilityStat": 72,
+      "firepowerStat": 55,
+      "gameBreakerStat": 43
     },
     {
       "id": "snappi",
@@ -1950,14 +2690,21 @@
       "age": 36,
       "birthDate": "1990-06-09",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 20,
+      "tradeStat": 13,
+      "clutchStat": 64,
+      "utilityStat": 76,
+      "firepowerStat": 15,
+      "gameBreakerStat": 28
     },
     {
       "id": "snax",
       "name": "Snax",
       "aliases": [
         "snax",
-        "Snax"
+        "Snax",
+        "波兰巨熊"
       ],
       "team": "GamerLegion",
       "nationality": "波兰",
@@ -1969,13 +2716,20 @@
       "age": 32,
       "birthDate": "1993-07-05",
       "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 48,
+      "tradeStat": 16,
+      "clutchStat": 42,
+      "utilityStat": 82,
+      "firepowerStat": 16,
+      "gameBreakerStat": 48
     },
     {
       "id": "snow",
       "name": "snow",
       "aliases": [
-        "snow"
+        "snow",
+        "小雪"
       ],
       "team": "paiN",
       "nationality": "巴西",
@@ -1986,7 +2740,13 @@
       "age": 19,
       "birthDate": "2007-03-22",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 1
+      "sniperStat": 1,
+      "breakthroughStat": 46,
+      "tradeStat": 49,
+      "clutchStat": 37,
+      "utilityStat": 43,
+      "firepowerStat": 73,
+      "gameBreakerStat": 33
     },
     {
       "id": "soulfly",
@@ -2003,7 +2763,13 @@
       "age": 22,
       "birthDate": "2004-06-16",
       "imageUrl": "https://cdn.wmpvp.com/appengine/B4D61360CFF24DB9BC74860EB3B37E94-1782336410078.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 46,
+      "tradeStat": 20,
+      "clutchStat": 53,
+      "utilityStat": 26,
+      "firepowerStat": 28,
+      "gameBreakerStat": 48
     },
     {
       "id": "spinx",
@@ -2022,7 +2788,13 @@
       "age": 25,
       "birthDate": "2000-09-13",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CEF2AE72D93F46D8A66E053B5114A762-1782335042561.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 66,
+      "tradeStat": 22,
+      "clutchStat": 35,
+      "utilityStat": 28,
+      "firepowerStat": 39,
+      "gameBreakerStat": 45
     },
     {
       "id": "staehr",
@@ -2040,7 +2812,13 @@
       "age": 21,
       "birthDate": "2004-07-19",
       "imageUrl": "https://cdn.wmpvp.com/appengine/0BF9277864424D7582FE9237DC7881FA-1782336299905.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 81,
+      "tradeStat": 37,
+      "clutchStat": 43,
+      "utilityStat": 73,
+      "firepowerStat": 83,
+      "gameBreakerStat": 48
     },
     {
       "id": "starry",
@@ -2058,13 +2836,20 @@
       "age": 21,
       "birthDate": "2005-01-03",
       "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 5
+      "sniperStat": 5,
+      "breakthroughStat": 72,
+      "tradeStat": 69,
+      "clutchStat": 33,
+      "utilityStat": 60,
+      "firepowerStat": 87,
+      "gameBreakerStat": 47
     },
     {
       "id": "stavn",
       "name": "stavn",
       "aliases": [
-        "stavn"
+        "stavn",
+        "蛇"
       ],
       "team": "NIP",
       "nationality": "丹麦",
@@ -2076,14 +2861,22 @@
       "age": 24,
       "birthDate": "2002-03-26",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "sniperStat": 93,
+      "breakthroughStat": 71,
+      "tradeStat": 38,
+      "clutchStat": 90,
+      "utilityStat": 62,
+      "firepowerStat": 80,
+      "gameBreakerStat": 17
     },
     {
       "id": "sunpayus",
       "name": "SunPayus",
       "aliases": [
         "sunpayus",
-        "SunPayus"
+        "SunPayus",
+        "太阳神",
+        "阳叔"
       ],
       "team": "G2",
       "nationality": "西班牙",
@@ -2095,7 +2888,13 @@
       "age": 27,
       "birthDate": "1998-11-19",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EB2C36419F72439A9F15A4CB5A408ED1-1782337233145.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 92
+      "sniperStat": 92,
+      "breakthroughStat": 56,
+      "tradeStat": 46,
+      "clutchStat": 70,
+      "utilityStat": 60,
+      "firepowerStat": 50,
+      "gameBreakerStat": 27
     },
     {
       "id": "swisher",
@@ -2113,7 +2912,13 @@
       "age": 27,
       "birthDate": "1998-09-17",
       "imageUrl": "https://cdn.wmpvp.com/appengine/C8DE3289030C4682BE44CD56F253921E-1782337332560.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 54,
+      "tradeStat": 60,
+      "clutchStat": 38,
+      "utilityStat": 86,
+      "firepowerStat": 47,
+      "gameBreakerStat": 83
     },
     {
       "id": "tabsen",
@@ -2131,7 +2936,13 @@
       "age": 31,
       "birthDate": "1995-04-05",
       "imageUrl": "https://cdn.wmpvp.com/appengine/EFFFE204E4414D2F9D21159E48A6C9FF-1782337207038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 26,
+      "tradeStat": 19,
+      "clutchStat": 38,
+      "utilityStat": 83,
+      "firepowerStat": 18,
+      "gameBreakerStat": 69
     },
     {
       "id": "tauson",
@@ -2149,7 +2960,13 @@
       "age": 20,
       "birthDate": "2005-08-17",
       "imageUrl": "https://cdn.wmpvp.com/appengine/90AB4DC9BBB1492A985463E47C4A8032-1782332774038.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 18,
+      "tradeStat": 45,
+      "clutchStat": 73,
+      "utilityStat": 34,
+      "firepowerStat": 44,
+      "gameBreakerStat": 64
     },
     {
       "id": "techno",
@@ -2167,7 +2984,13 @@
       "age": 21,
       "birthDate": "2005-05-20",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9CDB45A066BF4A2B95527842A920D206-1782333839061.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 30,
+      "tradeStat": 27,
+      "clutchStat": 45,
+      "utilityStat": 55,
+      "firepowerStat": 26,
+      "gameBreakerStat": 50
     },
     {
       "id": "tenzy",
@@ -2185,14 +3008,21 @@
       "age": 21,
       "birthDate": "2005-03-15",
       "imageUrl": "https://cdn.wmpvp.com/appengine/70F61852A70D49BA86E5A1C4F79681EE-1782336942872.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 62,
+      "tradeStat": 53,
+      "clutchStat": 48,
+      "utilityStat": 34,
+      "firepowerStat": 74,
+      "gameBreakerStat": 80
     },
     {
       "id": "teses",
       "name": "TeSeS",
       "aliases": [
         "teses",
-        "TeSeS"
+        "TeSeS",
+        "龙哥"
       ],
       "team": "Falcons",
       "nationality": "丹麦",
@@ -2203,7 +3033,13 @@
       "age": 25,
       "birthDate": "2000-12-12",
       "imageUrl": "https://cdn.wmpvp.com/appengine/5CA82F7A5D6F496CBF67049EC73CF97E-1782334708997.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 23,
+      "tradeStat": 70,
+      "clutchStat": 51,
+      "utilityStat": 50,
+      "firepowerStat": 35,
+      "gameBreakerStat": 35
     },
     {
       "id": "tn1r",
@@ -2221,13 +3057,21 @@
       "age": 25,
       "birthDate": "2001-02-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 59,
+      "tradeStat": 32,
+      "clutchStat": 40,
+      "utilityStat": 63,
+      "firepowerStat": 56,
+      "gameBreakerStat": 61
     },
     {
       "id": "torzsi",
       "name": "torzsi",
       "aliases": [
-        "torzsi"
+        "torzsi",
+        "托哥",
+        "托神"
       ],
       "team": "MOUZ",
       "nationality": "匈牙利",
@@ -2239,14 +3083,21 @@
       "age": 24,
       "birthDate": "2002-05-17",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CEF2AE72D93F46D8A66E053B5114A762-1782335042561.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 93
+      "sniperStat": 93,
+      "breakthroughStat": 49,
+      "tradeStat": 55,
+      "clutchStat": 73,
+      "utilityStat": 60,
+      "firepowerStat": 42,
+      "gameBreakerStat": 9
     },
     {
       "id": "twistzz",
       "name": "Twistzz",
       "aliases": [
         "twistzz",
-        "Twistzz"
+        "Twistzz",
+        "总监"
       ],
       "team": "FaZe",
       "nationality": "加拿大",
@@ -2258,7 +3109,13 @@
       "age": 26,
       "birthDate": "1999-11-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/8EB75AB25203401E92E36613B2E8F7AF-1782332917369.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 59,
+      "tradeStat": 54,
+      "clutchStat": 80,
+      "utilityStat": 67,
+      "firepowerStat": 81,
+      "gameBreakerStat": 75
     },
     {
       "id": "ultimate",
@@ -2275,7 +3132,13 @@
       "age": 22,
       "birthDate": "2003-11-29",
       "imageUrl": "https://cdn.wmpvp.com/appengine/DF16E63744C44D4A9AA4B7C728222189-1782334055853.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 90
+      "sniperStat": 90,
+      "breakthroughStat": 41,
+      "tradeStat": 39,
+      "clutchStat": 61,
+      "utilityStat": 51,
+      "firepowerStat": 35,
+      "gameBreakerStat": 10
     },
     {
       "id": "venomzera",
@@ -2292,7 +3155,13 @@
       "age": 21,
       "birthDate": "2004-08-19",
       "imageUrl": "https://cdn.wmpvp.com/appengine/AC0966CB344D4F9F9C9E7398CF7F7BB2-1782336369149.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 66,
+      "tradeStat": 61,
+      "clutchStat": 60,
+      "utilityStat": 33,
+      "firepowerStat": 40,
+      "gameBreakerStat": 97
     },
     {
       "id": "vsm",
@@ -2309,7 +3178,13 @@
       "age": 26,
       "birthDate": "1999-07-02",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CBAAF6E530494661B321E95182221F2E-1782337041542.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 42,
+      "tradeStat": 12,
+      "clutchStat": 39,
+      "utilityStat": 50,
+      "firepowerStat": 32,
+      "gameBreakerStat": 42
     },
     {
       "id": "w0nderful",
@@ -2327,7 +3202,13 @@
       "age": 21,
       "birthDate": "2004-12-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/1FEC4787391348758743855882C00F9D-1782336468455.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 92
+      "sniperStat": 92,
+      "breakthroughStat": 75,
+      "tradeStat": 85,
+      "clutchStat": 86,
+      "utilityStat": 57,
+      "firepowerStat": 83,
+      "gameBreakerStat": 31
     },
     {
       "id": "westmelon",
@@ -2345,7 +3226,13 @@
       "age": 25,
       "birthDate": "2001-02-04",
       "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 55,
+      "tradeStat": 27,
+      "clutchStat": 32,
+      "utilityStat": 82,
+      "firepowerStat": 41,
+      "gameBreakerStat": 96
     },
     {
       "id": "wicadia",
@@ -2363,13 +3250,20 @@
       "age": 21,
       "birthDate": "2005-03-04",
       "imageUrl": "https://cdn.wmpvp.com/appengine/B4D61360CFF24DB9BC74860EB3B37E94-1782336410078.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
+      "sniperStat": 3,
+      "breakthroughStat": 58,
+      "tradeStat": 21,
+      "clutchStat": 75,
+      "utilityStat": 36,
+      "firepowerStat": 95,
+      "gameBreakerStat": 32
     },
     {
       "id": "woxic",
       "name": "woxic",
       "aliases": [
-        "woxic"
+        "woxic",
+        "左手"
       ],
       "team": "Aurora",
       "nationality": "土耳其",
@@ -2381,7 +3275,13 @@
       "age": 27,
       "birthDate": "1998-09-02",
       "imageUrl": "https://cdn.wmpvp.com/appengine/B4D61360CFF24DB9BC74860EB3B37E94-1782336410078.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 94
+      "sniperStat": 94,
+      "breakthroughStat": 79,
+      "tradeStat": 25,
+      "clutchStat": 68,
+      "utilityStat": 50,
+      "firepowerStat": 62,
+      "gameBreakerStat": 6
     },
     {
       "id": "xantares",
@@ -2400,7 +3300,13 @@
       "age": 30,
       "birthDate": "1995-08-07",
       "imageUrl": "https://cdn.wmpvp.com/appengine/B4D61360CFF24DB9BC74860EB3B37E94-1782336410078.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 89,
+      "tradeStat": 35,
+      "clutchStat": 25,
+      "utilityStat": 56,
+      "firepowerStat": 79,
+      "gameBreakerStat": 58
     },
     {
       "id": "xelex",
@@ -2417,14 +3323,21 @@
       "age": 18,
       "birthDate": "2008-06-03",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CEF2AE72D93F46D8A66E053B5114A762-1782335042561.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 53,
+      "tradeStat": 37,
+      "clutchStat": 29,
+      "utilityStat": 39,
+      "firepowerStat": 60,
+      "gameBreakerStat": 63
     },
     {
       "id": "xertion",
       "name": "xertioN",
       "aliases": [
         "xertion",
-        "xertioN"
+        "xertioN",
+        "谢逊"
       ],
       "team": "MOUZ",
       "nationality": "以色列",
@@ -2436,7 +3349,13 @@
       "age": 21,
       "birthDate": "2004-07-22",
       "imageUrl": "https://cdn.wmpvp.com/appengine/CEF2AE72D93F46D8A66E053B5114A762-1782335042561.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 79,
+      "tradeStat": 31,
+      "clutchStat": 51,
+      "utilityStat": 86,
+      "firepowerStat": 89,
+      "gameBreakerStat": 58
     },
     {
       "id": "xielo",
@@ -2454,7 +3373,13 @@
       "age": 20,
       "birthDate": "2006-01-28",
       "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 1,
+      "breakthroughStat": 51,
+      "tradeStat": 45,
+      "clutchStat": 31,
+      "utilityStat": 41,
+      "firepowerStat": 32,
+      "gameBreakerStat": 74
     },
     {
       "id": "xkacpersky",
@@ -2472,7 +3397,13 @@
       "age": 19,
       "birthDate": "2006-10-22",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F31A5F52BA1F4F28BD8351E6EF7CDB8E-1765835304437.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 64,
+      "tradeStat": 21,
+      "clutchStat": 44,
+      "utilityStat": 44,
+      "firepowerStat": 77,
+      "gameBreakerStat": 21
     },
     {
       "id": "yekindar",
@@ -2491,13 +3422,20 @@
       "age": 26,
       "birthDate": "1999-10-04",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 2
+      "sniperStat": 2,
+      "breakthroughStat": 93,
+      "tradeStat": 22,
+      "clutchStat": 46,
+      "utilityStat": 89,
+      "firepowerStat": 78,
+      "gameBreakerStat": 51
     },
     {
       "id": "yuurih",
       "name": "yuurih",
       "aliases": [
-        "yuurih"
+        "yuurih",
+        "尤里"
       ],
       "team": "FURIA",
       "nationality": "巴西",
@@ -2509,14 +3447,21 @@
       "age": 26,
       "birthDate": "1999-12-22",
       "imageUrl": "https://cdn.wmpvp.com/appengine/F444752AB8F344CEB033773B27110DEB-1782337080564.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 13,
+      "tradeStat": 57,
+      "clutchStat": 87,
+      "utilityStat": 55,
+      "firepowerStat": 36,
+      "gameBreakerStat": 42
     },
     {
       "id": "z4kr",
       "name": "z4KR",
       "aliases": [
         "z4kr",
-        "z4KR"
+        "z4KR",
+        "三叶"
       ],
       "team": "Lynn Vision",
       "nationality": "中国",
@@ -2527,14 +3472,21 @@
       "age": 23,
       "birthDate": "2002-11-14",
       "imageUrl": "https://cdn.wmpvp.com/appengine/E30F29DB437A4AC2ADA2B35788161EAE-1782336921524.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 94
+      "sniperStat": 94,
+      "breakthroughStat": 89,
+      "tradeStat": 45,
+      "clutchStat": 70,
+      "utilityStat": 60,
+      "firepowerStat": 80,
+      "gameBreakerStat": 30
     },
     {
       "id": "zero",
       "name": "Zero",
       "aliases": [
         "zero",
-        "Zero"
+        "Zero",
+        "零皇"
       ],
       "team": "TYLOO",
       "nationality": "中国",
@@ -2545,13 +3497,20 @@
       "age": 20,
       "birthDate": "2005-08-31",
       "imageUrl": "https://cdn.wmpvp.com/appengine/6BB904265FDF4C5BA8A4138079D08F74-1782336942991.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 31,
+      "tradeStat": 68,
+      "clutchStat": 41,
+      "utilityStat": 31,
+      "firepowerStat": 59,
+      "gameBreakerStat": 81
     },
     {
       "id": "zont1x",
       "name": "zont1x",
       "aliases": [
-        "zont1x"
+        "zont1x",
+        "宗主"
       ],
       "team": "Spirit",
       "nationality": "乌克兰",
@@ -2562,7 +3521,13 @@
       "age": 20,
       "birthDate": "2005-07-20",
       "imageUrl": "https://cdn.wmpvp.com/appengine/9A812475A0F44AB1937495B22392AA90-1782337276246.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 0
+      "sniperStat": 0,
+      "breakthroughStat": 27,
+      "tradeStat": 29,
+      "clutchStat": 46,
+      "utilityStat": 73,
+      "firepowerStat": 29,
+      "gameBreakerStat": 65
     },
     {
       "id": "zorte",
@@ -2579,13 +3544,21 @@
       "age": 28,
       "birthDate": "1998-05-27",
       "imageUrl": "https://cdn.wmpvp.com/appengine/BF5D6A679101467EB48B8C6B45F2FA9D-1765834250910.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 92
+      "sniperStat": 92,
+      "breakthroughStat": 60,
+      "tradeStat": 58,
+      "clutchStat": 56,
+      "utilityStat": 58,
+      "firepowerStat": 46,
+      "gameBreakerStat": 16
     },
     {
       "id": "zweih",
       "name": "zweih",
       "aliases": [
-        "zweih"
+        "zweih",
+        "紫薇",
+        "天蓬元帅"
       ],
       "team": "PVISION",
       "nationality": "俄罗斯",
@@ -2596,14 +3569,22 @@
       "age": 18,
       "birthDate": "2007-09-19",
       "imageUrl": "https://cdn.wmpvp.com/appengine/216F5D62E78244EE86C4EA7A784FBF9E-1765834410024.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 4
+      "sniperStat": 4,
+      "breakthroughStat": 17,
+      "tradeStat": 52,
+      "clutchStat": 43,
+      "utilityStat": 64,
+      "firepowerStat": 44,
+      "gameBreakerStat": 36
     },
     {
       "id": "zywoo",
       "name": "ZywOo",
       "aliases": [
         "zywoo",
-        "ZywOo"
+        "ZywOo",
+        "载物",
+        "蜀黍"
       ],
       "team": "Vitality",
       "nationality": "法国",
@@ -2615,7 +3596,13 @@
       "age": 25,
       "birthDate": "2000-11-09",
       "imageUrl": "https://cdn.wmpvp.com/appengine/20920D8C531F445E9F6742427EB77C99-1782337333296.png?x-oss-process=image/resize,w_280",
-      "sniperStat": 90
+      "sniperStat": 91,
+      "breakthroughStat": 85,
+      "tradeStat": 54,
+      "clutchStat": 76,
+      "utilityStat": 58,
+      "firepowerStat": 98,
+      "gameBreakerStat": 33
     }
   ],
   "meta": {

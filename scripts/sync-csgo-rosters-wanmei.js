@@ -89,8 +89,18 @@ function mergeEntry(scraped, existing, teamFallback) {
     position: positionToZh(scraped.position || existing?.position || 'Rifler'),
   };
 
-  if (scraped.sniperStat != null) entry.sniperStat = scraped.sniperStat;
-  else if (reuseExisting && existing?.sniperStat != null) entry.sniperStat = existing.sniperStat;
+  for (const key of [
+    'firepowerStat',
+    'gameBreakerStat',
+    'sniperStat',
+    'breakthroughStat',
+    'tradeStat',
+    'clutchStat',
+    'utilityStat',
+  ]) {
+    if (scraped[key] != null) entry[key] = scraped[key];
+    else if (reuseExisting && existing?.[key] != null) entry[key] = existing[key];
+  }
 
   if (scraped.top20Summary) entry.top20Summary = scraped.top20Summary;
   else if (reuseExisting && existing?.top20Summary) entry.top20Summary = existing.top20Summary;

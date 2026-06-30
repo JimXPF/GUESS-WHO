@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import LivesHearts from './LivesHearts';
 
 interface Props {
   score: number;
@@ -46,11 +47,23 @@ export default function StatSidebar({
 
 export function AttemptsBadge({
   attemptsLeft,
+  maxAttempts = 10,
   pulse,
+  variant = 'attempts',
 }: {
   attemptsLeft: number;
+  maxAttempts?: number;
   pulse?: boolean;
+  variant?: 'attempts' | 'lives';
 }) {
+  if (variant === 'lives') {
+    return (
+      <div className="glass-card p-4 text-center hidden lg:block">
+        <LivesHearts lives={attemptsLeft} maxLives={maxAttempts} size="lg" pulse={pulse} />
+      </div>
+    );
+  }
+
   return (
     <div className="glass-card p-4 text-center hidden lg:block">
       <p className="text-xs text-apple-gray mb-1">剩余机会</p>
@@ -63,7 +76,7 @@ export function AttemptsBadge({
           className="text-4xl font-bold"
         >
           {attemptsLeft}
-          <span className="text-xl text-apple-gray font-normal">/10</span>
+          <span className="text-xl text-apple-gray font-normal">/{maxAttempts}</span>
         </motion.p>
       </AnimatePresence>
     </div>

@@ -2,12 +2,12 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getSession, getLeaderboard, SESSION_KEY } from '../api';
-import { GameSession, LeaderboardEntry, THEME_LABELS } from '../types';
+import { GameSession, THEME_LABELS, formatElapsedUs, isDailyEntry, LeaderboardRow } from '../types';
 
 export default function ResultPage() {
   const navigate = useNavigate();
   const [session, setSession] = useState<GameSession | null>(null);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardRow[]>([]);
 
   useEffect(() => {
     const id = localStorage.getItem(SESSION_KEY);
@@ -15,16 +15,18 @@ export default function ResultPage() {
       navigate('/');
       return;
     }
-    Promise.all([
-      getSession(id).catch(() => null),
-      getLeaderboard(15),
-    ])
-      .then(([s, lb]) => {
+    Promise.all([getSession(id).catch(() => null)])
+      .then(async ([s]) => {
         if (!s) {
           navigate('/');
           return;
         }
         setSession(s);
+        const lb = await getLeaderboard(
+          s.gameMode === 'daily-one' ? 'daily-one' : 'classic-six',
+          s.theme,
+          15
+        );
         setLeaderboard(lb);
       })
       .catch(() => navigate('/'));
@@ -37,6 +39,8 @@ export default function ResultPage() {
       </div>
     );
   }
+
+  const isDaily = session.gameMode === 'daily-one';
 
   return (
     <div className="min-h-[100dvh] overflow-y-auto px-4 py-6 safe-top safe-bottom sm:p-6">
@@ -57,22 +61,43 @@ export default function ResultPage() {
           </motion.div>
 
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">
-            {session.status === 'game_over' ? '游戏结束' : '已退出游戏'}
+            {session.status === 'failed'
+              ? '挑战失败'
+              : session.status === 'game_over'
+                ? isDaily
+                  ? '今日挑战完成'
+                  : '游戏结束'
+                : '已退出游戏'}
           </h1>
           <p className="text-apple-gray text-sm sm:text-base mb-5 sm:mb-6">
             {session.playerName}，本轮成绩
           </p>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
-            <div className="bg-apple-bg rounded-xl p-4 sm:p-5">
-              <p className="text-xs sm:text-sm text-apple-gray mb-1">总分</p>
-              <p className="text-3xl sm:text-4xl font-bold text-apple-blue">{session.score}</p>
+          {isDaily ? (
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
+              <div className="bg-apple-bg rounded-xl p-4 sm:p-5">
+                <p className="text-xs sm:text-sm text-apple-gray mb-1">使用轮次</p>
+                <p className="text-3xl sm:text-4xl font-bold text-apple-blue">{session.questionAttempts}</p>
+              </div>
+              <div className="bg-apple-bg rounded-xl p-4 sm:p-5">
+                <p className="text-xs sm:text-sm text-apple-gray mb-1">耗时</p>
+                <p className="text-xl sm:text-2xl font-bold text-apple-green">
+                  {session.elapsedUs != null ? formatElapsedUs(session.elapsedUs) : '--'}
+                </p>
+              </div>
             </div>
-            <div className="bg-apple-bg rounded-xl p-4 sm:p-5">
-              <p className="text-xs sm:text-sm text-apple-gray mb-1">答对题数</p>
-              <p className="text-3xl sm:text-4xl font-bold text-apple-green">{session.correctCount}</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
+              <div className="bg-apple-bg rounded-xl p-4 sm:p-5">
+                <p className="text-xs sm:text-sm text-apple-gray mb-1">总分</p>
+                <p className="text-3xl sm:text-4xl font-bold text-apple-blue">{session.score}</p>
+              </div>
+              <div className="bg-apple-bg rounded-xl p-4 sm:p-5">
+                <p className="text-xs sm:text-sm text-apple-gray mb-1">答对题数</p>
+                <p className="text-3xl sm:text-4xl font-bold text-apple-green">{session.correctCount}</p>
+              </div>
             </div>
-          </div>
+          )}
 
           <button
             type="button"
@@ -82,7 +107,7 @@ export default function ResultPage() {
               navigate('/');
             }}
           >
-            再玩一次
+            回到首页
           </button>
         </motion.div>
 
@@ -130,10 +155,23 @@ export default function ResultPage() {
                       </span>
                     </div>
                     <div className="flex flex-col items-end sm:flex-row sm:items-center gap-0.5 sm:gap-4 shrink-0">
-                      <span className="font-semibold text-apple-blue">{entry.totalScore}</span>
-                      <span className="text-apple-green text-xs sm:w-12 sm:text-right">
-                        {entry.correctCount} 题
-                      </span>
+                      {isDaily && isDailyEntry(entry) ? (
+                        <>
+                          <span className="font-semibold text-apple-blue">{entry.attemptsUsed} 轮</span>
+                          <span className="text-apple-green text-xs sm:text-right">
+                            {formatElapsedUs(entry.elapsedUs)}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-semibold text-apple-blue">
+                            {'totalScore' in entry ? entry.totalScore : '-'}
+                          </span>
+                          <span className="text-apple-green text-xs sm:w-12 sm:text-right">
+                            {'correctCount' in entry ? `${entry.correctCount} 题` : ''}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                 );

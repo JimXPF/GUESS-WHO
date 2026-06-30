@@ -1,21 +1,25 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { startGame, SESSION_KEY } from '../api';
+import { useEffect, useState } from 'react';
+import { ApiError, getDailyToday, startGame, SESSION_KEY } from '../api';
 import {
   GAME_MODE_LABELS,
   GameMode,
+  MODE_ICONS,
   THEME_ICONS,
   THEME_LABELS,
   Theme,
 } from '../types';
 
-const MODES: GameMode[] = ['classic-six'];
+const SINGLE_PLAYER_MODES: GameMode[] = [
+  'classic-six',
+  'daily-one',
+  'progressive-hint',
+  'reverse-bomb',
+];
+const MULTI_MODES: GameMode[] = ['battle', 'relay-chain'];
+const MODES: GameMode[] = [...SINGLE_PLAYER_MODES, ...MULTI_MODES];
 const THEMES: Theme[] = ['csgo', 'football', 'nba', 'pokemon', 'anime'];
-
-const MODE_ICONS: Record<GameMode, string> = {
-  'classic-six': '🎯',
-};
 
 function optionClass(selected: boolean, compact = false) {
   return `${
@@ -34,6 +38,40 @@ export default function HomePage() {
   const [theme, setTheme] = useState<Theme>('csgo');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [dailyCompleted, setDailyCompleted] = useState(false);
+  const [dailyInProgress, setDailyInProgress] = useState(false);
+
+  const isMulti = MULTI_MODES.includes(gameMode);
+  const isDaily = gameMode === 'daily-one';
+
+  useEffect(() => {
+    if (!isDaily) {
+      setDailyCompleted(false);
+      setDailyInProgress(false);
+      return;
+    }
+    let cancelled = false;
+    getDailyToday(theme)
+      .then((info) => {
+        if (cancelled) return;
+        setDailyCompleted(info.completed);
+        setDailyInProgress(Boolean(info.inProgress && info.sessionId));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setDailyCompleted(false);
+          setDailyInProgress(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isDaily, theme]);
+
+  const goToDailyResult = (sessionId: string) => {
+    localStorage.setItem(SESSION_KEY, sessionId);
+    navigate('/result');
+  };
 
   const handleStart = async () => {
     if (!name.trim()) {
@@ -43,15 +81,50 @@ export default function HomePage() {
     setLoading(true);
     setError('');
     try {
+      if (isMulti) {
+        localStorage.setItem('guess-who-player-name', name.trim());
+        localStorage.setItem('guess-who-lobby-theme', theme);
+        localStorage.setItem('guess-who-lobby-mode', gameMode);
+        navigate('/lobby');
+        return;
+      }
+
+      if (isDaily) {
+        const info = await getDailyToday(theme);
+        if (info.completed && info.sessionId) {
+          goToDailyResult(info.sessionId);
+          return;
+        }
+        if (info.inProgress && info.sessionId) {
+          localStorage.setItem(SESSION_KEY, info.sessionId);
+          navigate('/game');
+          return;
+        }
+      }
+
       const session = await startGame(name.trim(), theme, gameMode);
       localStorage.setItem(SESSION_KEY, session.sessionId);
       navigate('/game');
     } catch (e) {
+      if (e instanceof ApiError && e.code === 'DAILY_ALREADY_PLAYED' && e.sessionId) {
+        goToDailyResult(e.sessionId);
+        return;
+      }
       setError((e as Error).message);
     } finally {
       setLoading(false);
     }
   };
+
+  const startLabel = loading
+    ? '准备中...'
+    : isMulti
+      ? '进入房间'
+      : isDaily && dailyCompleted
+        ? '查看今日成绩'
+        : isDaily && dailyInProgress
+          ? '继续今日挑战'
+          : '开始游戏';
 
   return (
     <div className="min-h-[100dvh] flex flex-col items-center justify-center px-4 py-6 safe-top safe-bottom sm:p-6">
@@ -73,9 +146,7 @@ export default function HomePage() {
 
         <div className="glass-card p-5 sm:p-8 space-y-5 sm:space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">
-              你的昵称
-            </label>
+            <label className="block text-sm font-medium text-gray-600 mb-2">你的昵称</label>
             <input
               className="input-field"
               placeholder="输入昵称开始游戏"
@@ -124,12 +195,14 @@ export default function HomePage() {
             </div>
           </div>
 
+          {isDaily && dailyCompleted && (
+            <p className="text-sm text-apple-gray text-center">
+              今日该主题已完成挑战，每人每主题每日仅一次机会
+            </p>
+          )}
+
           {error && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-apple-red text-sm text-center"
-            >
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-apple-red text-sm text-center">
               {error}
             </motion.p>
           )}
@@ -141,15 +214,15 @@ export default function HomePage() {
             onClick={handleStart}
             disabled={loading}
           >
-            {loading ? '准备中...' : '开始游戏'}
+            {startLabel}
           </motion.button>
 
           <button
             type="button"
-            className="w-full min-h-[44px] text-apple-blue text-sm active:opacity-70 sm:hover:underline"
+            className="btn-pill-outline w-full min-h-[44px] text-sm"
             onClick={() => navigate('/leaderboard')}
           >
-            查看排行榜 →
+            查看排行榜
           </button>
         </div>
       </motion.div>

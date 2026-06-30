@@ -11,6 +11,8 @@ interface Props {
   loading: boolean;
   disabled: boolean;
   pulseAttempts?: boolean;
+  maxAttempts?: number;
+  useLivesHearts?: boolean;
   questionDone: boolean;
   onChange: (v: string) => void;
   onSubmit: (text: string, characterId?: string) => void;
@@ -26,6 +28,8 @@ export default function MobileGuessFooter({
   loading,
   disabled,
   pulseAttempts,
+  maxAttempts = 10,
+  useLivesHearts = false,
   questionDone,
   onChange,
   onSubmit,
@@ -34,19 +38,23 @@ export default function MobileGuessFooter({
   return (
     <div className="lg:hidden shrink-0 border-t border-gray-200/60 bg-white/95 backdrop-blur-xl safe-bottom">
       <div className="px-3 pt-2 pb-1 flex items-end justify-between gap-3">
-        <div>
-          <p className="text-[10px] text-apple-gray leading-none mb-0.5">剩余机会</p>
-          <motion.p
-            key={attemptsLeft}
-            initial={{ scale: pulseAttempts ? 1.2 : 1, color: pulseAttempts ? '#FF3B30' : '#111' }}
-            animate={{ scale: 1, color: '#111' }}
-            className="text-2xl font-bold leading-none"
-          >
-            {attemptsLeft}
-            <span className="text-base text-apple-gray font-normal">/10</span>
-          </motion.p>
-        </div>
-        <div className="text-right">
+        {!useLivesHearts ? (
+          <div>
+            <p className="text-[10px] text-apple-gray leading-none mb-0.5">剩余机会</p>
+            <motion.p
+              key={attemptsLeft}
+              initial={{ scale: pulseAttempts ? 1.2 : 1, color: pulseAttempts ? '#FF3B30' : '#111' }}
+              animate={{ scale: 1, color: '#111' }}
+              className="text-2xl font-bold leading-none"
+            >
+              {attemptsLeft}
+              <span className="text-base text-apple-gray font-normal">/{maxAttempts}</span>
+            </motion.p>
+          </div>
+        ) : (
+          <div className="min-w-0" aria-hidden />
+        )}
+        <div className="text-right ml-auto">
           <p className="text-[10px] text-apple-gray leading-none mb-0.5">本题已猜</p>
           <p className="text-lg font-semibold leading-none">{questionAttempts} 次</p>
         </div>

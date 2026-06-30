@@ -1,17 +1,15 @@
 /**
- * Fetch 2025+ regular-season games played (场次) from Hupu and record distribution.
+ * Fetch 2025+ games played (常规赛+季后赛) from Hupu into nba.json.
  *
  * Writes per player: currentSeasonGp, careerGpSince2025, maxCareerGpSince2025, bestGpSince2025
- * Writes audit report: server/data/nba-games-audit.json
  *
  * Usage:
  *   node scripts/backfill-nba-games-since-2025.js
  *   node scripts/backfill-nba-games-since-2025.js --limit 30
  *   node scripts/backfill-nba-games-since-2025.js --dry-run
- *   node scripts/backfill-nba-games-since-2025.js --all-roster   # include non-playable Hupu roster
+ *   node scripts/backfill-nba-games-since-2025.js --all-roster
+ *   node scripts/backfill-nba-games-since-2025.js --force
  */
-const fs = require('fs');
-const path = require('path');
 const { loadTheme, saveTheme } = require('./lib/theme-data');
 const {
   scrapeAllRosters,
@@ -19,12 +17,10 @@ const {
   launchBrowser,
   setupPage,
   toId,
+  normalizeSlug,
   normalizeName,
   sleep,
 } = require('./lib/hupu-nba');
-
-const ROOT = path.join(__dirname, '..');
-const AUDIT_PATH = path.join(ROOT, 'server', 'data', 'nba-games-audit.json');
 
 const LIMIT = (() => {
   const i = process.argv.indexOf('--limit');
@@ -95,7 +91,10 @@ async function main() {
   const urlByNormName = new Map();
   for (const r of allPlayers) {
     const slug = r.detailUrl.match(/\/players\/([a-z0-9]+)-\d+\.html/i)?.[1];
-    if (slug) urlById.set(slug, r.detailUrl);
+    if (slug) {
+      urlById.set(slug, r.detailUrl);
+      urlById.set(normalizeSlug(slug), r.detailUrl);
+    }
     urlByNormName.set(normalizeName(r.name), r.detailUrl);
   }
 
@@ -130,7 +129,9 @@ async function main() {
       const p = targets[i];
       const url =
         urlById.get(p.id) ||
+        urlById.get(normalizeSlug(p.id)) ||
         (p.englishName ? urlById.get(toId(p.englishName)) : null) ||
+        (p.englishName ? urlById.get(normalizeSlug(toId(p.englishName))) : null) ||
         urlByNormName.get(normalizeName(p.name));
 
       if (!url) {
@@ -213,10 +214,7 @@ async function main() {
     },
     zeroTotalGp: rows.filter((r) => r.totalGpSince2025 === 0).length,
     oneToFiveTotalGp: rows.filter((r) => r.totalGpSince2025 != null && r.totalGpSince2025 <= 5).length,
-    players: rows.sort((a, b) => (a.totalGpSince2025 ?? -1) - (b.totalGpSince2025 ?? -1)),
   };
-
-  fs.writeFileSync(AUDIT_PATH, JSON.stringify(audit, null, 2) + '\n', 'utf-8');
 
   console.log('\n=== totalGpSince2025 总场数分布 ===');
   for (const [k, v] of Object.entries(audit.histogramTotalGp)) {
@@ -224,8 +222,7 @@ async function main() {
   }
   console.log('\n总场数统计:', audit.statsTotalGp);
   console.log(`0 场: ${audit.zeroTotalGp}, ≤5 场: ${audit.oneToFiveTotalGp}`);
-  console.log(`\n写入 ${AUDIT_PATH}`);
-  if (!DRY_RUN) console.log('已更新 server/data/nba.json 中的场次字段');
+  if (!DRY_RUN) console.log('\n已更新 server/data/nba.json 中的场次字段');
 }
 
 main().catch((e) => {

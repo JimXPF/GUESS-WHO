@@ -24,9 +24,8 @@ function getDefensiveMultiplier(defenderTypes: string[], attackType: string): nu
   let mult = 1;
   for (const def of defenderTypes) {
     const row = chart[def];
-    if (!row) continue;
-    const m = row[attackType];
-    if (m !== undefined) mult *= m;
+    const m = row?.[attackType];
+    mult *= m !== undefined ? m : 1;
   }
   return mult;
 }
@@ -37,7 +36,8 @@ export function getPokemonWeaknesses(entry: CharacterEntry): string[] {
 
   const weak: string[] = [];
   for (const atk of allTypes) {
-    if (getDefensiveMultiplier(types, atk) >= 2) weak.push(atk);
+    const mult = getDefensiveMultiplier(types, atk);
+    if (mult >= 2 && mult > 0) weak.push(atk);
   }
   return weak;
 }
@@ -50,23 +50,17 @@ export function shouldShowWeaknessHint(activeFields: string[]): boolean {
   return !activeFields.some((f) => TYPE_FIELDS.has(f));
 }
 
+/** Bonus hints must appear in compare grid, except synthetic weaknessHint / moveHint when learnableMove is active */
 export function getPokemonBonusHintFields(activeFields: string[]): string[] {
-  const pool = [
-    'evolutionStage',
-    'ability',
-    'eggGroup',
-    'type2',
-    'category',
-    'moveHint',
-    'weaknessHint',
-  ].filter((f) => {
-    if (f === 'moveHint' || f === 'weaknessHint') return true;
-    if (activeFields.includes(f)) return false;
-    return !isPokemonHintFieldExcluded(f);
-  });
-
-  if (!shouldShowWeaknessHint(activeFields)) {
-    return pool.filter((f) => f !== 'weaknessHint');
+  const fromActive = activeFields.filter(
+    (f) => !isPokemonHintFieldExcluded(f) && f !== 'learnableMove'
+  );
+  const pool: string[] = [...fromActive];
+  if (activeFields.includes('learnableMove')) {
+    pool.push('moveHint');
+  }
+  if (shouldShowWeaknessHint(activeFields)) {
+    pool.push('weaknessHint');
   }
   return pool;
 }
@@ -90,10 +84,11 @@ export function buildPokemonWeaknessHint(answer: CharacterEntry): HintInfo {
   };
 }
 
-export function pickCompareMove(answer: CharacterEntry): string | null {
+export function pickCompareMove(answer: CharacterEntry, rng?: { next(): number }): string | null {
   const moves = (answer.gen3LevelMoves as string[] | undefined) ?? [];
   if (moves.length === 0) return null;
-  return moves[Math.floor(Math.random() * moves.length)];
+  const r = rng?.next() ?? Math.random();
+  return moves[Math.floor(r * moves.length)];
 }
 
 export function guessKnowsMove(entry: CharacterEntry, move: string): boolean {

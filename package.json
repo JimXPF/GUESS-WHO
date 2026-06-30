@@ -28,22 +28,24 @@
     "patch:csgo:team": "node scripts/patch-csgo-team.js",
     "reinfer:csgo:positions": "node scripts/reinfer-csgo-positions.js",
     "backfill:csgo:sniper-stats": "node scripts/backfill-csgo-sniper-stats.js --only-missing",
+    "backfill:csgo:radar-stats": "node scripts/backfill-csgo-radar-stats.js --only-missing",
     "patch:csgo:positions": "node scripts/patch-csgo-liquipedia.js --positions-only",
     "sync:pokemon": "node scripts/sync-pokemon-pokeapi.js",
     "patch:aliases": "node scripts/patch-search-aliases.js",
     "filter:football:leagues": "node scripts/filter-football-club-leagues.js"
   },
   "dependencies": {
-    "sql.js": "^1.11.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "socket.io": "^4.8.3",
+    "sql.js": "^1.11.0",
     "uuid": "^11.0.5"
   },
   "devDependencies": {
-    "@types/sql.js": "^1.4.9",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.5",
+    "@types/sql.js": "^1.4.9",
     "concurrently": "^9.1.2",
     "puppeteer": "^25.2.0",
     "tsx": "^4.19.2",

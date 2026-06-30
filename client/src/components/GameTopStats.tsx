@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import type { CorrectAnswerRecord } from '../types';
 import CorrectHistory from './CorrectHistory';
+import LivesHearts from './LivesHearts';
 
 interface Props {
   score: number;
@@ -13,6 +14,8 @@ interface Props {
   expanded: boolean;
   onToggle: () => void;
   pulseAttempts?: boolean;
+  maxAttempts?: number;
+  useLivesHearts?: boolean;
 }
 
 export default function GameTopStats({
@@ -26,6 +29,8 @@ export default function GameTopStats({
   expanded,
   onToggle,
   pulseAttempts,
+  maxAttempts = 10,
+  useLivesHearts = false,
 }: Props) {
   return (
     <div className="lg:hidden shrink-0 border-b border-gray-200/60 bg-white/90 backdrop-blur-xl">
@@ -79,16 +84,22 @@ export default function GameTopStats({
               </div>
 
               <div className="rounded-xl bg-apple-bg/80 px-3 py-2 flex items-center justify-between">
-                <span className="text-xs text-apple-gray">剩余机会（本局）</span>
-                <motion.span
-                  key={attemptsLeft}
-                  initial={{ scale: pulseAttempts ? 1.25 : 1 }}
-                  animate={{ scale: 1 }}
-                  className="text-xl font-bold"
-                >
-                  {attemptsLeft}
-                  <span className="text-sm text-apple-gray font-normal">/10</span>
-                </motion.span>
+                <span className="text-xs text-apple-gray">
+                  {useLivesHearts ? '剩余生命' : '剩余机会（本局）'}
+                </span>
+                {useLivesHearts ? (
+                  <LivesHearts lives={attemptsLeft} maxLives={maxAttempts} size="sm" pulse={pulseAttempts} />
+                ) : (
+                  <motion.span
+                    key={attemptsLeft}
+                    initial={{ scale: pulseAttempts ? 1.25 : 1 }}
+                    animate={{ scale: 1 }}
+                    className="text-xl font-bold"
+                  >
+                    {attemptsLeft}
+                    <span className="text-sm text-apple-gray font-normal">/{maxAttempts}</span>
+                  </motion.span>
+                )}
               </div>
 
               <div className="max-h-48 overflow-y-auto rounded-xl border border-gray-100 bg-white/70 p-3">

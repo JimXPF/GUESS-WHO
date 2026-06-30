@@ -1,46 +1,9 @@
 import { motion } from 'framer-motion';
 import type { FieldCompare } from '../types';
 import { RESULT_COLORS, RESULT_LABELS } from '../types';
+import CharacterAvatar from './CharacterAvatar';
 
-interface AvatarProps {
-  name: string;
-  imageUrl?: string | null;
-  size?: 'xs' | 'sm' | 'md';
-}
-
-export function CharacterAvatar({ name, imageUrl, size = 'sm' }: AvatarProps) {
-  const dim =
-    size === 'xs' ? 'w-7 h-7 text-[10px]' : size === 'sm' ? 'w-9 h-9 text-xs' : 'w-11 h-11 text-sm';
-  const initial = name.charAt(0);
-
-  if (imageUrl) {
-    return (
-      <img
-        src={imageUrl}
-        alt={name}
-        className={`${dim} rounded-full object-cover bg-gray-100 shrink-0 ring-1 ring-gray-200`}
-        loading="lazy"
-        onError={(e) => {
-          const el = e.target as HTMLImageElement;
-          el.replaceWith(
-            Object.assign(document.createElement('div'), {
-              className: `${dim} rounded-full bg-apple-blue/10 text-apple-blue font-semibold flex items-center justify-center shrink-0`,
-              textContent: initial,
-            })
-          );
-        }}
-      />
-    );
-  }
-
-  return (
-    <div
-      className={`${dim} rounded-full bg-apple-blue/10 text-apple-blue font-semibold flex items-center justify-center shrink-0`}
-    >
-      {initial}
-    </div>
-  );
-}
+export { default as CharacterAvatar } from './CharacterAvatar';
 
 const COL_WIDTH: Record<string, string> = {
   name: 'w-[120px]',

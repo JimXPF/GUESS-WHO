@@ -1,7 +1,44 @@
 export type Theme = 'csgo' | 'football' | 'nba' | 'anime' | 'pokemon';
-export type GameMode = 'classic-six';
+export type GameMode =
+  | 'classic-six'
+  | 'daily-one'
+  | 'progressive-hint'
+  | 'reverse-bomb'
+  | 'battle'
+  | 'relay-chain';
+
+export type ReverseOperator = '>=' | '<=' | '==' | '!=';
+
+export interface ReverseCondition {
+  field: string;
+  operator: ReverseOperator;
+  value: string | number;
+}
+
+export interface ReverseQueryRecord {
+  condition: ReverseCondition;
+  matched: boolean;
+  label: string;
+  displayValue: string | number;
+}
+
+export interface ReverseFieldMeta {
+  field: string;
+  label: string;
+  kind: 'numeric' | 'enum';
+}
+
+export type ReverseValuesResponse =
+  | { kind: 'enum'; values: string[] }
+  | { kind: 'numeric'; min: number; max: number };
+
+export interface PlayableCardSummary {
+  id: string;
+  name: string;
+  imageUrl: string | null;
+}
 export type CompareResult = 'hit' | 'close' | 'miss';
-export type SessionStatus = 'playing' | 'question_done' | 'game_over' | 'quit';
+export type SessionStatus = 'playing' | 'question_done' | 'game_over' | 'quit' | 'failed';
 
 export interface FieldCompare {
   field: string;
@@ -12,6 +49,7 @@ export interface FieldCompare {
   showAnswer: boolean;
   direction?: 'higher' | 'lower' | 'later' | 'earlier' | null;
   hint?: string | null;
+  claimedBy?: string | null;
 }
 
 export interface GuessRecord {
@@ -23,6 +61,7 @@ export interface GuessRecord {
   createdAt: string;
   questionIndex?: number;
   imageUrl?: string | null;
+  scoreDelta?: number;
 }
 
 export interface CorrectAnswerRecord {
@@ -37,6 +76,31 @@ export interface HintInfo {
   field: string;
   label: string;
   value: string | number | null;
+}
+
+export interface ProgressiveGuessEntry {
+  guessName: string;
+  guessId: string | null;
+  imageUrl?: string | null;
+  hintChecks: Array<{ field: string; label: string; hit: boolean }>;
+  allHintsHit: boolean;
+  livesLost: boolean;
+  isCorrect: boolean;
+}
+
+export interface ProgressiveRound {
+  hintIndex: number;
+  hint: HintInfo;
+  guesses: ProgressiveGuessEntry[];
+}
+
+export interface FieldClaim {
+  sessionId: string;
+  playerName: string;
+  round: number;
+  points: number;
+  field: string;
+  fieldLabel: string;
 }
 
 export interface GameSession {
@@ -58,20 +122,105 @@ export interface GameSession {
   lastGuessCorrect?: boolean;
   lastQuestionScore?: number;
   guessPlaceholder?: string;
+  showCompareGrid?: boolean;
+  elapsedUs?: number;
+  maxAttempts?: number;
+  roomCode?: string | null;
+  isMyTurn?: boolean;
+  currentTurnPlayer?: string | null;
+  fieldClaims?: FieldClaim[];
+  scoreBreakdown?: FieldClaim[];
+  progressiveRounds?: ProgressiveRound[];
+  progressiveLives?: number;
+  reverseQueries?: ReverseQueryRecord[];
+  reversePlayablePool?: PlayableCardSummary[];
+  reverseEliminatedIds?: string[];
+  finalGuessUsed?: boolean;
+  reverseFieldChoices?: ReverseFieldMeta[];
+  reverseRoundHistory?: ReverseRoundRecord[];
+  reversePhase?: 'filtering' | 'guessing';
+}
+
+export interface ReverseRoundRecord {
+  questionIndex: number;
+  answerName: string;
+  answerId: string;
+  imageUrl: string | null;
+  success: boolean;
+  autoDeduced?: boolean;
+  score: number;
+  guessedName?: string | null;
+  aliveCountAtEnd: number;
+  totalPool: number;
 }
 
 export interface LeaderboardEntry {
   id: number;
   playerName: string;
   theme: Theme;
+  gameMode?: GameMode;
   totalScore: number;
   correctCount: number;
   createdAt: string;
 }
 
+export interface DailyLeaderboardEntry {
+  id: number;
+  playerName: string;
+  theme: Theme;
+  challengeDate: string;
+  attemptsUsed: number;
+  elapsedUs: number;
+  completedAt: string;
+}
+
+export interface DailyTodayInfo {
+  challengeDate: string;
+  theme: Theme;
+  completed: boolean;
+  inProgress?: boolean;
+  sessionId?: string;
+  status?: SessionStatus;
+  bestAttempts?: number;
+  bestElapsedUs?: number;
+}
+
+export interface RoomPlayerState {
+  sessionId: string;
+  playerName: string;
+  score: number;
+  correctCount: number;
+  attemptsLeft: number;
+  questionIndex: number;
+  status: SessionStatus;
+  connected: boolean;
+  scoreBreakdown?: FieldClaim[];
+}
+
+export interface RoomState {
+  code: string;
+  mode: 'battle' | 'relay-chain';
+  theme: Theme;
+  maxPlayers: number;
+  status: 'waiting' | 'playing' | 'finished';
+  players: RoomPlayerState[];
+  currentTurnSessionId?: string | null;
+  currentTurnPlayer?: string | null;
+  fieldClaims?: FieldClaim[];
+  relayRound?: number;
+  finishReason?: string;
+}
+
 export const GAME_MODE_LABELS: Record<GameMode, string> = {
   'classic-six': '经典：六项提示',
+  'daily-one': '每日一题',
+  'progressive-hint': '逐步提示',
+  'reverse-bomb': '逆向轰炸',
+  battle: '对战模式',
+  'relay-chain': '接龙模式',
 };
+
+export const LEADERBOARD_MODES: GameMode[] = ['classic-six', 'daily-one'];
 
 export const THEME_LABELS: Record<Theme, string> = {
   csgo: 'CS 选手',
@@ -89,13 +238,32 @@ export const THEME_ICONS: Record<Theme, string> = {
   pokemon: '⚡',
 };
 
-export const MAX_ATTEMPTS = 10;
+export const MODE_ICONS: Record<GameMode, string> = {
+  'classic-six': '🎯',
+  'daily-one': '📅',
+  'progressive-hint': '🔍',
+  'reverse-bomb': '💣',
+  battle: '⚔️',
+  'relay-chain': '🔗',
+};
+
+export const PROGRESSIVE_LIVES = 3;
+export const REVERSE_QUERY_ATTEMPTS = 5;
 
 export function scoreForQuestion(attemptsUsed: number): number {
   if (attemptsUsed <= 1) return 500;
   if (attemptsUsed === 2) return 420;
   if (attemptsUsed === 3) return 340;
   return Math.max(100, 340 - (attemptsUsed - 3) * 55);
+}
+
+export function formatElapsedUs(us: number): string {
+  const totalMs = Math.floor(us / 1000);
+  const ms = Math.floor((us % 1_000_000) / 1000);
+  const sec = Math.floor(totalMs / 1000);
+  const min = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(min).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
 }
 
 export const RESULT_COLORS: Record<CompareResult, string> = {
@@ -109,3 +277,9 @@ export const RESULT_LABELS: Record<CompareResult, string> = {
   close: '接近',
   miss: '未命中',
 };
+
+export type LeaderboardRow = LeaderboardEntry | DailyLeaderboardEntry;
+
+export function isDailyEntry(entry: LeaderboardRow): entry is DailyLeaderboardEntry {
+  return 'attemptsUsed' in entry;
+}

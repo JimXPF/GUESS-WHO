@@ -136,6 +136,19 @@ function toId(en) {
     .replace(/^-|-$/g, '');
 }
 
+/** Hupu URL slugs omit hyphens (jarrettallen) while our ids use them (jarrett-allen). */
+function normalizeSlug(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/-/g, '');
+}
+
+function slugMatchesId(slug, id) {
+  if (!slug || !id) return false;
+  if (slug === id) return true;
+  return normalizeSlug(slug) === normalizeSlug(id);
+}
+
 function slugFromTeamUrl(url) {
   const m = String(url).match(/\/players\/([a-z0-9]+)$/i);
   return m ? m[1].toLowerCase() : null;
@@ -224,6 +237,33 @@ function countPlayoffSeasons(text) {
   return years.size;
 }
 
+/** Parse playoff career table rows from Hupu player detail page text. */
+function parseCareerPlayoffStats(text) {
+  const marker = '职业生涯季后赛平均数据';
+  const idx = text.indexOf(marker);
+  if (idx < 0) return [];
+
+  const block = text.slice(idx + marker.length);
+  const headerIdx = block.search(/赛季[\s\t]+球队/);
+  if (headerIdx < 0) return [];
+
+  const afterHeader = block.slice(headerIdx);
+  const end = afterHeader.search(
+    /\n(篮板排行榜|得分排行榜|助攻排行榜|抢断排行榜|盖帽排行榜|相关帖子|本赛季常规赛|职业生涯常规赛)/
+  );
+  const slice = end > 0 ? afterHeader.slice(0, end) : afterHeader.slice(0, 4000);
+
+  const rows = [];
+  for (const line of slice.split('\n')) {
+    const m = line.match(/^(20\d{2})[\t ]([^\t]+)[\t ](\d+)[\t ]/);
+    if (!m) continue;
+    const team = m[2].trim();
+    if (!team || team === '汇总' || team === '总计') continue;
+    rows.push({ year: Number(m[1]), team, games: Number(m[3]) });
+  }
+  return rows;
+}
+
 /** Parse regular-season career table rows from Hupu player detail page text. */
 function parseCareerRegularSeasonStats(text) {
   const markers = ['职业生涯常规赛平均数据', '常规赛平均数据'];
@@ -261,6 +301,59 @@ function parseCareerRegularSeasonYears(text) {
   return [...new Set(parseCareerRegularSeasonStats(text).map((r) => r.year))];
 }
 
+/** 本赛季季后赛「场次」from 本赛季季后赛平均数据 block */
+function parseCurrentSeasonPlayoffGames(text) {
+  const marker = '本赛季季后赛平均数据';
+  const idx = text.indexOf(marker);
+  if (idx < 0) return null;
+  const after = text.slice(idx + marker.length, idx + marker.length + 600);
+  for (const line of after.split('\n')) {
+    const m = line.match(/^(\d+)\t[\d.]+\t/);
+    if (m) return Number(m[1]);
+  }
+  return null;
+}
+
+/** Infer Hupu season year for 本赛季 blocks when career table is truncated. */
+function inferCurrentSeasonYear(texts) {
+  let maxYear = 0;
+  for (const t of texts) {
+    for (const y of parseCareerRegularSeasonYears(t)) {
+      if (y > maxYear) maxYear = y;
+    }
+  }
+  if (maxYear >= 2025) return maxYear;
+  if (maxYear > 0 && maxYear < 2025) return 2025;
+  return 2025;
+}
+
+function applyCurrentSeasonFallback(byYear, texts, minYear = 2025) {
+  let regularGp = null;
+  let playoffGp = null;
+  for (const t of texts) {
+    const rg = parseCurrentSeasonGames(t);
+    if (rg != null) regularGp = rg;
+    const pg = parseCurrentSeasonPlayoffGames(t);
+    if (pg != null) playoffGp = pg;
+  }
+  if (regularGp == null && playoffGp == null) return;
+
+  const year = inferCurrentSeasonYear(texts);
+  if (year < minYear) return;
+
+  const prev = byYear.get(year);
+  const regularGames = Math.max(prev?.regularGames || 0, regularGp || 0);
+  const playoffGames = Math.max(prev?.playoffGames || 0, playoffGp || 0);
+  if (regularGames === 0 && playoffGames === 0) return;
+
+  byYear.set(year, {
+    year,
+    team: prev?.team || '',
+    regularGames,
+    playoffGames,
+  });
+}
+
 /** 本赛季常规赛「场次」from 本赛季常规赛平均数据 block */
 function parseCurrentSeasonGames(text) {
   const marker = '本赛季常规赛平均数据';
@@ -274,26 +367,70 @@ function parseCurrentSeasonGames(text) {
   return null;
 }
 
-function summarizeGamesSince2025(initialText, regularText, minYear = 2025) {
-  let currentSeasonGp = null;
-  for (const t of [initialText, regularText]) {
-    const gp = parseCurrentSeasonGames(t);
-    if (gp != null) currentSeasonGp = gp;
+function mergeYearGames(byYear, row, kind) {
+  const prev = byYear.get(row.year);
+  if (!prev) {
+    byYear.set(row.year, {
+      year: row.year,
+      team: row.team,
+      regularGames: kind === 'regular' ? row.games : 0,
+      playoffGames: kind === 'playoff' ? row.games : 0,
+    });
+    return;
   }
+  if (kind === 'regular') {
+    prev.regularGames = Math.max(prev.regularGames || 0, row.games);
+    if (!prev.team) prev.team = row.team;
+  } else {
+    prev.playoffGames = (prev.playoffGames || 0) + row.games;
+    if (!prev.team) prev.team = row.team;
+  }
+}
+
+function finalizeYearGames(byYear) {
+  return [...byYear.values()]
+    .map((r) => ({
+      year: r.year,
+      team: r.team,
+      regularGames: r.regularGames || 0,
+      playoffGames: r.playoffGames || 0,
+      games: (r.regularGames || 0) + (r.playoffGames || 0),
+    }))
+    .sort((a, b) => a.year - b.year);
+}
+
+function summarizeGamesSince2025(...texts) {
+  const minYear = 2025;
+  const parts = texts.filter(Boolean);
+  let currentSeasonRegular = null;
+  let currentSeasonPlayoff = null;
+  for (const t of parts) {
+    const rg = parseCurrentSeasonGames(t);
+    if (rg != null) currentSeasonRegular = rg;
+    const pg = parseCurrentSeasonPlayoffGames(t);
+    if (pg != null) currentSeasonPlayoff = pg;
+  }
+  const currentSeasonGp =
+    currentSeasonRegular != null || currentSeasonPlayoff != null
+      ? (currentSeasonRegular || 0) + (currentSeasonPlayoff || 0)
+      : null;
 
   const byYear = new Map();
-  for (const t of [initialText, regularText]) {
+  for (const t of parts) {
     for (const row of parseCareerRegularSeasonStats(t)) {
       if (row.year < minYear) continue;
-      const prev = byYear.get(row.year);
-      if (!prev || row.games > prev.games) byYear.set(row.year, row);
+      mergeYearGames(byYear, row, 'regular');
+    }
+    for (const row of parseCareerPlayoffStats(t)) {
+      if (row.year < minYear) continue;
+      mergeYearGames(byYear, row, 'playoff');
     }
   }
+  applyCurrentSeasonFallback(byYear, parts, minYear);
 
-  const careerGpSince2025 = [...byYear.values()].sort((a, b) => a.year - b.year);
-  const maxCareerGpSince2025 = careerGpSince2025.length
-    ? Math.max(...careerGpSince2025.map((r) => r.games))
-    : null;
+  const careerGpSince2025 = finalizeYearGames(byYear);
+  const seasonTotals = careerGpSince2025.map((r) => r.games);
+  const maxCareerGpSince2025 = seasonTotals.length ? Math.max(...seasonTotals) : null;
 
   const candidates = [currentSeasonGp, maxCareerGpSince2025].filter((n) => n != null && n >= 0);
   const bestGpSince2025 = candidates.length ? Math.max(...candidates) : null;
@@ -327,8 +464,21 @@ function hasCurrentSeasonRegularStats(text) {
   return /\n\d+\t[\d.]+\t/.test(after);
 }
 
+function hasCareerPlayoffDataSince(text, minYear = 2025) {
+  return parseCareerPlayoffStats(text).some((r) => r.year >= minYear);
+}
+
+function hasCurrentSeasonPlayoffStats(text) {
+  return parseCurrentSeasonPlayoffGames(text) != null;
+}
+
 function hasCareerSince2025(text) {
-  return hasCareerDataSince(text, 2025) || hasCurrentSeasonRegularStats(text);
+  return (
+    hasCareerDataSince(text, 2025) ||
+    hasCareerPlayoffDataSince(text, 2025) ||
+    hasCurrentSeasonRegularStats(text) ||
+    hasCurrentSeasonPlayoffStats(text)
+  );
 }
 
 async function clickCareerRegularTab(page) {
@@ -345,6 +495,49 @@ async function clickCareerRegularTab(page) {
     candidates[candidates.length - 1].click();
     return true;
   });
+}
+
+async function clickCurrentSeasonRegularTab(page) {
+  return page.evaluate(() => {
+    for (const el of document.querySelectorAll('a, span, div, li, button')) {
+      const t = (el.textContent || '').trim();
+      if (t.endsWith('常规赛表现') && !t.includes('生涯') && !t.includes('季后赛')) {
+        el.click();
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+async function clickCurrentSeasonPlayoffTab(page) {
+  return page.evaluate(() => {
+    for (const el of document.querySelectorAll('a, span, div, li, button')) {
+      const t = (el.textContent || '').trim();
+      if (t.endsWith('季后赛表现') && !t.includes('生涯') && !t.includes('常规赛')) {
+        el.click();
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
+async function clickExpandMore(page, maxClicks = 4) {
+  for (let i = 0; i < maxClicks; i++) {
+    const clicked = await page.evaluate(() => {
+      for (const el of document.querySelectorAll('a, span, div, button')) {
+        const t = (el.textContent || '').trim();
+        if (t === '+ 展开更多' || t === '展开更多' || t.startsWith('+ 展开')) {
+          el.click();
+          return true;
+        }
+      }
+      return false;
+    });
+    if (!clicked) break;
+    await sleep(600);
+  }
 }
 
 async function clickCareerPlayoffTab(page) {
@@ -443,15 +636,33 @@ async function fetchPlayerDetail(page, detailUrl, options = {}) {
 
   await page.goto(detailUrl, { waitUntil, timeout });
   await sleep(options.postWait ?? 900);
+  await clickExpandMore(page, 3);
 
+  const pageTexts = [];
   const initialText = await page.evaluate(() => document.body.innerText || '');
+  pageTexts.push(initialText);
+
+  await clickCurrentSeasonRegularTab(page);
+  await sleep(800);
+  await clickExpandMore(page, 2);
+  pageTexts.push(await page.evaluate(() => document.body.innerText || ''));
+
+  await clickCurrentSeasonPlayoffTab(page);
+  await sleep(800);
+  await clickExpandMore(page, 2);
+  pageTexts.push(await page.evaluate(() => document.body.innerText || ''));
 
   await clickCareerRegularTab(page);
   await sleep(options.regularTabWait ?? 1200);
+  await clickExpandMore(page, 2);
   const regularText = await page.evaluate(() => document.body.innerText || '');
+  pageTexts.push(regularText);
 
   await clickCareerPlayoffTab(page);
   await sleep(options.playoffTabWait ?? 1200);
+  await clickExpandMore(page, 2);
+  const playoffText = await page.evaluate(() => document.body.innerText || '');
+  pageTexts.push(playoffText);
 
   const raw = await page.evaluate(() => {
     const text = document.body.innerText || '';
@@ -490,24 +701,24 @@ async function fetchPlayerDetail(page, detailUrl, options = {}) {
   });
 
   const careerRegularYears = [
-    ...new Set([
-      ...parseCareerRegularSeasonYears(initialText),
-      ...parseCareerRegularSeasonYears(regularText),
-    ]),
+    ...new Set(pageTexts.flatMap((t) => parseCareerRegularSeasonYears(t))),
   ].sort((a, b) => a - b);
 
-  const gamesSince2025 = summarizeGamesSince2025(initialText, regularText, 2025);
+  const gamesSince2025 = summarizeGamesSince2025(...pageTexts);
+
+  const allTexts = [...pageTexts, raw.pageText];
 
   return {
     ...raw,
     height: parseHeightCm(raw.heightRaw),
     position: parsePosition(raw.positionRaw),
     draft: parseDraft(raw.draftRaw),
-    playoffCount: countPlayoffSeasons(raw.pageText),
+    playoffCount: countPlayoffSeasons(
+      [initialText, regularText, playoffText, raw.pageText].join('\n')
+    ),
     careerRegularYears,
     ...gamesSince2025,
-    hasCareerSince2025:
-      hasCareerSince2025(initialText) || hasCareerSince2025(regularText),
+    hasCareerSince2025: allTexts.some((t) => hasCareerSince2025(t)),
   };
 }
 
@@ -582,20 +793,29 @@ module.exports = {
   normalizeName,
   hupuNameToStandard,
   toId,
+  normalizeSlug,
+  slugMatchesId,
   mapTeamZh,
   parsePosition,
   parseHeightCm,
   parseDraft,
   countPlayoffSeasons,
   parseCareerRegularSeasonStats,
+  parseCareerPlayoffStats,
   parseCareerRegularSeasonYears,
   parseCurrentSeasonGames,
+  parseCurrentSeasonPlayoffGames,
   summarizeGamesSince2025,
+  hasCareerPlayoffDataSince,
+  hasCurrentSeasonPlayoffStats,
+  clickExpandMore,
   hasCareerDataSince,
   hasCurrentSeasonRegularStats,
   hasCareerSince2025,
   clickCareerRegularTab,
   clickCareerPlayoffTab,
+  clickCurrentSeasonRegularTab,
+  clickCurrentSeasonPlayoffTab,
   ageFromBirthday,
   launchBrowser,
   setupPage,

@@ -25,6 +25,10 @@ function mergeAliases(existing, additions) {
 }
 
 function patchCsgo() {
+  if (!fs.existsSync(CSGO_NICK)) {
+    console.warn(`[csgo] skip — nicknames file missing: ${CSGO_NICK}`);
+    return;
+  }
   const raw = JSON.parse(fs.readFileSync(CSGO_PATH, 'utf-8'));
   const nickMap = JSON.parse(fs.readFileSync(CSGO_NICK, 'utf-8'));
   delete nickMap._comment;

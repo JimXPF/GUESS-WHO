@@ -180,6 +180,76 @@ export async function initDatabase(): Promise<void> {
   try {
     _db.run('ALTER TABLE sessions ADD COLUMN question_compare_move TEXT');
   } catch { /* exists */ }
+  try {
+    _db.run("ALTER TABLE leaderboard ADD COLUMN game_mode TEXT NOT NULL DEFAULT 'classic-six'");
+  } catch { /* exists */ }
+  try {
+    _db.run('ALTER TABLE sessions ADD COLUMN started_at_hrtime TEXT');
+  } catch { /* exists */ }
+  try {
+    _db.run('ALTER TABLE sessions ADD COLUMN elapsed_us INTEGER');
+  } catch { /* exists */ }
+  try {
+    _db.run("ALTER TABLE sessions ADD COLUMN progressive_state TEXT NOT NULL DEFAULT '{}'");
+  } catch { /* exists */ }
+  try {
+    _db.run('ALTER TABLE sessions ADD COLUMN room_code TEXT');
+  } catch { /* exists */ }
+
+  _db.run(`
+    CREATE TABLE IF NOT EXISTS daily_challenges (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      challenge_date TEXT NOT NULL,
+      theme TEXT NOT NULL,
+      answer_id TEXT NOT NULL,
+      hint_field TEXT NOT NULL,
+      extra_hint_fields TEXT NOT NULL DEFAULT '[]',
+      active_fields TEXT NOT NULL DEFAULT '[]',
+      question_compare_move TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(challenge_date, theme)
+    )
+  `);
+
+  _db.run(`
+    CREATE TABLE IF NOT EXISTS daily_leaderboard (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      challenge_date TEXT NOT NULL,
+      theme TEXT NOT NULL,
+      player_name TEXT NOT NULL,
+      attempts_used INTEGER NOT NULL,
+      elapsed_us INTEGER NOT NULL,
+      completed_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(challenge_date, theme, player_name)
+    )
+  `);
+
+  _db.run(`
+    CREATE TABLE IF NOT EXISTS daily_player_attempts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      challenge_date TEXT NOT NULL,
+      theme TEXT NOT NULL,
+      player_key TEXT NOT NULL,
+      player_name TEXT NOT NULL,
+      session_id TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'playing',
+      attempts_used INTEGER,
+      elapsed_us INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      completed_at TEXT,
+      UNIQUE(challenge_date, theme, player_key)
+    )
+  `);
+
+  try {
+    _db.run('CREATE INDEX IF NOT EXISTS idx_daily_attempts_session ON daily_player_attempts(session_id)');
+  } catch { /* exists */ }
+  try {
+    _db.run('CREATE INDEX IF NOT EXISTS idx_daily_lb ON daily_leaderboard(challenge_date, theme, attempts_used, elapsed_us)');
+  } catch { /* exists */ }
+  try {
+    _db.run('CREATE INDEX IF NOT EXISTS idx_leaderboard_mode ON leaderboard(game_mode, theme, total_score DESC)');
+  } catch { /* exists */ }
 
   flushDbSync();
   console.log(`[db] sql.js ready, path=${dbPath}, debounce=${SAVE_DEBOUNCE_MS}ms`);
@@ -206,11 +276,6 @@ function queryAll<T>(sql: string, params: SqlValue[] = []): T[] {
   }
   stmt.free();
   return results;
-}
-
-/** @deprecated 使用 flushDb；保留给测试 */
-export function saveDb(): void {
-  flushDbSync();
 }
 
 export const db = {

@@ -1,25 +1,34 @@
 import { Router } from 'express';
 import {
   getGameSession,
+  getReverseFieldsForSession,
+  getReverseValuesForSession,
   nextQuestion,
   quitGame,
   startGame,
   submitGuess,
+  submitReverseQuery,
 } from '../services/gameService';
 import { searchCharacters } from '../services/dataLoader';
-import { Theme } from '../types';
+import { DailyAlreadyPlayedError, GameMode, ReverseCondition, Theme } from '../types';
+import { getClientKey } from '../utils/clientKey';
 
 export const gameRouter = Router();
 
 const VALID_THEMES: Theme[] = ['csgo', 'football', 'nba', 'anime', 'pokemon'];
-const VALID_MODES = ['classic-six'] as const;
+const VALID_MODES: GameMode[] = [
+  'classic-six',
+  'daily-one',
+  'progressive-hint',
+  'reverse-bomb',
+];
 
 gameRouter.post('/start', (req, res) => {
   try {
     const { playerName, theme, gameMode } = req.body as {
       playerName?: string;
       theme?: Theme;
-      gameMode?: (typeof VALID_MODES)[number];
+      gameMode?: GameMode;
     };
     if (!playerName?.trim()) {
       return res.status(400).json({ error: '请输入昵称' });
@@ -27,10 +36,18 @@ gameRouter.post('/start', (req, res) => {
     if (!theme || !VALID_THEMES.includes(theme)) {
       return res.status(400).json({ error: '请选择有效主题' });
     }
-    const mode = gameMode && VALID_MODES.includes(gameMode) ? gameMode : 'classic-six';
-    const session = startGame(playerName, theme, mode);
+    const mode =
+      gameMode && VALID_MODES.includes(gameMode) ? gameMode : 'classic-six';
+    const session = startGame(playerName, theme, mode, getClientKey(req));
     res.json(session);
   } catch (e) {
+    if (e instanceof DailyAlreadyPlayedError) {
+      return res.status(409).json({
+        error: e.message,
+        code: e.code,
+        sessionId: e.sessionId,
+      });
+    }
     res.status(500).json({ error: (e as Error).message });
   }
 });
@@ -85,6 +102,54 @@ gameRouter.post('/quit', (req, res) => {
     res.json(session);
   } catch (e) {
     res.status(500).json({ error: (e as Error).message });
+  }
+});
+
+gameRouter.get('/reverse-fields', (req, res) => {
+  try {
+    const sessionId = String(req.query.sessionId || '');
+    if (!sessionId) return res.status(400).json({ error: '缺少 sessionId' });
+    const fields = getReverseFieldsForSession(sessionId);
+    res.json({ fields });
+  } catch (e) {
+    const msg = (e as Error).message;
+    if (msg === 'Session not found') return res.status(404).json({ error: msg });
+    res.status(400).json({ error: msg });
+  }
+});
+
+gameRouter.get('/reverse-values', (req, res) => {
+  try {
+    const sessionId = String(req.query.sessionId || '');
+    const field = String(req.query.field || '');
+    if (!sessionId || !field) {
+      return res.status(400).json({ error: '缺少 sessionId 或 field' });
+    }
+    const values = getReverseValuesForSession(sessionId, field);
+    res.json(values);
+  } catch (e) {
+    const msg = (e as Error).message;
+    if (msg === 'Session not found') return res.status(404).json({ error: msg });
+    res.status(400).json({ error: msg });
+  }
+});
+
+gameRouter.post('/reverse-query', (req, res) => {
+  try {
+    const { sessionId, condition } = req.body as {
+      sessionId?: string;
+      condition?: ReverseCondition;
+    };
+    if (!sessionId || !condition?.field || !condition?.operator) {
+      return res.status(400).json({ error: '缺少参数' });
+    }
+    const result = submitReverseQuery(sessionId, condition);
+    res.json(result);
+  } catch (e) {
+    const msg = (e as Error).message;
+    if (msg === 'Session not found') return res.status(404).json({ error: msg });
+    if (msg === '提问机会已用完') return res.status(409).json({ error: msg });
+    res.status(400).json({ error: msg });
   }
 });
 

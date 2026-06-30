@@ -32,6 +32,36 @@ function mergeEntry(scraped, existing, teamName) {
     position: positionToZh(scraped.position || 'Rifler'),
     ...(scraped.top20Summary ? { top20Summary: scraped.top20Summary } : {}),
     ...(scraped.sniperStat != null ? { sniperStat: scraped.sniperStat } : existing?.sniperStat != null ? { sniperStat: existing.sniperStat } : {}),
+    ...(scraped.firepowerStat != null
+      ? { firepowerStat: scraped.firepowerStat }
+      : existing?.firepowerStat != null
+        ? { firepowerStat: existing.firepowerStat }
+        : {}),
+    ...(scraped.gameBreakerStat != null
+      ? { gameBreakerStat: scraped.gameBreakerStat }
+      : existing?.gameBreakerStat != null
+        ? { gameBreakerStat: existing.gameBreakerStat }
+        : {}),
+    ...(scraped.breakthroughStat != null
+      ? { breakthroughStat: scraped.breakthroughStat }
+      : existing?.breakthroughStat != null
+        ? { breakthroughStat: existing.breakthroughStat }
+        : {}),
+    ...(scraped.tradeStat != null
+      ? { tradeStat: scraped.tradeStat }
+      : existing?.tradeStat != null
+        ? { tradeStat: existing.tradeStat }
+        : {}),
+    ...(scraped.clutchStat != null
+      ? { clutchStat: scraped.clutchStat }
+      : existing?.clutchStat != null
+        ? { clutchStat: existing.clutchStat }
+        : {}),
+    ...(scraped.utilityStat != null
+      ? { utilityStat: scraped.utilityStat }
+      : existing?.utilityStat != null
+        ? { utilityStat: existing.utilityStat }
+        : {}),
     ...(scraped.wanmeiId ? { wanmeiId: scraped.wanmeiId } : {}),
     ...(existing?.age != null ? { age: existing.age } : {}),
     ...(existing?.birthDate ? { birthDate: existing.birthDate } : {}),

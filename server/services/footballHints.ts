@@ -59,41 +59,60 @@ export function getClubLeagueHint(club: unknown, entry?: CharacterEntry): string
   return clubLeagues[name] || null;
 }
 
+export function hasValidFootballPrimaryHint(entry: CharacterEntry): boolean {
+  return Boolean(getConfederationHint(entry.nationalTeam) || resolveClubLeague(entry));
+}
+
 /** Whether this player may be chosen as a football question answer. */
 export function isPlayableFootballAnswer(entry: CharacterEntry): boolean {
-  if (allowedClubLeagueLabels.size === 0) return true;
+  const conf = getConfederationHint(entry.nationalTeam);
   const league = resolveClubLeague(entry);
-  return Boolean(league && allowedClubLeagueLabels.has(league));
+  if (!conf && !league) return false;
+  if (league && allowedClubLeagueLabels.size > 0 && !allowedClubLeagueLabels.has(league)) {
+    return Boolean(conf);
+  }
+  return true;
 }
 
-function preferLeagueHint(answer: CharacterEntry, hasLeague: boolean, hasConf: boolean): boolean {
-  if (!hasLeague) return false;
-  if (!hasConf) return true;
-  let hash = 0;
-  const key = String(answer.id || answer.name || '');
-  for (let i = 0; i < key.length; i++) hash = (hash + key.charCodeAt(i)) % 100;
-  return hash < 55;
+function pickRandomIndex(length: number, rng?: { next(): number }): number {
+  const r = rng?.next() ?? Math.random();
+  return Math.floor(r * length);
 }
 
-/** First football hint: confederation OR club league (prefer league when available). */
-export function buildFootballPrimaryHint(answer: CharacterEntry): HintInfo {
+/** First football hint: confederation OR club league with equal priority when both exist. */
+export function buildFootballPrimaryHint(
+  answer: CharacterEntry,
+  rng?: { next(): number },
+  forcedField?: 'confederation' | 'clubLeague'
+): HintInfo {
   const conf = getConfederationHint(answer.nationalTeam);
   const league = getClubLeagueHint(answer.club, answer);
 
-  const hasLeague = Boolean(league);
-  const hasConf = Boolean(conf);
-  const useLeague = preferLeagueHint(answer, hasLeague, hasConf);
+  const options: HintInfo[] = [];
+  if (league) {
+    options.push({ field: 'clubLeague', label: '所属联赛', value: league });
+  }
+  if (conf) {
+    options.push({ field: 'confederation', label: '所属足联', value: conf });
+  }
 
-  if (useLeague) {
-    return { field: 'clubLeague', label: '所属联赛', value: league! };
+  if (forcedField) {
+    const found = options.find((o) => o.field === forcedField);
+    if (found) return found;
   }
-  if (hasConf) {
-    return { field: 'confederation', label: '所属足联', value: conf! };
+
+  if (options.length === 0) {
+    return { field: 'confederation', label: '所属足联', value: '未知足联球员' };
   }
-  if (hasLeague) {
-    return { field: 'clubLeague', label: '所属联赛', value: league! };
-  }
-  return { field: 'confederation', label: '所属足联', value: '未知足联球员' };
+  if (options.length === 1) return options[0];
+  return options[pickRandomIndex(options.length, rng)];
+}
+
+export function buildFootballSyntheticHint(
+  answer: CharacterEntry,
+  field: 'confederation' | 'clubLeague'
+): HintInfo {
+  return buildFootballPrimaryHint(answer, undefined, field);
 }
 
 export function isFootballHintField(field: string): boolean {

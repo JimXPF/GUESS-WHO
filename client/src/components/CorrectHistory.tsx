@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import type { CorrectAnswerRecord, FieldCompare } from '../types';
-import { CharacterAvatar } from './GuessRow';
+import CharacterAvatar from './CharacterAvatar';
 
 interface Props {
   answers: CorrectAnswerRecord[];

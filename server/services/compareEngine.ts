@@ -224,6 +224,36 @@ const POKEMON_STAT_FIELDS = new Set([
   'speed',
 ]);
 
+function parseEggGroups(val: unknown): string[] {
+  return String(val ?? '')
+    .split('、')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/** Single vs dual egg group: shared group but different count → close with answer hint. */
+export function compareEggGroup(
+  guessValue: unknown,
+  answerValue: unknown
+): { result: CompareResult; hint?: string } {
+  const g = parseEggGroups(guessValue);
+  const a = parseEggGroups(answerValue);
+  if (g.length === 0 || a.length === 0) return { result: 'miss' };
+
+  const gKey = [...g].sort().join('|');
+  const aKey = [...a].sort().join('|');
+  if (gKey === aKey) return { result: 'hit' };
+
+  const shared = g.filter((x) => a.includes(x));
+  if (shared.length > 0 && g.length !== a.length) {
+    return {
+      result: 'close',
+      hint: `答案为${a.length >= 2 ? '双蛋群' : '单蛋群'}`,
+    };
+  }
+  return { result: 'miss' };
+}
+
 export function compareField(
   theme: Theme,
   field: string,
@@ -248,6 +278,10 @@ export function compareField(
 
   if (theme === 'nba' && field === 'draft') {
     return compareDraft(guessValue, answerValue);
+  }
+
+  if (theme === 'pokemon' && field === 'eggGroup') {
+    return compareEggGroup(guessValue, answerValue).result;
   }
 
   const rule = NUMERIC_RULES[theme]?.[field];

@@ -119,9 +119,9 @@ async function main() {
 
       if (detail.imageUrl) entry.imageUrl = detail.imageUrl;
 
+      // On Hupu roster ⇒ active NBA player. Career tab often omits 2024–25 rows in headless scrape.
       if (!detail.hasCareerSince2025) {
-        console.log(`  skip (no 2025+ career): ${nameStd}`);
-        continue;
+        console.log(`  roster fallback (no 2025 career row): ${nameStd}`);
       }
       entry.hasCareerSince2025 = true;
       if (detail.careerRegularYears?.length) {

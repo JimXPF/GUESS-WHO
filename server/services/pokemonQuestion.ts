@@ -8,6 +8,7 @@ import {
   pickCompareMove,
   shouldShowWeaknessHint,
 } from './pokemonHints';
+import { SeededRng, createSeededRng } from './seededRng';
 
 const STAT_FIELDS = [
   'baseStatTotal',
@@ -27,13 +28,7 @@ const OPTIONAL_FIELDS = [
   'eggGroup',
 ] as const;
 
-const PRIMARY_HINT_POOL = [
-  'category',
-  'evolutionStage',
-  'ability',
-  'eggGroup',
-  'moveHint',
-] as const;
+const PRIMARY_HINT_POOL = ['category', 'ability', 'eggGroup', 'moveHint'] as const;
 
 export type PokemonPrimaryHint = (typeof PRIMARY_HINT_POOL)[number];
 
@@ -44,17 +39,8 @@ export interface PokemonQuestionSetup {
   compareMove: string | null;
 }
 
-function shuffle<T>(arr: T[]): T[] {
-  const copy = [...arr];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
-
-function pickOne<T>(arr: readonly T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+function defaultRng(): SeededRng {
+  return createSeededRng(Math.floor(Math.random() * 0xffffffff));
 }
 
 /** 属性2 紧跟属性1，其余保持相对顺序 */
@@ -69,9 +55,9 @@ export function orderPokemonActiveFields(fields: string[]): string[] {
   return ordered.length ? ordered : others;
 }
 
-function pickCompareFields(primaryHint: PokemonPrimaryHint): string[] {
-  const statField = pickOne(STAT_FIELDS);
-  const optionalPool = shuffle([...OPTIONAL_FIELDS]);
+function pickCompareFields(primaryHint: PokemonPrimaryHint, rng: SeededRng): string[] {
+  const statField = rng.pickOne(STAT_FIELDS);
+  const optionalPool = rng.shuffle([...OPTIONAL_FIELDS]);
 
   if (primaryHint === 'moveHint') {
     const others = optionalPool.slice(0, 3);
@@ -79,18 +65,25 @@ function pickCompareFields(primaryHint: PokemonPrimaryHint): string[] {
   }
 
   const others = optionalPool.slice(0, 4);
-  return orderPokemonActiveFields(['type1', statField, ...others]);
+  let fields = orderPokemonActiveFields(['type1', statField, ...others]);
+  if (!fields.includes(primaryHint)) {
+    fields = orderPokemonActiveFields([...fields, primaryHint]);
+  }
+  return fields;
 }
 
-export function buildPokemonQuestion(answer: CharacterEntry): PokemonQuestionSetup {
-  const primaryHint = pickOne(PRIMARY_HINT_POOL);
-  const activeFields = pickCompareFields(primaryHint);
+export function buildPokemonQuestion(
+  answer: CharacterEntry,
+  rng: SeededRng = defaultRng()
+): PokemonQuestionSetup {
+  const primaryHint = rng.pickOne(PRIMARY_HINT_POOL);
+  const activeFields = pickCompareFields(primaryHint, rng);
   const compareMove =
-    primaryHint === 'moveHint' ? pickCompareMove(answer) : null;
+    primaryHint === 'moveHint' ? pickCompareMove(answer, rng) : null;
 
-  const extraHintFields = shuffle(
-    getPokemonBonusHintFields(activeFields).filter((f) => f !== primaryHint)
-  ).slice(0, 3);
+  const extraHintFields = rng
+    .shuffle(getPokemonBonusHintFields(activeFields).filter((f) => f !== primaryHint))
+    .slice(0, 3);
 
   return {
     hintField: primaryHint,

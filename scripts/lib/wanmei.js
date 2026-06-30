@@ -268,15 +268,28 @@ async function parsePlayerDetail(page) {
       }
     }
 
+    const abilities = {};
+    for (const head of document.querySelectorAll('.ability-head')) {
+      const label = head.querySelector('.ability-title')?.textContent?.trim();
+      const scoreText = head.querySelector('.score-value')?.textContent?.trim();
+      if (!label || scoreText == null || scoreText === '') continue;
+      const n = parseInt(scoreText, 10);
+      if (!Number.isNaN(n)) abilities[label] = n;
+    }
+
     const radar = {};
     for (const label of ['狙击', '突破', '补枪', '残局', '道具']) {
+      if (abilities[label] != null) {
+        radar[label] = abilities[label];
+        continue;
+      }
       const re = new RegExp(`${label}\\s*\\n\\s*(\\d+)`);
       const m = text.match(re);
       if (m) radar[label] = parseInt(m[1], 10);
     }
 
     let position = 'Rifler';
-    if ((radar['狙击'] || 0) >= 65) position = 'AWPer';
+    if ((abilities['狙击'] ?? radar['狙击'] ?? 0) >= 65) position = 'AWPer';
 
     const imgs = [...document.querySelectorAll('img')].filter((img) => {
       const src = img.src || '';
@@ -299,11 +312,12 @@ async function parsePlayerDetail(page) {
 
     const wanmeiId = (location.pathname.match(/\/players\/(\d+)/) || [])[1] || null;
 
-    return { name, team, nationality, position, src, rating, top20Text, wanmeiId, radar };
+    return { name, team, nationality, position, src, rating, top20Text, wanmeiId, radar, abilities };
   });
 
   const top20 = parseTop20FromText(raw.top20Text);
-  const sniperStat = raw.radar?.['狙击'] ?? null;
+  const radar = raw.radar || {};
+  const abilities = raw.abilities || {};
   return {
     name: raw.name,
     team: raw.team,
@@ -314,7 +328,15 @@ async function parsePlayerDetail(page) {
     top20Count: top20.top20Count,
     top20Summary: top20.top20Summary,
     wanmeiId: raw.wanmeiId,
-    sniperStat,
+    firepowerStat: abilities['火力值'] ?? null,
+    gameBreakerStat: abilities['破局'] ?? null,
+    sniperStat: abilities['狙击'] ?? radar['狙击'] ?? null,
+    breakthroughStat: abilities['突破'] ?? radar['突破'] ?? null,
+    tradeStat: abilities['补枪'] ?? radar['补枪'] ?? null,
+    clutchStat: abilities['残局'] ?? radar['残局'] ?? null,
+    utilityStat: abilities['道具'] ?? radar['道具'] ?? null,
+    radar,
+    abilities,
   };
 }
 
