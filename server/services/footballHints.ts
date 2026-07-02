@@ -59,19 +59,22 @@ export function getClubLeagueHint(club: unknown, entry?: CharacterEntry): string
   return clubLeagues[name] || null;
 }
 
-export function hasValidFootballPrimaryHint(entry: CharacterEntry): boolean {
-  return Boolean(getConfederationHint(entry.nationalTeam) || resolveClubLeague(entry));
+export function isAllowedClubLeague(league: string | null | undefined): boolean {
+  if (!league) return false;
+  if (allowedClubLeagueLabels.size === 0) return true;
+  return allowedClubLeagueLabels.has(league);
 }
 
-/** Whether this player may be chosen as a football question answer. */
+export function hasValidFootballPrimaryHint(entry: CharacterEntry): boolean {
+  return isPlayableFootballAnswer(entry);
+}
+
+/**
+ * 足球答案池（`filterAtQuestionTime`）：仅 meta.allowedClubLeagues 内联赛球员。
+ * 与首提示无关——首提示在已选答案上另随机联赛或足联（见 buildFootballPrimaryHint）。
+ */
 export function isPlayableFootballAnswer(entry: CharacterEntry): boolean {
-  const conf = getConfederationHint(entry.nationalTeam);
-  const league = resolveClubLeague(entry);
-  if (!conf && !league) return false;
-  if (league && allowedClubLeagueLabels.size > 0 && !allowedClubLeagueLabels.has(league)) {
-    return Boolean(conf);
-  }
-  return true;
+  return isAllowedClubLeague(resolveClubLeague(entry));
 }
 
 function pickRandomIndex(length: number, rng?: { next(): number }): number {
@@ -79,7 +82,7 @@ function pickRandomIndex(length: number, rng?: { next(): number }): number {
   return Math.floor(r * length);
 }
 
-/** First football hint: confederation OR club league with equal priority when both exist. */
+/** 首提示：在已选答案上，联赛与足联等概率二选一（两者皆有则 50/50）。 */
 export function buildFootballPrimaryHint(
   answer: CharacterEntry,
   rng?: { next(): number },
@@ -89,7 +92,7 @@ export function buildFootballPrimaryHint(
   const league = getClubLeagueHint(answer.club, answer);
 
   const options: HintInfo[] = [];
-  if (league) {
+  if (league && isAllowedClubLeague(league)) {
     options.push({ field: 'clubLeague', label: '所属联赛', value: league });
   }
   if (conf) {

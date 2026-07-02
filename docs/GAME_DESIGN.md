@@ -173,19 +173,41 @@ POST /api/game/guess
 
 ### 2.3 出题 Pipeline
 
-```
-pickRandomCharacter(theme)
-  football → isPlayableFootballAnswer
-  nba      → isPlayableNBAAnswer
-  else     → 全库随机（去 used_answer_ids）
+出题分两步：**① 从可玩池抽答案** → **② 为该答案生成对比列与提示**。各模式共用同一套筛选与 `resolveQuestionSetup`，仅随机源与是否批量预生成不同。
 
-resolveQuestionSetup(theme, answer)
-  pokemon  → buildPokemonQuestion（动态 activeFields + hintField + compareMove）
-  else     → pickActiveFields（固定6）+ pickQuestionHints（首1 + 预抽额外3）
-
-写入 sessions：answer_id, hint_field, extra_hint_fields, active_fields,
-              question_compare_move, progressive_state（模式相关）
 ```
+① pickRandomCharacter(theme, excludeIds?, rng?)
+     csgo / pokemon  → getBank 去重后随机
+     football        → isPlayableFootballAnswer（仅 meta.allowedClubLeagues）
+     nba             → isPlayableNBAAnswer
+
+② resolveQuestionSetup(theme, answer)   // 多人/每日用 resolveQuestionSetupWithRng
+     pokemon  → buildPokemonQuestion
+     else     → pickActiveFields + pickQuestionHints（首 1 + 预抽额外 3）
+
+写入 sessions / questionQueue：answer_id, hint_field, extra_hint_fields,
+                              active_fields, question_compare_move, progressive_state…
+```
+
+**各模式入口**（均走 ①→②，足球/NBA 过滤在 ① 统一生效）
+
+| 模式 | 选题入口 | 说明 |
+|------|----------|------|
+| 经典六项 | `startGame` → `pickRandomCharacter` | 单题即时出题 |
+| 每日一题 | `getOrCreateDailyChallenge` → 种子 RNG + `pickRandomCharacter` | 同日同主题全员同题，写 `daily_challenges` |
+| 逐步提示 | 同经典 | 另建 `createInitialProgressiveState` |
+| 逆向轰炸 | `pickRandomCharacter` 定答案 + `createInitialReverseState` 抽 100 卡池 | 卡池用 `getReverseQuestionBank`（同 ① 过滤） |
+| 对战 / 接龙 | `generateQuestionQueue` → 循环 `pickRandomCharacter` + `resolveQuestionSetupWithRng` | 开局一次生成整局 `questionQueue`，房间共享 |
+| 下一题 | `nextQuestion` → `pickRandomCharacter`（去 `used_answer_ids`） | 经典 / 逐步 / 逆向 |
+
+**足球：筛库与首提示是两件事**（勿混用）
+
+| 阶段 | 函数 | 作用 |
+|------|------|------|
+| ① 筛题库 | `isPlayableFootballAnswer` | 答案**必须**来自 `allowedClubLeagues` 内联赛球员 |
+| ② 首提示 | `buildFootballPrimaryHint` | 在**已选答案**上，有联赛且有足联则 **50/50** 展示 `clubLeague` 或 `confederation`（不进对比格） |
+
+非白名单联赛球员（如伊朗联赛）不入池，故不会成为答案，也不会作为首提示的联赛项出现。
 
 **每日一题**：`seed = hash(UTC+8日期:theme)` → 确定性选题 → `daily_challenges` 表缓存。
 
@@ -207,7 +229,7 @@ resolveQuestionSetup(theme, answer)
 | 主题 | 首提示（`hint_field`） | 额外 3 条预抽池 |
 |------|------------------------|-----------------|
 | csgo | 对比 6 项 shuffle 第 1 项 | 同 6 项 shuffle 第 2–4 项 |
-| football | `clubLeague` 联赛 或 `confederation` 洲际赛区（meta 合成，**不进对比格**） | 对比 6 项 shuffle |
+| football | `buildFootballPrimaryHint`：已选答案上联赛/足联 50/50（**筛库已在 pickRandomCharacter 完成**） | 对比 6 项 shuffle |
 | nba | `divisionPosition` 赛区·选秀轮次（合成，**不进对比格**） | 对比 6 项 shuffle |
 | pokemon | 见 `buildPokemonQuestion` 首提示池随机 1 项 | `activeFields` + bonus 字段 shuffle（见 §3.3、§2.6） |
 
@@ -281,7 +303,7 @@ finishReverseRound → roundHistory；第 3 轮 → game_over + 写榜
 | 足球年龄 | 基准年 `meta.ageReferenceYear`（2026） |
 | NBA 球队展示 | 存英文代码，hint/UI 用 `meta.teams` 中文 |
 | NBA 可玩 | `hasCareerSince2025` 且 GP≥30（2025 起常规+季后） |
-| 足球可玩 | 有效足联 **或** 允许列表内联赛 |
+| 足球可玩 | **仅** `allowedClubLeagues` 筛题库（`isPlayableFootballAnswer`）；首提示另走 `buildFootballPrimaryHint` |
 | CS 年龄 | 优先 `birthDate` 动态算 |
 | 逆向数值输入 | 不预填；枚举/数值运算符见 `reverseBomb.validateCondition` |
 | 答案揭晓 | `buildRevealedAnswer`：`quit`/`daily-one` 必返；逆向当前轮已在 `roundHistory` 则不返；其余看本题是否猜中 |
@@ -330,14 +352,15 @@ server/data/
 | 逆向额外 | `firepowerStat` 火力值 · `sniperStat` 狙击值 · `breakthroughStat` 突破 · `tradeStat` 补枪值 · `clutchStat` 残局值 · `utilityStat` 道具值（完美雷达回填） |
 | meta | 无 |
 
-#### 足球 `football` — ~1248 人，可玩=有效联赛或足联
+#### 足球 `football` — ~1248 入库，可玩=白名单联赛球员
 
 | 项 | 内容 |
 |----|------|
 | 对比 6 项 | `club` 俱乐部 · `nationalTeam` 国家队 · `age` 年龄 · `marketValue` 身价(万欧元) · `height` 身高(cm) · `position` 位置 |
-| 合成首提示 | `clubLeague` 联赛 · `confederation` 洲际赛区（二选一，不进对比格） |
+| 题库筛选 | `isPlayableFootballAnswer`：**仅** `meta.allowedClubLeagues` 内联赛球员可成为答案 |
+| 合成首提示 | `buildFootballPrimaryHint`：在已选答案上 **联赛 / 足联 50/50**（不进对比格；与筛库无关） |
 | meta | `confederations`, `clubLeagues`, `allowedClubLeagues`, `ageReferenceYear` |
-| 允许联赛 | 英超、西甲、意甲、德甲、法甲、美职联、沙特联、J/K/中超 |
+| 允许联赛 | 见 `meta.allowedClubLeagues`（英超、西甲、意甲、德甲、法甲、美职联、沙特联、J/K/中超等） |
 
 #### NBA `nba` — ~538 入库，~415 可玩
 
@@ -365,7 +388,7 @@ server/data/
 | 主题 | 入库 | 可玩 |
 |------|------|------|
 | csgo | 147 | 147 |
-| football | ~1248 | 视 meta |
+| football | ~1248 | ~626（仅白名单联赛） |
 | nba | 538 | ~415 |
 | pokemon | 386 | 386 |
 
