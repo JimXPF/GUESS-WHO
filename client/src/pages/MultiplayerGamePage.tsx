@@ -13,6 +13,7 @@ import BattleNextCountdown from '../components/BattleNextCountdown';
 import CorrectHistory from '../components/CorrectHistory';
 import RelayOpponentExhaustedModal from '../components/RelayOpponentExhaustedModal';
 import GameEndRevealModal from '../components/GameEndRevealModal';
+import AnswerRevealModal from '../components/AnswerRevealModal';
 import { AttemptsBadge } from '../components/StatSidebar';
 import type { GameSession, GuessRecord, RelayGuessRecord } from '../types';
 import {
@@ -38,6 +39,11 @@ export default function MultiplayerGamePage() {
   const [relayNoticeName, setRelayNoticeName] = useState('');
   const [seenRelayNoticeId, setSeenRelayNoticeId] = useState(0);
   const [showEndReveal, setShowEndReveal] = useState(false);
+  const [showDrawReveal, setShowDrawReveal] = useState(false);
+  const [drawAnswer, setDrawAnswer] = useState<{
+    name: string;
+    imageUrl: string | null;
+  } | null>(null);
   const [wentToSettlement, setWentToSettlement] = useState(false);
   const sessionId = localStorage.getItem(SESSION_KEY) || '';
   const roomCode = localStorage.getItem(ROOM_KEY) || '';
@@ -66,10 +72,28 @@ export default function MultiplayerGamePage() {
   }, [room, sessionId, roomCode, rejoinRoom]);
 
   useEffect(() => {
-    if (room?.status === 'finished' && !wentToSettlement) {
+    if (room?.status !== 'finished' || wentToSettlement) return;
+    if (room.revealedAnswer) {
       setShowEndReveal(true);
+      return;
     }
-  }, [room?.status, wentToSettlement]);
+    setWentToSettlement(true);
+    sessionStorage.setItem('guess-who-last-room', JSON.stringify(room));
+    navigate('/settlement');
+  }, [room, wentToSettlement, navigate]);
+
+  useEffect(() => {
+    if (room?.battlePhase !== 'intermission' || room.battleResult?.kind !== 'draw') {
+      setShowDrawReveal(false);
+      setDrawAnswer(null);
+      return;
+    }
+    setDrawAnswer({
+      name: room.battleResult.answerName,
+      imageUrl: room.battleResult.answerImageUrl ?? null,
+    });
+    setShowDrawReveal(true);
+  }, [room?.battlePhase, room?.battleResult]);
 
   useEffect(() => {
     const notice = room?.relayNotice;
@@ -115,16 +139,16 @@ export default function MultiplayerGamePage() {
     setShowEndReveal(false);
     setWentToSettlement(true);
     if (room) {
-      const { revealedAnswer: _omit, ...settlementRoom } = room;
-      sessionStorage.setItem('guess-who-last-room', JSON.stringify(settlementRoom));
+      sessionStorage.setItem('guess-who-last-room', JSON.stringify(room));
     }
     navigate('/settlement');
   };
 
-  const handleQuit = () => {
-    leaveRoom(sessionId);
-    if (room?.revealedAnswer) {
-      sessionStorage.setItem('guess-who-last-room', JSON.stringify(room));
+  const handleQuit = async () => {
+    const result = await leaveRoom(sessionId);
+    const settlementRoom = result.room ?? room;
+    if (settlementRoom) {
+      sessionStorage.setItem('guess-who-last-room', JSON.stringify(settlementRoom));
     }
     navigate('/settlement');
   };
@@ -358,11 +382,20 @@ export default function MultiplayerGamePage() {
         onClose={() => setRelayNoticeOpen(false)}
       />
 
+      <AnswerRevealModal
+        open={showDrawReveal}
+        variant="failure"
+        answerName={drawAnswer?.name ?? '—'}
+        answerImageUrl={drawAnswer?.imageUrl}
+        continueLabel="继续"
+        onContinue={() => setShowDrawReveal(false)}
+      />
+
       <GameEndRevealModal
         open={showEndReveal}
-        answerName={room.revealedAnswer?.name ?? '—'}
-        answerImageUrl={room.revealedAnswer?.imageUrl}
-        finishReason={room.finishReason}
+        answerName={room?.revealedAnswer?.name ?? '—'}
+        answerImageUrl={room?.revealedAnswer?.imageUrl}
+        finishReason={room?.finishReason}
         onContinue={handleContinueSettlement}
       />
     </div>

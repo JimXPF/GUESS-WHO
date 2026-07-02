@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import AnswerRevealPanel from '../components/AnswerRevealPanel';
 import { RoomState, THEME_LABELS } from '../types';
 
 export default function SettlementPage() {
@@ -38,6 +39,16 @@ export default function SettlementPage() {
         <h1 className="text-2xl font-bold text-center mb-1">本局结算</h1>
         {room?.finishReason && (
           <p className="text-sm text-apple-gray text-center mb-4">{room.finishReason}</p>
+        )}
+
+        {room?.revealedAnswer && (
+          <div className="mb-5">
+            <AnswerRevealPanel
+              name={room.revealedAnswer.name}
+              imageUrl={room.revealedAnswer.imageUrl}
+              subtitle="本题答案"
+            />
+          </div>
         )}
 
         <div className="space-y-2 mb-6">

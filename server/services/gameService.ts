@@ -107,6 +107,7 @@ import {
   computeEliminatedIds,
   computeNewlyEliminated,
   createInitialReverseState,
+  ensureReverseQuestionPoolIds,
   evaluateAnswerCondition,
   formatReverseTag,
   getAlivePool,
@@ -639,21 +640,28 @@ function buildRevealedAnswer(row: SessionRow): { name: string; imageUrl: string 
   if (row.status !== 'game_over' && row.status !== 'failed' && row.status !== 'quit') {
     return undefined;
   }
+
+  const answer = getCharacter(row.theme, row.answer_id);
+  if (!answer) return undefined;
+  const revealed = {
+    name: getDisplayName(answer, row.theme),
+    imageUrl: getCharacterImage(answer),
+  };
+
+  if (row.status === 'quit') return revealed;
+  if (row.game_mode === 'daily-one') return revealed;
+
   if (row.game_mode === 'reverse-bomb') {
     const reverseState = parseReverseState(row.progressive_state);
     if (reverseState.roundHistory.some((r) => r.questionIndex === row.question_index)) {
       return undefined;
     }
   }
+
   if (isQuestionAnsweredCorrectly(row.id, row.question_index)) {
     return undefined;
   }
-  const answer = getCharacter(row.theme, row.answer_id);
-  if (!answer) return undefined;
-  return {
-    name: getDisplayName(answer, row.theme),
-    imageUrl: getCharacterImage(answer),
-  };
+  return revealed;
 }
 
 function saveToLeaderboard(
@@ -1000,11 +1008,6 @@ export function submitGuess(
       name: getDisplayName(answerChar, row.theme),
       imageUrl: getCharacterImage(answerChar),
     };
-  } else if (isCorrect && status === 'game_over') {
-    correctAnswer = {
-      name: getDisplayName(answerChar, row.theme),
-      imageUrl: getCharacterImage(answerChar),
-    };
   }
 
   return {
@@ -1018,7 +1021,7 @@ function submitReverseBombGuess(
   character: CharacterEntry,
   answer: CharacterEntry
 ): GuessResponse {
-  const reverseState = parseReverseState(row.progressive_state);
+  const reverseState = getReverseStateWithPool(row);
   if (reverseState.finalGuessUsed || row.status === 'question_done') {
     throw new Error('本题已结束');
   }
@@ -1028,8 +1031,8 @@ function submitReverseBombGuess(
 
   const queries = loadReverseQueries(row.id, row.question_index);
   const poolIds = reverseState.questionPoolIds;
-  const totalPool = resolveQuestionPoolIds(row.theme, poolIds).length;
-  const aliveCount = getAlivePool(row.theme, queries, poolIds).length;
+  const totalPool = resolveQuestionPoolIds(row.theme, poolIds, row.answer_id).length;
+  const aliveCount = getAlivePool(row.theme, queries, poolIds, row.answer_id).length;
   const isCorrect = character.id === answer.id;
   const roundScore = isCorrect
     ? scoreReverseCorrectGuess()
@@ -1146,16 +1149,28 @@ function assertReverseSession(row: SessionRow): void {
   }
 }
 
+/** 保证 progressive_state 含本题 100 张卡池；缺失时生成并写回 */
+function getReverseStateWithPool(row: SessionRow): ReverseState {
+  const state = parseReverseState(row.progressive_state);
+  const repaired = ensureReverseQuestionPoolIds(state, row.theme, row.answer_id);
+  if (repaired === state) return state;
+  db.prepare(
+    `UPDATE sessions SET progressive_state = ?, updated_at = datetime('now') WHERE id = ?`
+  ).run(JSON.stringify(repaired), row.id);
+  row.progressive_state = JSON.stringify(repaired);
+  return repaired;
+}
+
 export function getReverseFieldsForSession(sessionId: string) {
   const row = getSessionRow(sessionId);
   if (!row) throw new Error('Session not found');
   assertReverseSession(row);
-  const state = parseReverseState(row.progressive_state);
+  const state = getReverseStateWithPool(row);
   if (state.fieldChoices.length >= 1) {
     return state.fieldChoices;
   }
   const queries = loadReverseQueries(sessionId, row.question_index);
-  const alivePool = getAlivePool(row.theme, queries, state.questionPoolIds);
+  const alivePool = getAlivePool(row.theme, queries, state.questionPoolIds, row.answer_id);
   return pickReverseFieldChoices(alivePool, row.theme, state.recentChoiceFields ?? []);
 }
 
@@ -1166,9 +1181,9 @@ export function getReverseValuesForSession(sessionId: string, field: string) {
   if (!getReverseQueryableFields(row.theme).includes(field)) {
     throw new Error('无效字段');
   }
-  const state = parseReverseState(row.progressive_state);
+  const state = getReverseStateWithPool(row);
   const queries = loadReverseQueries(sessionId, row.question_index);
-  const alivePool = getAlivePool(row.theme, queries, state.questionPoolIds);
+  const alivePool = getAlivePool(row.theme, queries, state.questionPoolIds, row.answer_id);
   return getFieldValues(alivePool, row.theme, field);
 }
 
@@ -1183,7 +1198,7 @@ export function submitReverseQuery(
     throw new Error('筛选次数已用完，请给出终极猜测');
   }
 
-  const reverseState = parseReverseState(row.progressive_state);
+  const reverseState = getReverseStateWithPool(row);
   if (reverseState.phase === 'guessing') {
     throw new Error('筛选次数已用完，请给出终极猜测');
   }
@@ -1196,8 +1211,8 @@ export function submitReverseQuery(
   const answer = getCharacter(row.theme, row.answer_id)!;
   const queriesBefore = loadReverseQueries(sessionId, row.question_index);
   const poolIds = reverseState.questionPoolIds;
-  const poolBefore = getAlivePool(row.theme, queriesBefore, poolIds);
-  const totalPool = resolveQuestionPoolIds(row.theme, poolIds).length;
+  const poolBefore = getAlivePool(row.theme, queriesBefore, poolIds, row.answer_id);
+  const totalPool = resolveQuestionPoolIds(row.theme, poolIds, row.answer_id).length;
 
   const matched = evaluateAnswerCondition(answer, condition, row.theme);
   const label = getFieldLabel(row.theme, condition.field);
@@ -1212,7 +1227,7 @@ export function submitReverseQuery(
     displayValue,
   };
   const queriesAfter = [...queriesBefore, queryRecord];
-  const poolAfter = getAlivePool(row.theme, queriesAfter, poolIds);
+  const poolAfter = getAlivePool(row.theme, queriesAfter, poolIds, row.answer_id);
   const newlyEliminatedIds = computeNewlyEliminated(poolBefore, poolAfter);
   const attemptsLeft = row.attempts_left - 1;
   const filtersUsed = queriesAfter.length;
@@ -1967,7 +1982,7 @@ export function getGameSession(sessionId: string): GameSession | null {
       : undefined;
   const reverseState =
     row.game_mode === 'reverse-bomb'
-      ? parseReverseState(row.progressive_state)
+      ? getReverseStateWithPool(row)
       : undefined;
   const reverseQueries =
     row.game_mode === 'reverse-bomb' ? loadReverseQueries(sessionId, row.question_index) : undefined;
@@ -2021,11 +2036,16 @@ export function getGameSession(sessionId: string): GameSession | null {
     reverseQueries,
     reversePlayablePool:
       row.game_mode === 'reverse-bomb'
-        ? buildPlayablePool(row.theme, reverseState?.questionPoolIds)
+        ? buildPlayablePool(row.theme, reverseState?.questionPoolIds, row.answer_id)
         : undefined,
     reverseEliminatedIds:
       row.game_mode === 'reverse-bomb' && reverseQueries
-        ? computeEliminatedIds(row.theme, reverseQueries, reverseState?.questionPoolIds)
+        ? computeEliminatedIds(
+            row.theme,
+            reverseQueries,
+            reverseState?.questionPoolIds,
+            row.answer_id
+          )
         : undefined,
     finalGuessUsed: reverseState?.finalGuessUsed,
     reverseFieldChoices: reverseState?.fieldChoices,

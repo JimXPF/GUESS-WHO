@@ -108,7 +108,11 @@ export default function ResultPage() {
                 name={revealed.name}
                 imageUrl={revealed.imageUrl}
                 subtitle={
-                  session.status === 'failed' ? '正确答案' : '本局最后一题答案'
+                  isDaily
+                    ? '今日答案'
+                    : session.status === 'failed' || session.status === 'quit'
+                      ? '正确答案'
+                      : '本局最后一题答案'
                 }
               />
             </div>

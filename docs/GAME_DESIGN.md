@@ -59,7 +59,7 @@
 | 机会 | 初始 10，答对 +2（上限 10） |
 | UI | 6 列对比格 + 1 条首提示；猜 3/6/9 次各解锁 1 条额外提示 |
 | 对比格 | CS/足球/NBA 固定 6 字段；**宝可梦每题动态 4–6 字段** |
-| 结束 | 机会耗尽 → 揭晓当前题；可无限「下一题」 |
+| 结束 | 机会耗尽 → 弹窗揭晓（§1.3）；答对仅题内恭喜；可无限「下一题」 |
 | 排行榜 | `leaderboard`，`game_mode=classic-six` |
 
 #### 每日一题 `daily-one`
@@ -69,7 +69,8 @@
 | 题目 | 每主题每天 1 题（UTC+8），全员同答案（种子随机） |
 | 机会 | 20 次；**每人每主题每日 1 次**（🔴 设备 UUID / 平台 userId） |
 | 排名 | 猜测次数少优先，其次用时 |
-| 失败 | `failed`，揭晓答案，不入总分榜 |
+| 失败 | `failed`，弹窗 + 结算页揭晓答案，不入总分榜 |
+| 猜对 | 题内恭喜，无弹窗；结算页**仍展示**今日答案 |
 
 #### 逐步提示 `progressive-hint`
 
@@ -81,7 +82,7 @@
 | 全提示命中 + 人错 | 解锁下一条（不扣命） |
 | 未全命中 | 扣 1 命 |
 | 额外命中 | 猜中尚未解锁的队列字段仅记入 `satisfiedFields`，**不阻止**后续正式提示 |
-| 结束 | 命尽 → 揭晓当前题 |
+| 结束 | 命尽 → 弹窗揭晓（§1.3）；猜对仅题内恭喜 |
 | 排行榜 | `game_mode=progressive-hint` |
 
 #### 逆向轰炸 `reverse-bomb`
@@ -89,20 +90,21 @@
 | 项 | 规则 |
 |----|------|
 | 目标 | 已知有隐藏答案，用自提条件筛卡片，最终猜人 |
-| 池 | 每轮随机 **100** 张（含答案） |
+| 题库 | 每轮 **100** 张（含答案），从**可用题库**抽样（足球/NBA 同经典 `isPlayable*`）；卡格、淘汰、条件下拉均限本题池/存活池，**禁止回退全库** |
 | 筛选 | 5 次；每轮 **二选一** 字段配置条件（`==`/`!=` 或数值 `>=`/`<=`） |
 | 判定 | 看隐藏答案是否满足条件 → 淘汰不一致卡 |
 | 第 4 次筛选前 | 1 条准确提示（字段不在当轮二选一里） |
 | 结案 | 存活=1 自动成功；筛尽 → 1 次终极猜测 |
 | 局数 | **固定 3 轮**，三轮总分排名 |
+| 揭晓 | 每轮结束 **弹窗**含答案（猜对/猜错/筛至唯一）；结算页不重复（见 `reverseRoundHistory`） |
 | 排行榜 | `game_mode=reverse-bomb` |
 
 #### 对战 `battle` / 接龙 `relay-chain`
 
 | 模式 | 要点 |
 |------|------|
-| 对战 | 2–5 人，共享 30 题，各 10 次，规则同经典；无全局榜 |
-| 接龙 | 轮流猜；完全猜对 +300；字段首次认领 +50；已认领字段再猜对不加分；已认领字段答错 -50 |
+| 对战 | 2–5 人，共享 30 题，各 10 次，规则同经典；猜对题间 banner 无弹窗；平局弹窗揭晓；无全局榜 |
+| 接龙 | 轮流猜；完全猜对 +300；字段首次认领 +50；已认领字段再猜对不加分；已认领字段答错 -50；耗尽结束弹窗揭晓 |
 
 ### 1.3 计分与结算
 
@@ -112,7 +114,20 @@
 
 **接龙**：见上表。
 
-**结算揭晓**（`revealedAnswer`）：`game_over` / `failed` / `quit` 且当前题无正确猜测时，游戏内弹窗 + 结算页展示。逆向每轮 modal + `reverseRoundHistory`。
+**答案揭晓**（单人 `/result` · 多人 `/settlement`）
+
+| 时机 | 题内 UI | 结算页答案 |
+|------|---------|------------|
+| 猜对（经典 / 逐步 / 对战 / 接龙） | `CongratsBanner` 或题间 banner，**无弹窗** | 否 |
+| 猜对（每日） | 同上 +「查看成绩」，**无弹窗** | **始终展示**（含猜对） |
+| 猜对（逆向每轮） | `roundModal` 含答案与得分 | 否（三轮明细见 `reverseRoundHistory`） |
+| 猜错（全部模式） | `AnswerRevealModal` / 多人 `GameEndRevealModal` | 是（本题为未猜中结束） |
+| 中途退出 | — | 是（当前题答案） |
+| 多人正常打完（题数用尽） | — | 否 |
+
+**服务端**：`submitGuess` 仅在**猜错且机会/命尽**时返回 `correctAnswer`；`getGameSession` 用 `buildRevealedAnswer` 附加 `revealedAnswer`（`quit` 与 `daily-one` 始终；其余仅当前题未猜中）。**多人**：`roomService.endRoom` 在正常打完时不写 `revealedAnswer`，退出/耗尽才写。
+
+**前端入口**：单人 `GamePage` · 多人 `MultiplayerGamePage` · 结算 `ResultPage` / `SettlementPage`（`AnswerRevealPanel`）。
 
 | 模式 | 排行榜 |
 |------|--------|
@@ -151,7 +166,7 @@ POST /api/game/guess
        classic/daily/battle → compareAllFields → 更新 attempts/score/status
        progressive-hint     → submitProgressiveGuess
        reverse-bomb       → submitReverseBombGuess 或 reverse-query
-  → 机会/命尽：返回 correctAnswer；getGameSession 附加 revealedAnswer
+  → 猜错且机会/命尽：返回 `correctAnswer`（题内弹窗）；结算见 `buildRevealedAnswer`
 ```
 
 **Session 状态**：`playing` → 答对 `question_done` → 下一题；耗尽 `game_over`；每日失败 `failed`。
@@ -216,10 +231,13 @@ updateProgressiveSatisfiedFields     → 记录额外命中，不删 pendingQueu
 
 ```
 createInitialReverseState
-  pickReverseQuestionPoolIds（100，含答案）
+  getReverseQuestionBank → pickReverseQuestionPoolIds（100，含答案）
   pickReverseFieldChoices（2 个有区分度字段，避 recentChoiceFields）
 
-submitReverseQuery
+submitReverseQuery / getReverseValues
+  getAlivePool(questionPoolIds) → 淘汰 / 枚举（均限本题池，禁止 getBank 全量）
+
+submitReverseQuery（续）
   判答案是否满足 → 淘汰卡 → attempts_left--
   queries≥3 → buildReverseAccurateHint
   存活=1 → finishReverseRound（autoDeduce 计分）
@@ -228,6 +246,8 @@ submitReverseQuery
 finishReverseRound → roundHistory；第 3 轮 → game_over + 写榜
 ```
 
+**题库约束**：`questionPoolIds` 写入 `ReverseState`；缺失时 `ensureReverseQuestionPoolIds` 补池。凡涉及卡格/枚举/淘汰的路径须带 `answerId` 解析池，不得空池时扫全库。
+
 **逆向-only 字段**：CS 雷达五维、NBA 赛区/出场、足球 league/confederation 合成等（见 `reverseBomb.ts` `EXTRA_REVERSE_FIELD_DEFS`）。
 
 #### 多人
@@ -235,6 +255,7 @@ finishReverseRound → roundHistory；第 3 轮 → game_over + 写榜
 - 每玩家独立 `sessions` 行，共享 `room_code`（🔴）
 - 猜测走 Socket `room:guess`，REST guess 拒绝
 - 接龙：`relayScoring.ts` 维护 `fieldClaims`
+- 揭晓：对战猜对 → `BattleRoundBanner`；对战平局 → `AnswerRevealModal`；房间因退出/耗尽结束 → `GameEndRevealModal` + `/settlement` 的 `revealedAnswer`（正常打完无揭晓）
 
 ### 2.5 比对引擎要点 `compareEngine.ts`
 
@@ -263,6 +284,7 @@ finishReverseRound → roundHistory；第 3 轮 → game_over + 写榜
 | 足球可玩 | 有效足联 **或** 允许列表内联赛 |
 | CS 年龄 | 优先 `birthDate` 动态算 |
 | 逆向数值输入 | 不预填；枚举/数值运算符见 `reverseBomb.validateCondition` |
+| 答案揭晓 | `buildRevealedAnswer`：`quit`/`daily-one` 必返；逆向当前轮已在 `roundHistory` 则不返；其余看本题是否猜中 |
 | 排行榜写入 | `handleGameEndLeaderboard` 排除 daily/battle/relay/failed |
 
 ---
@@ -407,7 +429,7 @@ scripts/              数据同步（puppeteer 等，不进生产镜像）
 
 ### 4.5 前端路由
 
-`/` 首页 · `/game` 单人 · `/lobby` 多人大厅 · `/multiplayer` 对局 · `/settlement` 多人结算 · `/result` 单人结算 · `/leaderboard` 榜
+`/` 首页 · `/game` 单人（`CongratsBanner` / `AnswerRevealModal` / 逆向 `roundModal`） · `/lobby` 多人大厅 · `/multiplayer` 对局 · `/settlement` 多人结算 · `/result` 单人结算（`revealedAnswer`） · `/leaderboard` 榜
 
 ### 4.6 部署
 

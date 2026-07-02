@@ -156,23 +156,27 @@ export default function GamePage() {
         } else {
           setGuessText('');
           setSelectedCharacterId(undefined);
+          const isCorrect = Boolean(result.session.lastGuessCorrect);
+          const isReverse = result.session.gameMode === 'reverse-bomb';
+
           if (result.correctAnswer) {
-            if (result.session.gameMode === 'reverse-bomb') {
+            if (isReverse) {
               const last = result.session.reverseRoundHistory?.slice(-1)[0];
               setRoundModal({
                 answer: result.correctAnswer,
                 score: last?.score ?? result.session.lastQuestionScore ?? 0,
-                success: Boolean(result.session.lastGuessCorrect),
+                success: isCorrect,
               });
-            } else {
+            } else if (!isCorrect) {
               setAnswerReveal({
                 answer: result.correctAnswer,
-                variant: result.session.lastGuessCorrect ? 'success' : 'failure',
+                variant: 'failure',
               });
               setShowAnswerReveal(true);
             }
           } else if (
-            result.session.gameMode === 'reverse-bomb' &&
+            isReverse &&
+            isCorrect &&
             (result.session.status === 'question_done' || result.session.status === 'game_over')
           ) {
             const last = result.session.reverseRoundHistory?.slice(-1)[0];
@@ -186,11 +190,6 @@ export default function GamePage() {
                 success: true,
               });
             }
-          } else if (
-            result.session.gameMode !== 'reverse-bomb' &&
-            (result.session.status === 'game_over' || result.session.status === 'failed')
-          ) {
-            navigate('/result');
           }
         }
       } catch (e) {
@@ -407,6 +406,9 @@ export default function GamePage() {
   const placeholder =
     session.guessPlaceholder ?? GUESS_PLACEHOLDER[session.theme];
   const questionDone = session.status === 'question_done';
+  const dailyCompleted =
+    isDaily && session.status === 'game_over' && Boolean(session.lastGuessCorrect);
+  const showCongrats = questionDone || dailyCompleted;
   const lastScore =
     session.lastQuestionScore ?? scoreForQuestion(session.questionAttempts);
   const inputDisabled = isReverseBomb
@@ -668,7 +670,17 @@ export default function GamePage() {
   }
 
   const guessPanel =
-    questionDone && !isDaily ? (
+    dailyCompleted ? (
+      <div className="shrink-0 glass-card p-4 text-center">
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          className="btn-primary w-full text-lg py-3.5"
+          onClick={() => navigate('/result')}
+        >
+          查看成绩 →
+        </motion.button>
+      </div>
+    ) : questionDone && !isDaily ? (
       isProgressive ? (
         <div className="shrink-0 glass-card p-4 text-center">
           <motion.button
@@ -770,7 +782,7 @@ export default function GamePage() {
 
         <main className="flex flex-col min-h-0 min-w-0 order-1 lg:order-2 overflow-hidden">
           <div className="shrink-0 mb-2">
-            {questionDone ? (
+            {showCongrats ? (
               <CongratsBanner attempts={session.questionAttempts} score={lastScore} />
             ) : !isProgressive ? (
               <HintCard hints={session.hints ?? [session.hint]} />
@@ -869,14 +881,10 @@ export default function GamePage() {
 
       <AnswerRevealModal
         open={showAnswerReveal}
-        variant={answerReveal?.variant ?? 'failure'}
+        variant="failure"
         answerName={answerReveal?.answer.name ?? '—'}
         answerImageUrl={answerReveal?.answer.imageUrl}
-        continueLabel={
-          session.status === 'game_over' || session.status === 'failed'
-            ? '查看结算'
-            : '查看排行榜'
-        }
+        continueLabel="查看结算"
         onContinue={() => {
           setShowAnswerReveal(false);
           setAnswerReveal(null);

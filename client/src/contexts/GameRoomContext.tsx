@@ -29,6 +29,10 @@ interface RoomGuessResult {
   fullCorrect?: boolean;
 }
 
+interface RoomLeaveResult {
+  room?: RoomState;
+}
+
 interface GameRoomContextValue {
   connected: boolean;
   room: RoomState | null;
@@ -46,7 +50,7 @@ interface GameRoomContextValue {
     guessText: string,
     characterId?: string
   ) => Promise<RoomGuessResult>;
-  leaveRoom: (sessionId: string) => void;
+  leaveRoom: (sessionId: string) => Promise<RoomLeaveResult>;
   rejoinRoom: (roomCode: string, sessionId: string) => Promise<RoomJoinResult>;
 }
 
@@ -187,12 +191,15 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const leaveRoom = useCallback((sessionId: string) => {
-    getGameSocket().emit('room:leave', { sessionId });
-    setRoom(null);
-    localStorage.removeItem(SESSION_KEY);
-    localStorage.removeItem(ROOM_KEY);
-  }, []);
+  const leaveRoom = useCallback(
+    (sessionId: string) =>
+      emitWithAck<RoomLeaveResult>('room:leave', { sessionId }).finally(() => {
+        setRoom(null);
+        localStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(ROOM_KEY);
+      }),
+    []
+  );
 
   const value = useMemo(
     () => ({

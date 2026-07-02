@@ -375,9 +375,9 @@ function endRoom(room: Room, reason: string) {
   room.finishReason = reason;
   room.relayNotice = null;
   const answerId = getSharedRoomAnswerId(room.playerOrder);
-  room.revealedAnswer = answerId
-    ? buildRoomRevealedAnswer(room.theme, answerId)
-    : null;
+  const normalComplete = reason === '十道题已完成' || reason === '题目已完成';
+  room.revealedAnswer =
+    !normalComplete && answerId ? buildRoomRevealedAnswer(room.theme, answerId) : null;
   clearRelayTurnTimer(room);
   clearBattleIntermissionTimer(room);
   clearRelayIntermissionTimer(room);
@@ -673,8 +673,12 @@ export function registerRoomHandlers(io: Server) {
       }
     });
 
-    socket.on('room:leave', (payload) => {
-      handleDisconnect(socket, io, payload?.sessionId as string | undefined);
+    socket.on('room:leave', (payload, ack) => {
+      const sessionId = payload?.sessionId as string | undefined;
+      const code = socketToRoom.get(socket.id);
+      handleDisconnect(socket, io, sessionId);
+      const room = code ? rooms.get(code) : undefined;
+      ack?.({ room: room?.status === 'finished' ? roomToState(room) : undefined });
     });
 
     socket.on('disconnect', () => {

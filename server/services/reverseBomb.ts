@@ -25,8 +25,8 @@ import {
   getCharacterImage,
   getDisplayName,
 } from './dataLoader';
-import { getConfederationHint, resolveClubLeague } from './footballHints';
-import { getDivisionHint } from './nbaHints';
+import { getConfederationHint, isPlayableFootballAnswer, resolveClubLeague } from './footballHints';
+import { getDivisionHint, isPlayableNBAAnswer } from './nbaHints';
 import { buildProgressiveHintInfo } from './progressiveHint';
 
 const EXCLUDED_FIELDS = new Set(['learnableMove']);
@@ -252,44 +252,76 @@ export function loadReverseQueries(
   return queries;
 }
 
-export function getAlivePool(
+/** 逆向轰炸题库：足球/NBA 与经典模式一致，仅限可作答球员 */
+export function getReverseQuestionBank(theme: Theme): CharacterEntry[] {
+  const bank = getBank(theme);
+  if (theme === 'football') {
+    return bank.filter(isPlayableFootballAnswer);
+  }
+  if (theme === 'nba') {
+    return bank.filter(isPlayableNBAAnswer);
+  }
+  return bank;
+}
+
+/** 补齐缺失的本题 100 张卡池（旧存档或异常状态） */
+export function ensureReverseQuestionPoolIds(
+  state: ReverseState,
   theme: Theme,
-  queries: ReverseQueryRecord[],
-  questionPoolIds?: string[]
-): CharacterEntry[] {
-  const bank = resolveQuestionPoolEntries(theme, questionPoolIds);
-  if (queries.length === 0) return bank;
-  return bank.filter((card) =>
-    queries.every((q) => cardCompatibleWithTag(card, q, theme))
-  );
+  answerId: string
+): ReverseState {
+  if (state.questionPoolIds.length > 0) return state;
+  return {
+    ...state,
+    questionPoolIds: pickReverseQuestionPoolIds(theme, answerId),
+  };
 }
 
 export function resolveQuestionPoolIds(
   theme: Theme,
-  questionPoolIds: string[] | undefined
+  questionPoolIds: string[] | undefined,
+  answerId?: string
 ): string[] {
   if (questionPoolIds && questionPoolIds.length > 0) return questionPoolIds;
-  return getBank(theme).map((c) => c.id);
+  if (answerId) return pickReverseQuestionPoolIds(theme, answerId);
+  return getReverseQuestionBank(theme).map((c) => c.id);
 }
 
 export function getQuestionPoolEntries(
   theme: Theme,
   questionPoolIds: string[]
 ): CharacterEntry[] {
-  if (questionPoolIds.length === 0) return getBank(theme);
+  if (questionPoolIds.length === 0) return [];
   const idSet = new Set(questionPoolIds);
   return getBank(theme).filter((c) => idSet.has(c.id));
 }
 
 function resolveQuestionPoolEntries(
   theme: Theme,
-  questionPoolIds?: string[]
+  questionPoolIds?: string[],
+  answerId?: string
 ): CharacterEntry[] {
-  return getQuestionPoolEntries(theme, resolveQuestionPoolIds(theme, questionPoolIds));
+  return getQuestionPoolEntries(
+    theme,
+    resolveQuestionPoolIds(theme, questionPoolIds, answerId)
+  );
+}
+
+export function getAlivePool(
+  theme: Theme,
+  queries: ReverseQueryRecord[],
+  questionPoolIds?: string[],
+  answerId?: string
+): CharacterEntry[] {
+  const bank = resolveQuestionPoolEntries(theme, questionPoolIds, answerId);
+  if (queries.length === 0) return bank;
+  return bank.filter((card) =>
+    queries.every((q) => cardCompatibleWithTag(card, q, theme))
+  );
 }
 
 export function pickReverseQuestionPoolIds(theme: Theme, answerId: string): string[] {
-  const bank = getBank(theme);
+  const bank = getReverseQuestionBank(theme);
   if (bank.length <= REVERSE_QUESTION_POOL_SIZE) {
     return bank.map((c) => c.id);
   }
@@ -478,41 +510,28 @@ export function formatReverseTag(
   return `${label} ${operatorDisplayLabel(condition.operator)} ${val}`;
 }
 
-const playablePoolCache = new Map<Theme, PlayableCardSummary[]>();
-
-export function buildPlayablePool(theme: Theme, questionPoolIds?: string[]): PlayableCardSummary[] {
-  const entries = questionPoolIds?.length
-    ? getQuestionPoolEntries(theme, questionPoolIds)
-    : (() => {
-        const cached = playablePoolCache.get(theme);
-        if (cached) return null;
-        return getBank(theme);
-      })();
-
-  if (entries === null) {
-    return playablePoolCache.get(theme)!;
-  }
-
-  const pool = entries.map((entry) => ({
+export function buildPlayablePool(
+  theme: Theme,
+  questionPoolIds?: string[],
+  answerId?: string
+): PlayableCardSummary[] {
+  const ids = resolveQuestionPoolIds(theme, questionPoolIds, answerId);
+  return getQuestionPoolEntries(theme, ids).map((entry) => ({
     id: entry.id,
     name: getDisplayName(entry, theme),
     imageUrl: getCharacterImage(entry),
   }));
-
-  if (!questionPoolIds?.length) {
-    playablePoolCache.set(theme, pool);
-  }
-  return pool;
 }
 
 /** Single-pass eliminated id list from query tags (avoids getAlivePool + full bank rescan). */
 export function computeEliminatedIds(
   theme: Theme,
   queries: ReverseQueryRecord[],
-  questionPoolIds?: string[]
+  questionPoolIds?: string[],
+  answerId?: string
 ): string[] {
   if (queries.length === 0) return [];
-  const bank = resolveQuestionPoolEntries(theme, questionPoolIds);
+  const bank = resolveQuestionPoolEntries(theme, questionPoolIds, answerId);
   const eliminated: string[] = [];
   for (const card of bank) {
     const alive = queries.every((q) => cardCompatibleWithTag(card, q, theme));
