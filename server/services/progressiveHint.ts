@@ -31,7 +31,7 @@ import {
   isNBAHintField,
 } from './nbaHints';
 import { buildPokemonHint } from './pokemonQuestion';
-import { getPokemonWeaknesses, guessKnowsMove } from './pokemonHints';
+import { getPokemonWeaknesses, guessKnowsMove, shouldShowWeaknessHint, collectProgressivePokemonTypeHits } from './pokemonHints';
 import { buildHint as buildThemeHint } from './gameServiceHelpers';
 import { getPokemonBonusHintFields } from './pokemonHints';
 import { buildProgressiveHintQueueFromSetup } from './progressiveQueue';
@@ -360,6 +360,13 @@ export function unlockNextProgressiveHint(
       rest.push(field);
       continue;
     }
+    if (
+      theme === 'pokemon' &&
+      field === 'weaknessHint' &&
+      !shouldShowWeaknessHint(collectProgressivePokemonTypeHits(state.satisfiedFields))
+    ) {
+      continue;
+    }
     const info = buildProgressiveHintInfo(
       theme,
       answer,
@@ -398,8 +405,12 @@ export function unlockNextProgressiveHint(
 }
 
 export function buildProgressiveHintsFromState(
-  state: ProgressiveState
+  state: ProgressiveState,
+  theme?: Theme
 ): HintInfo[] {
+  if (theme === 'pokemon' && !shouldShowWeaknessHint(collectProgressivePokemonTypeHits(state.satisfiedFields))) {
+    return state.hints.filter((h) => h.field !== 'weaknessHint');
+  }
   return state.hints;
 }
 

@@ -236,7 +236,7 @@ function buildSessionHints(
   progressiveState?: ProgressiveState
 ): HintInfo[] {
   if (progressiveState) {
-    return buildProgressiveHintsFromState(progressiveState);
+    return buildProgressiveHintsFromState(progressiveState, theme);
   }
 
   const hints =
@@ -259,7 +259,7 @@ function buildSessionHints(
       if (field === 'moveHint') {
         if (activeFields.includes('learnableMove')) hints.push(buildPokemonMoveHint(answer));
       } else if (field === 'weaknessHint') {
-        if (shouldShowWeaknessHint(activeFields)) {
+        if (shouldShowWeaknessHint(hitFields)) {
           hints.push(buildPokemonWeaknessHint(answer));
         }
       } else if (activeFields.includes(field)) {
@@ -269,6 +269,10 @@ function buildSessionHints(
       hints.push(buildHint(theme, answer, field, activeFields));
     }
     shownFields.add(field);
+  }
+
+  if (theme === 'pokemon' && !shouldShowWeaknessHint(hitFields)) {
+    return hints.filter((h) => h.field !== 'weaknessHint');
   }
   return hints;
 }
@@ -990,11 +994,16 @@ export function submitGuess(
 
   const session = getGameSession(sessionId)!;
   let correctAnswer: { name: string; imageUrl: string | null } | undefined;
+  const answerChar = getCharacter(row.theme, row.answer_id)!;
   if (!isCorrect && attemptsLeft <= 0) {
-    const ans = getCharacter(row.theme, row.answer_id)!;
     correctAnswer = {
-      name: getDisplayName(ans, row.theme),
-      imageUrl: getCharacterImage(ans),
+      name: getDisplayName(answerChar, row.theme),
+      imageUrl: getCharacterImage(answerChar),
+    };
+  } else if (isCorrect && status === 'game_over') {
+    correctAnswer = {
+      name: getDisplayName(answerChar, row.theme),
+      imageUrl: getCharacterImage(answerChar),
     };
   }
 
@@ -1415,7 +1424,7 @@ function submitProgressiveGuess(
 
   const session = getGameSession(row.id)!;
   let correctAnswer: { name: string; imageUrl: string | null } | undefined;
-  if (status === 'game_over' && !isCorrect) {
+  if (status === 'game_over') {
     correctAnswer = {
       name: getDisplayName(answer, row.theme),
       imageUrl: getCharacterImage(answer),

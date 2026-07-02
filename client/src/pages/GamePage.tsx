@@ -31,6 +31,7 @@ import CorrectHistory from '../components/CorrectHistory';
 import StatSidebar, { AttemptsBadge } from '../components/StatSidebar';
 import GameTopStats from '../components/GameTopStats';
 import MobileGuessFooter from '../components/MobileGuessFooter';
+import AnswerRevealModal from '../components/AnswerRevealModal';
 import CharacterAvatar from '../components/CharacterAvatar';
 import { GameSession, THEME_LABELS, scoreForQuestion, formatElapsedUs, PROGRESSIVE_LIVES, REVERSE_QUERY_ATTEMPTS, REVERSE_ROUNDS_PER_GAME, reverseRoundLabel, PlayableCardSummary } from '../types';
 
@@ -50,8 +51,11 @@ export default function GamePage() {
   const [toast, setToast] = useState('');
   const [pulseAttempts, setPulseAttempts] = useState(false);
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
-  const [showFailed, setShowFailed] = useState(false);
-  const [failedAnswer, setFailedAnswer] = useState<{ name: string; imageUrl: string | null } | null>(null);
+  const [showAnswerReveal, setShowAnswerReveal] = useState(false);
+  const [answerReveal, setAnswerReveal] = useState<{
+    answer: { name: string; imageUrl: string | null };
+    variant: 'success' | 'failure';
+  } | null>(null);
   const [statsExpanded, setStatsExpanded] = useState(false);
   const [elapsedDisplay, setElapsedDisplay] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -158,11 +162,14 @@ export default function GamePage() {
               setRoundModal({
                 answer: result.correctAnswer,
                 score: last?.score ?? result.session.lastQuestionScore ?? 0,
-                success: false,
+                success: Boolean(result.session.lastGuessCorrect),
               });
             } else {
-              setFailedAnswer(result.correctAnswer);
-              setShowFailed(true);
+              setAnswerReveal({
+                answer: result.correctAnswer,
+                variant: result.session.lastGuessCorrect ? 'success' : 'failure',
+              });
+              setShowAnswerReveal(true);
             }
           } else if (
             result.session.gameMode === 'reverse-bomb' &&
@@ -860,35 +867,22 @@ export default function GamePage() {
         onNext={handleNext}
       />
 
-      <AnimatePresence>
-        {showFailed && failedAnswer && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 safe-bottom">
-            <div className="glass-card p-6 max-w-sm w-full text-center">
-              <p className="text-lg font-medium mb-2">本题未猜中</p>
-              <p className="text-sm text-apple-gray mb-4">正确答案是：</p>
-              <div className="flex flex-col items-center gap-3 mb-6">
-                <CharacterAvatar
-                  name={failedAnswer.name}
-                  imageUrl={failedAnswer.imageUrl}
-                  size="lg"
-                />
-                <p className="text-2xl font-semibold text-apple-red">{failedAnswer.name}</p>
-              </div>
-              <button
-                className="btn-primary w-full"
-                onClick={() => {
-                  setShowFailed(false);
-                  navigate('/result');
-                }}
-              >
-                {session.status === 'game_over' || session.status === 'failed'
-                  ? '查看结算'
-                  : '查看排行榜'}
-              </button>
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
+      <AnswerRevealModal
+        open={showAnswerReveal}
+        variant={answerReveal?.variant ?? 'failure'}
+        answerName={answerReveal?.answer.name ?? '—'}
+        answerImageUrl={answerReveal?.answer.imageUrl}
+        continueLabel={
+          session.status === 'game_over' || session.status === 'failed'
+            ? '查看结算'
+            : '查看排行榜'
+        }
+        onContinue={() => {
+          setShowAnswerReveal(false);
+          setAnswerReveal(null);
+          navigate('/result');
+        }}
+      />
 
       <AnimatePresence>
         {showQuitConfirm && (

@@ -176,11 +176,25 @@ resolveQuestionSetup(theme, answer)
 
 ### 2.4 模式专项
 
-#### 经典额外提示
+#### 经典 / 对战 / 每日 — 提示 Pipeline
 
-- 预抽 3 字段存 `extra_hint_fields`
-- 本题第 3/6/9 次猜后各展示 1 条
+适用模式：`classic-six`、`daily-one`、`battle`（`pickQuestionHints` + `buildSessionHints`）。
+
+**通用规则**
+
+- 开局展示 **1 条**首提示（`hint_field`）
+- 出题时预抽 **3 条**额外提示（`extra_hint_fields`），存库待解锁
+- 本题第 **3 / 6 / 9** 次猜测后，各展示 1 条额外提示（`BONUS_HINT_THRESHOLDS`）
 - 对比格已 **hit** 的字段不再作额外提示（`collectHitFields`）
+
+**各主题：首提示与额外池来源**（仅数据来源差异，解锁规则同上）
+
+| 主题 | 首提示（`hint_field`） | 额外 3 条预抽池 |
+|------|------------------------|-----------------|
+| csgo | 对比 6 项 shuffle 第 1 项 | 同 6 项 shuffle 第 2–4 项 |
+| football | `clubLeague` 联赛 或 `confederation` 洲际赛区（meta 合成，**不进对比格**） | 对比 6 项 shuffle |
+| nba | `divisionPosition` 赛区·选秀轮次（合成，**不进对比格**） | 对比 6 项 shuffle |
+| pokemon | 见 `buildPokemonQuestion` 首提示池随机 1 项 | `activeFields` + bonus 字段 shuffle（见 §3.3、§2.6） |
 
 #### 逐步提示队列
 
@@ -242,7 +256,7 @@ finishReverseRound → roundHistory；第 3 轮 → game_over + 写榜
 | 场景 | 处理 |
 |------|------|
 | 宝可梦首提示=moveHint | 对比格加 `learnableMove`，session 存 `compareMove` |
-| 宝可梦 weaknessHint | 仅当对比格无 type1/type2 |
+| 宝可梦 weaknessHint | 可入额外提示池；对比格含 type1/type2 时仍可展示；**仅当 type1 或 type2 在猜测中已 hit 时不再展示** |
 | 足球年龄 | 基准年 `meta.ageReferenceYear`（2026） |
 | NBA 球队展示 | 存英文代码，hint/UI 用 `meta.teams` 中文 |
 | NBA 可玩 | `hasCareerSince2025` 且 GP≥30（2025 起常规+季后） |
@@ -282,32 +296,45 @@ server/data/
 
 ### 3.3 四主题速查
 
+> 字段中文名与 `server/types.ts` 中 `THEME_FIELD_DEFS` / `getFieldLabel()` 一致。  
+> **经典 / 对战 / 每日**的提示解锁与预抽规则见 [§2.4 经典 / 对战 / 每日 — 提示 Pipeline](#经典--对战--每日--提示-pipeline)；本节只列字段与主题特有问题。
+
 #### CS `csgo` — 147 人，无过滤
 
-| 对比 6 项 | team, nationality, age, rating, top20Count, position |
-| 首/额外提示 | 对比池随机（首 1 + 额外 3） |
-| 逆向额外 | firepower/sniper/breakthrough/trade/clutch/utility（完美雷达回填） |
+| 项 | 内容 |
+|----|------|
+| 对比 6 项 | `team` 战队 · `nationality` 国籍 · `age` 年龄 · `rating` 近三月Rating · `top20Count` TOP 20次数 · `position` 位置 |
+| 提示字段来源 | 首提示与额外提示均来自上表 6 项（无合成首提示） |
+| 逆向额外 | `firepowerStat` 火力值 · `sniperStat` 狙击值 · `breakthroughStat` 突破 · `tradeStat` 补枪值 · `clutchStat` 残局值 · `utilityStat` 道具值（完美雷达回填） |
 | meta | 无 |
 
 #### 足球 `football` — ~1248 人，可玩=有效联赛或足联
 
-| 对比 6 项 | club, nationalTeam, age, marketValue, height, position |
-| 首提示 | `clubLeague` 或 `confederation`（meta 推导，不进对比格） |
+| 项 | 内容 |
+|----|------|
+| 对比 6 项 | `club` 俱乐部 · `nationalTeam` 国家队 · `age` 年龄 · `marketValue` 身价(万欧元) · `height` 身高(cm) · `position` 位置 |
+| 合成首提示 | `clubLeague` 联赛 · `confederation` 洲际赛区（二选一，不进对比格） |
 | meta | `confederations`, `clubLeagues`, `allowedClubLeagues`, `ageReferenceYear` |
 | 允许联赛 | 英超、西甲、意甲、德甲、法甲、美职联、沙特联、J/K/中超 |
 
 #### NBA `nba` — ~538 入库，~415 可玩
 
-| 对比 6 项 | team, age, height, draft, playoffCount, position |
-| 首提示 | `divisionPosition`（赛区 · 首轮秀/次轮秀/落选秀，**无年份**） |
+| 项 | 内容 |
+|----|------|
+| 对比 6 项 | `team` 球队 · `age` 年龄 · `height` 身高(cm) · `draft` 选秀 · `playoffCount` 季后赛次数 · `position` 位置 |
+| 合成首提示 | `divisionPosition` 赛区·选秀轮次（不进对比格） |
 | 过滤 | `max(totalGpSince2025,bestGpSince2025) >= 30` 且 `hasCareerSince2025` |
 | meta | `teams`, `divisions`, `positions`, `schools`, `playableMinTotalGpSince2025` |
 | 球队 | JSON 存英文代码如 `Cavaliers`，展示用中文 |
+| 逆向额外 | `currentSeasonGp` 本赛季出场 · `maxCareerGpSince2025` 2025来最高出场 · `division` 赛区（合成） |
 
 #### 宝可梦 `pokemon` — 386 人，无过滤
 
-| 对比 | **动态**：必含 type1 + 1 种族值 + 最多 4 项可选（type2/evolutionStage/category/ability/eggGroup）；moveHint 时 + learnableMove |
-| 首提示池 | category, ability, eggGroup, moveHint |
+| 项 | 内容 |
+|----|------|
+| 对比（动态） | 必含 `type1` 属性1 + 1 项种族值（`baseStatTotal` 种族值总和 / `hp` HP / `attack` 攻击 / `defense` 防御 / `spAttack` 特攻 / `spDefense` 特防 / `speed` 速度 中随机 1 项）+ 最多 4 项可选：`type2` 属性2 · `evolutionStage` 进化阶段 · `category` 分类 · `ability` 特性 · `eggGroup` 生蛋群；首提示为 `moveHint` 时另加 `learnableMove` 可学习技能 |
+| 首提示池 | `category` 分类 · `ability` 特性 · `eggGroup` 生蛋群 · `moveHint` 可学会招式 |
+| 运行时字段 | `weaknessHint` 属性弱点（规则见 §2.6） |
 | 依赖 | `pokemon-type-chart.json`（弱点）、`aliases/pokemon-extra.json` |
 | 蛋群 close | 共享蛋群但单/双蛋群数不同 → close + 文案 |
 
