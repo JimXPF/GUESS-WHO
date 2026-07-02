@@ -19,19 +19,19 @@
 
 ## 0. PWA 电竞平台接入待替换
 
-当前为**独立 Web 小游戏**实现；嵌入 PWA 电竞平台后，下列标识与存储需替换为**平台统一身份与房间服务**（标注 🔴）。
+当前为**独立 Web 小游戏**实现；嵌入 PWA 电竞平台后，下列标识与存储需替换为**平台统一身份与房间服务**（标注 【PWA】）。
 
 | 现状 | 位置 | 平台接入方案（待实现） |
 |------|------|------------------------|
-| **玩家昵称** `player_name` | 首页手填 → `POST /api/game/start` body | 🔴 改用平台 **userId + displayName**，禁止客户端自填唯一标识 |
-| **用户唯一键** `player_key` | `daily_player_attempts.player_key`；`getClientKey()` | 🔴 现为 `uid:{localStorage UUID}` 或回退 `ip:`；改为 **平台 userId** |
-| **请求头** `X-User-Id` | `client/src/api.ts` 注入；`server/utils/clientKey.ts` 读取 | 🔴 改为平台 **JWT / Session Token**，服务端验签后取 userId |
-| **会话 ID** `sessions.id` | UUID v4，前端 `localStorage` `guess-who-session-id` | 🔴 可保留局内 UUID，或改为平台 **matchId**；需定义恢复/断线策略 |
-| **多人房间码** `room_code` | 内存 Map + 6 位随机码（`roomService.ts`） | 🔴 改为平台 **Lobby / Room ID**；房间生命周期由平台或 Redis 管理 |
-| **Socket 连接** | 无鉴权，`/socket.io` 明文 join | 🔴 握手携带平台 token；房间权限校验 |
-| **排行榜键** | `leaderboard.player_name` 文本 | 🔴 改为 **userId** 存榜 + displayName 展示；防同名冲突 |
-| **每日限次** | `UNIQUE(challenge_date, theme, player_key)` | 🔴 `player_key` → 平台 userId |
-| **接龙认领** `FieldClaim.playerName` | 房间内显示名 | 🔴 绑定 userId，展示用平台昵称 |
+| **玩家昵称** `player_name` | 首页手填 → `POST /api/game/start` body | 【PWA】 改用平台 **userId + displayName**，禁止客户端自填唯一标识 |
+| **用户唯一键** `player_key` | `daily_player_attempts.player_key`；`getClientKey()` | 【PWA】 现为 `uid:{localStorage UUID}` 或回退 `ip:`；改为 **平台 userId** |
+| **请求头** `X-User-Id` | `client/src/api.ts` 注入；`server/utils/clientKey.ts` 读取 | 【PWA】 改为平台 **JWT / Session Token**，服务端验签后取 userId |
+| **会话 ID** `sessions.id` | UUID v4，前端 `localStorage` `guess-who-session-id` | 【PWA】 可保留局内 UUID，或改为平台 **matchId**；需定义恢复/断线策略 |
+| **多人房间码** `room_code` | 内存 Map + 6 位随机码（`roomService.ts`） | 【PWA】 改为平台 **Lobby / Room ID**；房间生命周期由平台或 Redis 管理 |
+| **Socket 连接** | 无鉴权，`/socket.io` 明文 join | 【PWA】 握手携带平台 token；房间权限校验 |
+| **排行榜键** | `leaderboard.player_name` 文本 | 【PWA】 改为 **userId** 存榜 + displayName 展示；防同名冲突 |
+| **每日限次** | `UNIQUE(challenge_date, theme, player_key)` | 【PWA】 `player_key` → 平台 userId |
+| **接龙认领** `FieldClaim.playerName` | 房间内显示名 | 【PWA】 绑定 userId，展示用平台昵称 |
 
 **暂可保留（局内逻辑）**：`answer_id`、`question_index`、`active_fields`、`progressive_state` / 逆向 `ReverseState` 结构——与平台身份正交。
 
@@ -47,7 +47,7 @@
 |------|------|
 | 主题 | CS 选手、2026 世界杯足球、NBA、宝可梦 Gen1–3 |
 | 单人模式 | 经典六项、每日一题、逐步提示、逆向轰炸 |
-| 多人模式 | 对战 2–5 人、接龙 2–5 人（Socket.io 房间，🔴 见 §0） |
+| 多人模式 | 对战 2–5 人、接龙 2–5 人（Socket.io 房间，【PWA】 见 §0） |
 | 核心交互 | 搜索建议（模糊）+ 提交猜测（**精确匹配**题库名/别名/id） |
 
 ### 1.2 模式规则速查
@@ -57,7 +57,7 @@
 | 项 | 规则 |
 |----|------|
 | 机会 | 初始 10，答对 +2（上限 10） |
-| UI | 6 列对比格 + 1 条首提示；猜 3/6/9 次各解锁 1 条额外提示 |
+| UI | 6 列对比格 + 1 条首提示；猜 3/6/9 次各解锁 1 条额外提示（已 hit 字段递补队列下一条，见 §2.4） |
 | 对比格 | CS/足球/NBA 固定 6 字段；**宝可梦每题动态 4–6 字段** |
 | 结束 | 机会耗尽 → 弹窗揭晓（§1.3）；答对仅题内恭喜；可无限「下一题」 |
 | 排行榜 | `leaderboard`，`game_mode=classic-six` |
@@ -67,7 +67,7 @@
 | 项 | 规则 |
 |----|------|
 | 题目 | 每主题每天 1 题（UTC+8），全员同答案（种子随机） |
-| 机会 | 20 次；**每人每主题每日 1 次**（🔴 设备 UUID / 平台 userId） |
+| 机会 | 20 次；**每人每主题每日 1 次**（【PWA】 设备 UUID / 平台 userId） |
 | 排名 | 猜测次数少优先，其次用时 |
 | 失败 | `failed`，弹窗 + 结算页揭晓答案，不入总分榜 |
 | 猜对 | 题内恭喜，无弹窗；结算页**仍展示**今日答案 |
@@ -103,7 +103,7 @@
 
 | 模式 | 要点 |
 |------|------|
-| 对战 | 2–5 人，共享 30 题，各 10 次，规则同经典；猜对题间 banner 无弹窗；平局弹窗揭晓；无全局榜 |
+| 对战 | 2–5 人，共享 30 题，各 10 次；提示队列同房同题一致，解锁规则同经典（§2.4） |
 | 接龙 | 轮流猜；完全猜对 +300；字段首次认领 +50；已认领字段再猜对不加分；已认领字段答错 -50；耗尽结束弹窗揭晓 |
 
 ### 1.3 计分与结算
@@ -152,7 +152,7 @@ nbaHints.ts         赛区·选秀轮次、可玩过滤
 progressiveQueue.ts + progressiveHint.ts   逐步提示队列与状态机
 reverseBomb.ts      逆向池、二选一、淘汰、计分
 dailyChallenge.ts   每日种子题
-roomService.ts      多人 Socket 房间（🔴 内存态）
+roomService.ts      多人 Socket 房间（【PWA】 内存态）
 relayScoring.ts     接龙认领计分
 ```
 
@@ -215,16 +215,19 @@ POST /api/game/guess
 
 #### 经典 / 对战 / 每日 — 提示 Pipeline
 
-适用模式：`classic-six`、`daily-one`、`battle`（`pickQuestionHints` + `buildSessionHints`）。
+适用模式：`classic-six`、`daily-one`、`battle`（`pickQuestionHints` + `buildQueuedBonusSessionHints`）；接龙见 `buildRelayHintsForRoom`（全队累计次数，逻辑同队列递补）。
 
 **通用规则**
 
 - 开局展示 **1 条**首提示（`hint_field`）
-- 出题时预抽 **3 条**额外提示（`extra_hint_fields`），存库待解锁
-- 本题第 **3 / 6 / 9** 次猜测后，各展示 1 条额外提示（`BONUS_HINT_THRESHOLDS`）
-- 对比格已 **hit** 的字段不再作额外提示（`collectHitFields`）
+- 出题时预抽 **3 条**有序额外提示（`extra_hint_fields`），存库作队列
+- 本题第 **3 / 6 / 9** 次猜测各解锁 **1 个槽位**（`BONUS_HINT_THRESHOLDS` → `countUnlockedBonusHints`）
+- 每解锁 1 槽，从队列取下一条展示：**未 hit 优先**（`collectHitFields`）；队列未 hit 项用尽后再展示 **已 hit** 项
+- 对比格已 hit 的字段**不会占槽空缺**，自动递补队列中下一条
 
-**各主题：首提示与额外池来源**（仅数据来源差异，解锁规则同上）
+**对战额外**：同房 `generateQuestionQueue` 种子固定 → 每题 `extra_hint_fields` 两人相同；各自 `question_attempts` 独立 → 解锁进度不同步。
+
+**各主题：首提示与额外池来源**
 
 | 主题 | 首提示（`hint_field`） | 额外 3 条预抽池 |
 |------|------------------------|-----------------|
@@ -274,7 +277,7 @@ finishReverseRound → roundHistory；第 3 轮 → game_over + 写榜
 
 #### 多人
 
-- 每玩家独立 `sessions` 行，共享 `room_code`（🔴）
+- 每玩家独立 `sessions` 行，共享 `room_code`（【PWA】）
 - 猜测走 Socket `room:guess`，REST guess 拒绝
 - 接龙：`relayScoring.ts` 维护 `fieldClaims`
 - 揭晓：对战猜对 → `BattleRoundBanner`；对战平局 → `AnswerRevealModal`；房间因退出/耗尽结束 → `GameEndRevealModal` + `/settlement` 的 `revealedAnswer`（正常打完无揭晓）
@@ -404,7 +407,7 @@ server/data/
 |----|------|
 | 前端 | React 18 + TS + Vite + Tailwind |
 | 后端 | Express + **sql.js**（内存 SQLite，debounce 落盘） |
-| 实时 | Socket.io `/socket.io`（🔴 待平台鉴权） |
+| 实时 | Socket.io `/socket.io`（【PWA】 待平台鉴权） |
 | 题库 | 静态 JSON，运行时只读 |
 
 ### 4.2 目录（关键路径）
@@ -424,12 +427,12 @@ scripts/              数据同步（puppeteer 等，不进生产镜像）
 
 | 表 | 用途 |
 |----|------|
-| `sessions` | 局状态：answer_id, active_fields, attempts, score, status, progressive_state, room_code（🔴） |
+| `sessions` | 局状态：answer_id, active_fields, attempts, score, status, progressive_state, room_code（【PWA】） |
 | `guesses` | 每次猜测 + field_results JSON |
-| `leaderboard` | 单人模式总分榜（🔴 player_name → userId） |
+| `leaderboard` | 单人模式总分榜（【PWA】 player_name → userId） |
 | `daily_challenges` | 每日题目缓存 |
 | `daily_leaderboard` | 每日成功榜 |
-| `daily_player_attempts` | 每人每日一次（🔴 player_key） |
+| `daily_player_attempts` | 每人每日一次（【PWA】 player_key） |
 
 `progressive_state` / 逆向：复用同列存 `ProgressiveState` 或 `ReverseState` JSON。
 
@@ -439,7 +442,7 @@ scripts/              数据同步（puppeteer 等，不进生产镜像）
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/api/game/start` | body: playerName🔴, theme, gameMode |
+| POST | `/api/game/start` | body: playerName【PWA】, theme, gameMode |
 | POST | `/api/game/guess` | 单人猜测（有 room_code 拒绝） |
 | POST | `/api/game/next` | 下一题 |
 | POST | `/api/game/quit` | 退出写榜 |

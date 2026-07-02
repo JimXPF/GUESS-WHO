@@ -225,6 +225,104 @@ function getMaxAttemptsForMode(mode: GameMode): number {
   return MAX_ATTEMPTS;
 }
 
+function countUnlockedBonusHints(questionAttempts: number): number {
+  return BONUS_HINT_THRESHOLDS.filter((t) => questionAttempts >= t).length;
+}
+
+function buildPrimaryHintList(
+  theme: Theme,
+  answer: CharacterEntry,
+  hintField: string,
+  activeFields: string[],
+  compareMove: string | null
+): HintInfo[] {
+  if (theme === 'football') return [buildFootballPrimaryHint(answer)];
+  if (theme === 'nba') return [buildNBAPrimaryHint(answer)];
+  if (theme === 'pokemon') return [buildPokemonHint(answer, hintField, compareMove)];
+  return [buildHint(theme, answer, hintField, activeFields)];
+}
+
+function buildExtraHintForField(
+  theme: Theme,
+  answer: CharacterEntry,
+  field: string,
+  activeFields: string[],
+  compareMove: string | null,
+  hitFields: Set<string>
+): HintInfo | null {
+  if (theme === 'pokemon') {
+    if (field === 'moveHint') {
+      if (!activeFields.includes('learnableMove')) return null;
+      return buildPokemonMoveHint(answer);
+    }
+    if (field === 'weaknessHint') {
+      if (!shouldShowWeaknessHint(hitFields)) return null;
+      return buildPokemonWeaknessHint(answer);
+    }
+    if (!activeFields.includes(field)) return null;
+    return buildHint(theme, answer, field, activeFields);
+  }
+  return buildHint(theme, answer, field, activeFields);
+}
+
+function filterPokemonWeaknessHints(
+  hints: HintInfo[],
+  theme: Theme,
+  hitFields: Set<string>
+): HintInfo[] {
+  if (theme === 'pokemon' && !shouldShowWeaknessHint(hitFields)) {
+    return hints.filter((h) => h.field !== 'weaknessHint');
+  }
+  return hints;
+}
+
+/**
+ * 经典 / 每日 / 对战：按 extra_hint_fields 有序队列解锁额外提示。
+ * 3/6/9 次各解锁 1 槽；槽位从队列取下一条——未 hit 优先，用尽后再展示已 hit 项。
+ */
+function buildQueuedBonusSessionHints(
+  theme: Theme,
+  answer: CharacterEntry,
+  hintField: string,
+  extraHintFields: string[],
+  questionAttempts: number,
+  activeFields: string[],
+  hitFields: Set<string>,
+  compareMove: string | null
+): HintInfo[] {
+  const hints = buildPrimaryHintList(theme, answer, hintField, activeFields, compareMove);
+  const shownFields = new Set(hints.map((h) => h.field));
+
+  const maxBonus = countUnlockedBonusHints(questionAttempts);
+  if (maxBonus === 0) {
+    return filterPokemonWeaknessHints(hints, theme, hitFields);
+  }
+
+  const queue = extraHintFields.filter((f) => !shownFields.has(f));
+  const notHit = queue.filter((f) => !hitFields.has(f));
+  const alreadyHit = queue.filter((f) => hitFields.has(f));
+  const ordered = [...notHit, ...alreadyHit];
+
+  let bonusAdded = 0;
+  for (const field of ordered) {
+    if (bonusAdded >= maxBonus) break;
+    const hint = buildExtraHintForField(
+      theme,
+      answer,
+      field,
+      activeFields,
+      compareMove,
+      hitFields
+    );
+    if (!hint) continue;
+    hints.push(hint);
+    shownFields.add(field);
+    bonusAdded++;
+  }
+
+  return filterPokemonWeaknessHints(hints, theme, hitFields);
+}
+
 function buildSessionHints(
   theme: Theme,
   answer: CharacterEntry,
@@ -240,42 +338,16 @@ function buildSessionHints(
     return buildProgressiveHintsFromState(progressiveState, theme);
   }
 
-  const hints =
-    theme === 'football'
-      ? [buildFootballPrimaryHint(answer)]
-      : theme === 'nba'
-        ? [buildNBAPrimaryHint(answer)]
-        : theme === 'pokemon'
-          ? [buildPokemonHint(answer, hintField, compareMove)]
-          : [buildHint(theme, answer, hintField, activeFields)];
-
-  const shownFields = new Set(hints.map((h) => h.field));
-
-  for (let i = 0; i < extraHintFields.length; i++) {
-    if (questionAttempts < BONUS_HINT_THRESHOLDS[i]) continue;
-    const field = extraHintFields[i];
-    if (hitFields.has(field) || shownFields.has(field)) continue;
-
-    if (theme === 'pokemon') {
-      if (field === 'moveHint') {
-        if (activeFields.includes('learnableMove')) hints.push(buildPokemonMoveHint(answer));
-      } else if (field === 'weaknessHint') {
-        if (shouldShowWeaknessHint(hitFields)) {
-          hints.push(buildPokemonWeaknessHint(answer));
-        }
-      } else if (activeFields.includes(field)) {
-        hints.push(buildHint(theme, answer, field, activeFields));
-      }
-    } else {
-      hints.push(buildHint(theme, answer, field, activeFields));
-    }
-    shownFields.add(field);
-  }
-
-  if (theme === 'pokemon' && !shouldShowWeaknessHint(hitFields)) {
-    return hints.filter((h) => h.field !== 'weaknessHint');
-  }
-  return hints;
+  return buildQueuedBonusSessionHints(
+    theme,
+    answer,
+    hintField,
+    extraHintFields,
+    questionAttempts,
+    activeFields,
+    hitFields,
+    compareMove
+  );
 }
 
 function compareAllFields(

@@ -333,6 +333,24 @@ function broadcastRoom(io: Server, room: Room) {
   io.to(room.code).emit('room:state', roomToState(room));
 }
 
+function countConnectedPlayers(room: Room): number {
+  let count = 0;
+  for (const entry of room.players.values()) {
+    if (entry.socketId !== null) count++;
+  }
+  return count;
+}
+
+function maybeStartWaitingRoom(io: Server, room: Room): void {
+  if (room.status !== 'waiting') return;
+  if (countConnectedPlayers(room) < room.maxPlayers) return;
+  startRoomGame(room);
+  if (room.mode === 'relay-chain') {
+    scheduleRelayTurnTimer(io, room, true);
+  }
+  io.to(room.code).emit('game:start', roomToState(room));
+}
+
 function startRoomGame(room: Room) {
   room.status = 'playing';
   const queueSize = room.mode === 'battle' ? BATTLE_QUESTION_COUNT : QUESTION_QUEUE_SIZE;
@@ -491,6 +509,10 @@ export function registerRoomHandlers(io: Server) {
         if (room.mode === 'relay-chain' && room.status === 'playing') {
           scheduleRelayTurnTimer(io, room, false);
         }
+        if (room.status === 'waiting') {
+          maybeStartWaitingRoom(io, room);
+        }
+
         ack?.({ room: roomToState(room), sessionId, session });
         broadcastRoom(io, room);
       } catch (e) {
@@ -543,13 +565,7 @@ export function registerRoomHandlers(io: Server) {
         socketToRoom.set(socket.id, code);
         socket.join(code);
 
-        if (room.players.size >= room.maxPlayers) {
-          startRoomGame(room);
-          if (room.mode === 'relay-chain') {
-            scheduleRelayTurnTimer(io, room, true);
-          }
-          io.to(code).emit('game:start', roomToState(room));
-        }
+        maybeStartWaitingRoom(io, room);
 
         ack?.({ room: roomToState(room), sessionId, session });
         broadcastRoom(io, room);

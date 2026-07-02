@@ -191,7 +191,8 @@ export default function LobbyPage() {
             <p className="text-4xl font-bold tracking-widest text-apple-blue">{roomCode}</p>
             <p className="text-xs text-apple-gray break-all">邀请链接：{inviteUrl}</p>
             <p className="text-sm text-apple-gray">
-              等待玩家 {room?.players.length ?? 1}/{room?.maxPlayers ?? maxPlayers}
+              等待玩家 {room?.players.filter((p) => p.connected).length ?? 1}/
+              {room?.maxPlayers ?? maxPlayers}
             </p>
             <ul className="text-left text-sm space-y-1">
               {room?.players.map((p) => (
