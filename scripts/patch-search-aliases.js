@@ -1,6 +1,6 @@
 /**
- * Merge search aliases into csgo.json and pokemon.json
- * Sources: csgo-nicknames.json, pokemon-extra.json, 52poke unofficial names
+ * Merge optional 52poke wiki nicknames into pokemon.json players[].aliases.
+ * CS/pokemon nickname maps are stored on each player; run consolidate-theme-data.js once to import legacy alias files.
  */
 const fs = require('fs');
 const path = require('path');
@@ -83,7 +83,7 @@ function patchPokemon() {
   console.log(`[pokemon] merged nicknames for ${updated} species`);
 }
 
-module.exports = { patchCsgo, patchPokemon };
+module.exports = { patchCsgo, patchPokemon, mergeAliases };
 
 if (require.main === module) {
   patchCsgo();

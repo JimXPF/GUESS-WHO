@@ -18,7 +18,7 @@ import { AttemptsBadge } from '../components/StatSidebar';
 import type { GameSession, GuessRecord, RelayGuessRecord } from '../types';
 import {
   RELAY_FIELD_POINTS,
-  RELAY_FULL_CORRECT_BONUS,
+  RELAY_FULL_CORRECT_MIN,
   RELAY_TIMEOUT_PENALTY,
   RELAY_WRONG_CLAIM_PENALTY,
   FULL_CORRECT_MIN_SCORE,
@@ -258,8 +258,8 @@ export default function MultiplayerGamePage() {
             {isRelay && (
               <p className="text-[11px] text-apple-gray text-center mt-2 leading-relaxed">
                 接龙计分：字段首次认领 +{RELAY_FIELD_POINTS}，已被认领字段再猜对不加分，
-                已认领字段答错 -{RELAY_WRONG_CLAIM_PENALTY}，完全猜对 +{RELAY_FULL_CORRECT_BONUS}，超时 -
-                {RELAY_TIMEOUT_PENALTY}
+                已认领字段答错 -{RELAY_WRONG_CLAIM_PENALTY}，完全猜对 300/270/230/180/120/
+                {RELAY_FULL_CORRECT_MIN}（按已认领数），超时 -{RELAY_TIMEOUT_PENALTY}
               </p>
             )}
             {toast && (

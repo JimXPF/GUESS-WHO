@@ -248,7 +248,7 @@ function toPlayerId(ign) {
 function loadRoleOverrides() {
   try {
     const { loadTheme } = require('./theme-data');
-    return loadTheme('csgo').meta.roleOverrides || { igl: [], awper: [] };
+    return loadTheme('csgo').config.roleOverrides || { igl: [], awper: [] };
   } catch {
     return { igl: [], awper: [] };
   }
@@ -324,7 +324,7 @@ function resolvePosition(ign, positionMaps) {
 function loadTeamIgls() {
   try {
     const { loadTheme } = require('./theme-data');
-    return loadTheme('csgo').meta.teamIgls || {};
+    return loadTheme('csgo').config.teamIgls || {};
   } catch {
     return {};
   }

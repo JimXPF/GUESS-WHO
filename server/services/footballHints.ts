@@ -1,26 +1,14 @@
-import fs from 'fs';
-import path from 'path';
 import { CharacterEntry, HintInfo } from '../types';
+import { getThemeConfig } from './themeConfig';
 
 type AllowedClubLeague = { id: string; label: string; name: string };
 
-const { confederations, clubLeagues, allowedClubLeagueLabels } = (() => {
-  try {
-    const raw = fs.readFileSync(path.join(__dirname, '..', 'data', 'football.json'), 'utf-8');
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
-      return { confederations: {}, clubLeagues: {}, allowedClubLeagueLabels: new Set<string>() };
-    }
-    const allowed = (parsed.meta?.allowedClubLeagues as AllowedClubLeague[] | undefined) ?? [];
-    return {
-      confederations: (parsed.meta?.confederations as Record<string, string>) ?? {},
-      clubLeagues: (parsed.meta?.clubLeagues as Record<string, string>) ?? {},
-      allowedClubLeagueLabels: new Set(allowed.map((l) => l.label)),
-    };
-  } catch {
-    return { confederations: {}, clubLeagues: {}, allowedClubLeagueLabels: new Set<string>() };
-  }
-})();
+const footballConfig = getThemeConfig('football');
+const allowedClubLeagues =
+  (footballConfig.allowedClubLeagues as AllowedClubLeague[] | undefined) ?? [];
+const confederations = (footballConfig.confederations as Record<string, string>) ?? {};
+const clubLeagues = (footballConfig.clubLeagues as Record<string, string>) ?? {};
+const allowedClubLeagueLabels = new Set(allowedClubLeagues.map((l) => l.label));
 
 const HINT_EXCLUDE = new Set([
   'name',
@@ -70,7 +58,7 @@ export function hasValidFootballPrimaryHint(entry: CharacterEntry): boolean {
 }
 
 /**
- * 足球答案池（`filterAtQuestionTime`）：仅 meta.allowedClubLeagues 内联赛球员。
+ * 足球答案池（`filterAtQuestionTime`）：仅 config.allowedClubLeagues 内联赛球员。
  * 与首提示无关——首提示在已选答案上另随机联赛或足联（见 buildFootballPrimaryHint）。
  */
 export function isPlayableFootballAnswer(entry: CharacterEntry): boolean {

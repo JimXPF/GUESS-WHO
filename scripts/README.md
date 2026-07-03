@@ -4,6 +4,17 @@
 
 完整玩法与数据结构说明见 **[docs/GAME_DESIGN.md](../docs/GAME_DESIGN.md)**。
 
+## 主题数据（单文件）
+
+每主题一个 JSON：`server/data/{theme}.json`，含 `config` + `players[]`。昵称在 `players[].aliases`。
+
+| 文件 | 说明 |
+|------|------|
+| `csgo.json` / `football.json` / `nba.json` / `pokemon.json` | 选手库 + 主题 `config`（位置合并、联赛表、克制表等） |
+| `geo/nationality-regions.json` | 国籍地理邻近（**不进后台**，引擎写死读取） |
+
+一次性从旧分散文件合并：`node scripts/consolidate-theme-data.js`
+
 ## 数据来源
 
 | 主题 | 数据源 | 说明 |
@@ -40,7 +51,7 @@ node scripts/sync-nba-missing-roster.js
 
 # 宝可梦
 npm run sync:pokemon
-npm run patch:aliases          # 合并宝可梦/CS 搜索别名
+npm run patch:aliases          # 可选：从 52poke wiki 缓存补充宝可梦 aliases
 ```
 
 ## 目录结构
@@ -49,6 +60,7 @@ npm run patch:aliases          # 合并宝可梦/CS 搜索别名
 scripts/
 ├── cache/                     # 爬虫缓存（已 gitignore，非版本库内容）
 ├── lib/                       # 共享工具（虎扑、完美世界、Liquipedia 等）
+├── consolidate-theme-data.js  # 合并 config / aliases 到各主题单文件
 ├── sync-*.js                  # 全量同步
 ├── backfill-*.js              # 字段回填
 ├── filter-*.js                # 可玩池 / 联赛过滤
@@ -56,13 +68,6 @@ scripts/
 ├── start-dev.ps1              # 开发启动（Windows）
 └── kill-dev.ps1               # 停止 dev 进程
 ```
-
-## 别名文件
-
-| 文件 | 说明 |
-|------|------|
-| `server/data/aliases/pokemon-extra.json` | 宝可梦中文昵称，纳入版本库 |
-| `server/data/aliases/csgo-nicknames.json` | CS 昵称（**可选**）；缺失时 `patch:aliases` 跳过 CS |
 
 ## 依赖
 

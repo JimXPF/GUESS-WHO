@@ -1,34 +1,29 @@
-import fs from 'fs';
-import path from 'path';
 import { CharacterEntry, THEME_FIELDS, Theme } from '../types';
 import { computeAgeFromBirthDate, computeAgeFromReferenceYear, normalizeBirthDate } from './ageUtils';
 import { isPlayableFootballAnswer } from './footballHints';
 import { getDivisionHint, isPlayableNBAAnswer } from './nbaHints';
+import { readThemeDocument } from './themeConfig';
 
 interface ThemeFile {
   version?: number;
   updatedAt?: string;
   players: CharacterEntry[];
-  meta?: Record<string, unknown>;
+  config: Record<string, unknown>;
 }
 
 function readThemeFile(theme: Theme): ThemeFile {
-  const filePath = path.join(__dirname, '..', 'data', `${theme}.json`);
-  const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-  if (Array.isArray(raw)) {
-    return { players: raw, meta: {} };
-  }
+  const doc = readThemeDocument(theme);
   return {
-    version: raw.version,
-    updatedAt: raw.updatedAt,
-    players: raw.players ?? [],
-    meta: raw.meta ?? {},
+    version: doc.version,
+    updatedAt: doc.updatedAt,
+    players: doc.players as CharacterEntry[],
+    config: doc.config,
   };
 }
 
-const nbaMeta = readThemeFile('nba').meta ?? {};
-const nbaTeamMap: Record<string, string> = (nbaMeta.teams as Record<string, string>) ?? {};
-const nbaPositionMap: Record<string, string> = (nbaMeta.positions as Record<string, string>) ?? {};
+const nbaConfig = readThemeFile('nba').config;
+const nbaTeamMap: Record<string, string> = (nbaConfig.teams as Record<string, string>) ?? {};
+const nbaPositionMap: Record<string, string> = (nbaConfig.positions as Record<string, string>) ?? {};
 
 export function getNBATeamDisplay(team: string): string {
   return nbaTeamMap[team] || team;
@@ -338,3 +333,5 @@ export function getGuessPlaceholder(theme: Theme): string {
   if (theme === 'pokemon') return '输入宝可梦中文名，如 皮卡丘...';
   return '输入人物中文名...';
 }
+
+export { getThemeConfig, getPositionGroups, readThemeDocument } from './themeConfig';

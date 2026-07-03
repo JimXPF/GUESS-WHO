@@ -31,7 +31,7 @@ import {
   isNBAHintField,
 } from './nbaHints';
 import { buildPokemonHint } from './pokemonQuestion';
-import { getPokemonWeaknesses, guessKnowsMove, shouldShowWeaknessHint, collectProgressivePokemonTypeHits } from './pokemonHints';
+import { getPokemonMatchupHintTypes, guessKnowsMove, shouldShowWeaknessHint, collectProgressivePokemonTypeHits } from './pokemonHints';
 import { buildHint as buildThemeHint } from './gameServiceHelpers';
 import { getPokemonBonusHintFields } from './pokemonHints';
 import { buildProgressiveHintQueueFromSetup } from './progressiveQueue';
@@ -227,9 +227,9 @@ export function evaluateHintHit(
       return compareMove ? guessKnowsMove(guess, compareMove) : false;
     }
     if (hintField === 'weaknessHint') {
-      const weak = getPokemonWeaknesses(answer);
+      const listed = getPokemonMatchupHintTypes(answer);
       const gTypes = [guess.type1, guess.type2].filter(Boolean).map(String);
-      return gTypes.some((t) => weak.includes(t));
+      return gTypes.some((t) => listed.includes(t));
     }
   }
 

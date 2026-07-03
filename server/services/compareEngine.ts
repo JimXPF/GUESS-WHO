@@ -1,6 +1,6 @@
 import geoData from '../data/geo/nationality-regions.json';
-import positionGroups from '../data/position-groups.json';
 import { CompareResult, Theme } from '../types';
+import { getPositionGroups } from './themeConfig';
 
 type CountryInfo = { continent: string; groups: string[] };
 
@@ -50,11 +50,8 @@ function positionTokens(position: string): string[] {
 }
 
 function getPositionGroup(theme: Theme, position: string): string | null {
-  const groups = positionGroups[theme as keyof typeof positionGroups] as Record<
-    string,
-    string[]
-  >;
-  if (!groups) return null;
+  const groups = getPositionGroups(theme);
+  if (!groups || !Object.keys(groups).length) return null;
   const norm = normalizeStr(position);
   for (const [group, members] of Object.entries(groups)) {
     if (members.some((m) => normalizeStr(m) === norm)) return group;

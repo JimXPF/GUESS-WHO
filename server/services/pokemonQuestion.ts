@@ -28,7 +28,7 @@ const OPTIONAL_FIELDS = [
   'eggGroup',
 ] as const;
 
-const PRIMARY_HINT_POOL = ['category', 'ability', 'eggGroup', 'moveHint'] as const;
+const PRIMARY_HINT_POOL = ['category', 'ability', 'eggGroup', 'moveHint', 'weaknessHint'] as const;
 
 export type PokemonPrimaryHint = (typeof PRIMARY_HINT_POOL)[number];
 

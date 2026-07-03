@@ -1,30 +1,12 @@
-import fs from 'fs';
-import path from 'path';
 import { CharacterEntry, HintInfo, THEME_FIELDS } from '../types';
+import { getThemeConfig } from './themeConfig';
 
-const { divisions, positions } = (() => {
-  try {
-    const raw = fs.readFileSync(path.join(__dirname, '..', 'data', 'nba.json'), 'utf-8');
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return { divisions: {}, positions: {} };
-    return {
-      divisions: (parsed.meta?.divisions as Record<string, string>) ?? {},
-      positions: (parsed.meta?.positions as Record<string, string>) ?? {},
-    };
-  } catch {
-    return { divisions: {}, positions: {} };
-  }
-})();
-
+const nbaConfig = getThemeConfig('nba');
+const divisions = (nbaConfig.divisions as Record<string, string>) ?? {};
+const positions = (nbaConfig.positions as Record<string, string>) ?? {};
 const playableMinTotalGpSince2025 = (() => {
-  try {
-    const raw = fs.readFileSync(path.join(__dirname, '..', 'data', 'nba.json'), 'utf-8');
-    const parsed = JSON.parse(raw);
-    const v = parsed.meta?.playableMinTotalGpSince2025;
-    return typeof v === 'number' && v >= 0 ? v : 0;
-  } catch {
-    return 0;
-  }
+  const v = nbaConfig.playableMinTotalGpSince2025;
+  return typeof v === 'number' && v >= 0 ? v : 0;
 })();
 
 export function getPlayableMinTotalGpSince2025(): number {

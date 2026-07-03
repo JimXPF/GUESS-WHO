@@ -387,8 +387,10 @@ export function getFieldLabel(theme: Theme, field: string): string {
   const def = THEME_FIELD_DEFS[theme]?.find((f) => f.field === field);
   if (def) return def.label;
   if (STAT_FIELD_LABELS[field]) return STAT_FIELD_LABELS[field];
-  if (field === 'weaknessHint') return '属性弱点';
+  if (field === 'weaknessHint') return '属性相克';
   if (field === 'moveHint') return '可学会招式';
+  if (field === 'pokemonWeakTo') return '弱点';
+  if (field === 'pokemonResistTo') return '抗性';
   if (field === 'division') return '赛区';
   if (field === 'clubLeague') return '联赛';
   if (field === 'confederation') return '洲际赛区';
@@ -442,9 +444,20 @@ export const REVERSE_SCORE_CORRECT_GUESS = 500;
 export const REVERSE_SCORE_AUTO_BASE = 600;
 export const REVERSE_SCORE_AUTO_REMAINING_BONUS = 50;
 
-export const RELAY_FIELD_POINTS = 60;
-export const RELAY_WRONG_CLAIM_PENALTY = 50;
-export const RELAY_FULL_CORRECT_BONUS = 300;
+export const RELAY_FIELD_POINTS = 80;
+export const RELAY_WRONG_CLAIM_PENALTY = 25;
+/** 完全猜对：按已认领字段数查表（0→4），非等差整数 */
+export const RELAY_FULL_CORRECT_BY_CLAIMED_COUNT = [300, 270, 230, 180, 120] as const;
+/** 完全猜对：已认领 ≥5 个字段时的保底分 */
+export const RELAY_FULL_CORRECT_MIN = 80;
+
+/** 接龙完全猜对奖励：已认领字段越多奖励越少（查表） */
+export function computeRelayFullCorrectBonus(claimedFieldCount: number): number {
+  const n = Math.max(0, Math.floor(claimedFieldCount));
+  if (n >= RELAY_FULL_CORRECT_BY_CLAIMED_COUNT.length) return RELAY_FULL_CORRECT_MIN;
+  return RELAY_FULL_CORRECT_BY_CLAIMED_COUNT[n];
+}
+
 export const RELAY_TURN_SECONDS = 30;
 export const RELAY_TIMEOUT_PENALTY = 50;
 

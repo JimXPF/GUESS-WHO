@@ -78,11 +78,18 @@ export interface RelayGuessRecord extends GuessRecord {
   playerName: string;
 }
 
-export const RELAY_FIELD_POINTS = 60;
-export const RELAY_WRONG_CLAIM_PENALTY = 50;
-export const RELAY_FULL_CORRECT_BONUS = 300;
+export const RELAY_FIELD_POINTS = 80;
+export const RELAY_WRONG_CLAIM_PENALTY = 25;
+export const RELAY_FULL_CORRECT_BY_CLAIMED_COUNT = [300, 270, 230, 180, 120] as const;
+export const RELAY_FULL_CORRECT_MIN = 80;
 export const RELAY_TURN_SECONDS = 30;
 export const RELAY_TIMEOUT_PENALTY = 50;
+
+export function computeRelayFullCorrectBonus(claimedFieldCount: number): number {
+  const n = Math.max(0, Math.floor(claimedFieldCount));
+  if (n >= RELAY_FULL_CORRECT_BY_CLAIMED_COUNT.length) return RELAY_FULL_CORRECT_MIN;
+  return RELAY_FULL_CORRECT_BY_CLAIMED_COUNT[n];
+}
 
 export const BATTLE_QUESTION_COUNT = 10;
 export const BATTLE_INTERMISSION_SECONDS = 5;

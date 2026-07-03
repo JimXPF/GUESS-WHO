@@ -33,7 +33,7 @@ function main() {
       : path.join(__dirname, '../server/data/football.json'));
 
   const raw = JSON.parse(fs.readFileSync(sourcePath, 'utf-8'));
-  const clubLeagues = raw.meta?.clubLeagues ?? {};
+  const clubLeagues = raw.config?.clubLeagues ?? raw.meta?.clubLeagues ?? {};
   const players = raw.players ?? [];
 
   const tagged = players.map((player) => {

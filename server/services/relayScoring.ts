@@ -2,9 +2,9 @@ import {
   FieldClaim,
   FieldCompare,
   RELAY_FIELD_POINTS,
-  RELAY_FULL_CORRECT_BONUS,
   RELAY_WRONG_CLAIM_PENALTY,
   Theme,
+  computeRelayFullCorrectBonus,
 } from '../types';
 import { getFieldLabel } from '../types';
 
@@ -41,14 +41,19 @@ export function scoreRelayGuess(
   const newClaims = { ...claims };
 
   if (isCorrect) {
-    scoreDelta += RELAY_FULL_CORRECT_BONUS;
+    const claimedCount = Object.keys(claims).length;
+    const fullBonus = computeRelayFullCorrectBonus(claimedCount);
+    scoreDelta += fullBonus;
     breakdown.push({
       sessionId,
       playerName,
       round: roundNumber,
-      points: RELAY_FULL_CORRECT_BONUS,
+      points: fullBonus,
       field: '__full__',
-      fieldLabel: '完全猜对',
+      fieldLabel:
+        claimedCount > 0
+          ? `完全猜对（已认领 ${claimedCount} 字段）`
+          : '完全猜对',
     });
     return { scoreDelta, newClaims, breakdown, fullCorrect: true };
   }

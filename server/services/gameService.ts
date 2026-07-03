@@ -74,6 +74,7 @@ import {
   buildPokemonMoveHint,
   buildPokemonWeaknessHint,
   guessKnowsMove,
+  getPokemonMatchupHintTypes,
   isPokemonHintFieldExcluded,
   shouldShowWeaknessHint,
 } from './pokemonHints';

@@ -24,7 +24,7 @@ const {
 const { hasCJK, createLookupCache, getManualChineseName } = require('./lib/nba-name-lookup');
 const { loadTheme, saveTheme } = require('./lib/theme-data');
 
-const schoolMap = loadTheme('nba').meta.schools || {};
+const schoolMap = loadTheme('nba').config.schools || {};
 
 const LIMIT = (() => {
   const i = process.argv.indexOf('--limit');

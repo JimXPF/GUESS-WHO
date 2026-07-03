@@ -27,6 +27,14 @@ import {
 } from './dataLoader';
 import { getConfederationHint, isPlayableFootballAnswer, resolveClubLeague } from './footballHints';
 import { getDivisionHint, isPlayableNBAAnswer } from './nbaHints';
+import {
+  getPokemonReverseMatchupValues,
+  isPokemonReverseMatchupField,
+  POKEMON_REVERSE_RESIST_FIELD,
+  POKEMON_REVERSE_WEAK_FIELD,
+  pokemonCardSatisfiesMatchupCondition,
+  pokemonMatchupFieldHasDiscrimination,
+} from './pokemonHints';
 import { buildProgressiveHintInfo } from './progressiveHint';
 
 const EXCLUDED_FIELDS = new Set(['learnableMove']);
@@ -54,8 +62,9 @@ const SYNTHETIC_REVERSE_FIELDS: Record<Theme, string[]> = {
   csgo: [],
   football: ['clubLeague', 'confederation'],
   nba: ['division'],
-  pokemon: [],
+  pokemon: [POKEMON_REVERSE_WEAK_FIELD, POKEMON_REVERSE_RESIST_FIELD],
 };
+
 const NULLABLE_FIELDS = new Set(['type2', 'club', 'school']);
 
 const NUMERIC_FIELDS: Record<Theme, Set<string>> = {
@@ -160,8 +169,18 @@ function cardSatisfiesOperator(
   operator: ReverseOperator,
   conditionValue: string | number,
   field: string,
-  theme: Theme
+  theme: Theme,
+  card?: CharacterEntry
 ): boolean {
+  if (theme === 'pokemon' && card && isPokemonReverseMatchupField(field)) {
+    return pokemonCardSatisfiesMatchupCondition(
+      card,
+      field,
+      operator,
+      String(conditionValue)
+    );
+  }
+
   if (field === 'eggGroup') {
     const groups = parseEggGroups(cardValue);
     const target = normalizeStr(conditionValue);
@@ -199,7 +218,8 @@ export function cardCompatibleWithTag(
     condition.operator,
     condition.value,
     condition.field,
-    theme
+    theme,
+    card
   );
   return matched ? satisfies : !satisfies;
 }
@@ -209,8 +229,16 @@ export function cardMatchesCondition(
   condition: ReverseCondition,
   theme: Theme
 ): boolean {
+  if (theme === 'pokemon' && isPokemonReverseMatchupField(condition.field)) {
+    return pokemonCardSatisfiesMatchupCondition(
+      card,
+      condition.field,
+      condition.operator,
+      String(condition.value)
+    );
+  }
   const raw = getRawFieldValue(card, condition.field, theme);
-  return cardSatisfiesOperator(raw, condition.operator, condition.value, condition.field, theme);
+  return cardSatisfiesOperator(raw, condition.operator, condition.value, condition.field, theme, card);
 }
 
 export function evaluateAnswerCondition(
@@ -345,6 +373,13 @@ function countFieldDiscrimination(
   field: string,
   theme: Theme
 ): number {
+  if (theme === 'pokemon' && field === POKEMON_REVERSE_WEAK_FIELD) {
+    return getPokemonReverseMatchupValues(alivePool, 'weak').length;
+  }
+  if (theme === 'pokemon' && field === POKEMON_REVERSE_RESIST_FIELD) {
+    return getPokemonReverseMatchupValues(alivePool, 'resist').length;
+  }
+
   if (isNumericReverseField(theme, field)) {
     const nums: number[] = [];
     for (const card of alivePool) {
@@ -421,6 +456,13 @@ function fieldHasDiscrimination(
   field: string,
   theme: Theme
 ): boolean {
+  if (theme === 'pokemon' && field === POKEMON_REVERSE_WEAK_FIELD) {
+    return pokemonMatchupFieldHasDiscrimination(alivePool, 'weak');
+  }
+  if (theme === 'pokemon' && field === POKEMON_REVERSE_RESIST_FIELD) {
+    return pokemonMatchupFieldHasDiscrimination(alivePool, 'resist');
+  }
+
   if (isNumericReverseField(theme, field)) {
     const nums: number[] = [];
     for (const card of alivePool) {
@@ -467,6 +509,13 @@ export function getFieldValues(
   theme: Theme,
   field: string
 ): ReverseValuesResponse {
+  if (theme === 'pokemon' && field === POKEMON_REVERSE_WEAK_FIELD) {
+    return { kind: 'enum', values: getPokemonReverseMatchupValues(alivePool, 'weak') };
+  }
+  if (theme === 'pokemon' && field === POKEMON_REVERSE_RESIST_FIELD) {
+    return { kind: 'enum', values: getPokemonReverseMatchupValues(alivePool, 'resist') };
+  }
+
   if (isNumericReverseField(theme, field)) {
     const nums: number[] = [];
     for (const card of alivePool) {
