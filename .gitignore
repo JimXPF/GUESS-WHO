@@ -15,3 +15,6 @@ AGENTS.md
 server/data/*-audit.json
 scripts/cache/
 client/tsconfig.tsbuildinfo
+server-go/server.exe
+server-go/server
+server-go/*.exe

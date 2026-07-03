@@ -785,7 +785,7 @@ export default function GamePage() {
             {showCongrats ? (
               <CongratsBanner attempts={session.questionAttempts} score={lastScore} />
             ) : !isProgressive ? (
-              <HintCard hints={session.hints ?? [session.hint]} />
+              <HintCard hints={(session.hints?.length ? session.hints : session.hint ? [session.hint] : [])} />
             ) : null}
 
             {!questionDone && toast && (

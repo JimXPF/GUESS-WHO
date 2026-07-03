@@ -5,12 +5,12 @@
   "scripts": {
     "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-dev.ps1",
     "dev:inner": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "tsx watch server/index.ts",
+    "dev:server": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-server.ps1",
     "dev:client": "npm run dev --prefix client",
     "restart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/kill-dev.ps1 && npm install && npm install --prefix client && npm run dev",
-    "build": "npm run build --prefix client && tsc -p server/tsconfig.json",
-    "start": "node dist/server/index.js",
-    "typecheck": "tsc -p server/tsconfig.json --noEmit && npm run typecheck --prefix client",
+    "build": "npm run build --prefix client && cd server-go && go build -o server.exe ./cmd/server",
+    "start": "cd server-go && server.exe",
+    "typecheck": "npm run typecheck --prefix client",
     "fetch:images": "node scripts/fetch-all-images.js",
     "fetch:images:csgo": "node scripts/scrape-csgo-wanmei.js",
     "sync:csgo": "node scripts/sync-csgo-rosters-wanmei.js",
@@ -34,21 +34,9 @@
     "patch:aliases": "node scripts/patch-search-aliases.js",
     "filter:football:leagues": "node scripts/filter-football-club-leagues.js"
   },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "socket.io": "^4.8.3",
-    "sql.js": "^1.11.0",
-    "uuid": "^11.0.5"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.10.5",
-    "@types/sql.js": "^1.4.9",
     "concurrently": "^9.1.2",
-    "puppeteer": "^25.2.0",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "puppeteer": "^25.2.0"
   }
 }

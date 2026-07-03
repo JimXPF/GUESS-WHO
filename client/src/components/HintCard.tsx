@@ -44,10 +44,8 @@ export default function HintCard({ hints }: Props) {
                 {hint.label}
               </p>
               <p
-                className={`font-bold text-apple-blue leading-tight mt-0.5 ${
-                  hint.field === 'weaknessHint'
-                    ? 'text-[10px] sm:text-xs whitespace-pre-line text-left'
-                    : `truncate ${single ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'}`
+                className={`font-bold text-apple-blue leading-tight mt-0.5 truncate ${
+                  single ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'
                 }`}
                 title={String(hint.value ?? '')}
               >

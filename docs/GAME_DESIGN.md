@@ -508,7 +508,7 @@ server/data/
 | 层 | 选型 |
 |----|------|
 | 前端 | React 18 + TS + Vite + Tailwind |
-| 后端 | Express + **sql.js**（内存 SQLite，debounce 落盘） |
+| 后端 | **Go + chi + modernc/sqlite**（纯 Go SQLite，已完全替代原 Node 后端） |
 | 实时 | Socket.io `/socket.io`（【PWA】 待平台鉴权） |
 | 题库 | 静态 JSON，运行时只读 |
 
@@ -517,12 +517,13 @@ server/data/
 ```
 client/src/pages/     GamePage, ResultPage, LobbyPage, MultiplayerGamePage, SettlementPage
 client/src/hooks/     useGameRoom.ts（Socket）
-server/index.ts       Express + Socket 入口
-server/db.ts          建表与持久化
-server/routes/        game, leaderboard
-server/services/      见 §2.1
-server/data/          题库 JSON
-scripts/              数据同步（puppeteer 等，不进生产镜像）
+server-go/cmd/server/main.go    Go 入口（chi + Socket + static）
+server-go/internal/db/            SQLite 持久化（modernc/sqlite）
+server-go/internal/api/           REST 接口 + 静态文件托管
+server-go/internal/services/      游戏核心逻辑（compareEngine、hints、RNG、状态机）
+server-go/internal/socket/        房间管理与 Socket.io 事件
+server/data/                      题库 JSON（与 Go/Node 共享）
+scripts/                          数据同步（puppeteer 等，非运行时）
 ```
 
 ### 4.3 数据库（核心表）
@@ -538,7 +539,7 @@ scripts/              数据同步（puppeteer 等，不进生产镜像）
 
 `progressive_state` / 逆向：复用同列存 `ProgressiveState` 或 `ReverseState` JSON。
 
-**生产扩展**：多实例需外置 DB（如 PostgreSQL）；单实例 sql.js 可用。
+**生产扩展**：Go 后端为单二进制部署，SQLite 文件持久化即可；多实例建议外置 PostgreSQL + Redis 房间状态。原 Node `sql.js` 方案已废弃。
 
 ### 4.4 API 摘要
 
