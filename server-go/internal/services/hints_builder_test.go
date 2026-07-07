@@ -47,35 +47,24 @@ func TestComputeStableBonusFieldsPreservesUnlockOrder(t *testing.T) {
 	}
 }
 
-func TestBackfillBonusHintsSkipsHitAndPrefersNotHit(t *testing.T) {
-	queue := []string{"evolutionStage", "eggGroup", "ability", "type2"}
-	currentHits := map[string]bool{
-		"evolutionStage": true,
-		"eggGroup":       true,
-		"ability":        true,
-	}
+func TestAssembleUnlockedHintsKeepsHitBonus(t *testing.T) {
+	currentHits := map[string]bool{"evolutionStage": true}
 	ctx := bonusHintBuildContext{
 		theme:     types.ThemePokemon,
-		answer:    types.CharacterEntry{"id": "x", "evolutionStage": "1阶进化", "eggGroup": "矿物", "ability": "坚硬脑袋", "type2": "岩石"},
-		hintField: "category",
+		answer:    types.CharacterEntry{"id": "x", "evolutionStage": "1阶进化", "eggGroup": "怪兽"},
+		hintField: "eggGroup",
 		activeFields: []string{
-			"type1", "type2", "evolutionStage", "eggGroup", "ability",
+			"type1", "evolutionStage", "eggGroup", "ability",
 		},
 	}
-	primary := types.HintInfo{Field: "category", Label: "分类", Value: "宝可梦"}
+	primary := types.HintInfo{Field: "eggGroup", Label: "生蛋群", Value: "怪兽、陆上"}
 
-	hints := backfillBonusHints(primary, []string{"evolutionStage", "eggGroup"}, 2, queue, currentHits, ctx)
-	if len(hints) != 3 {
-		t.Fatalf("expected primary + 2 bonus, got %d hints: %+v", len(hints), hints)
+	hints := assembleUnlockedHints(primary, []string{"evolutionStage"}, ctx, currentHits)
+	if len(hints) != 2 {
+		t.Fatalf("expected primary + hit bonus kept, got %d: %+v", len(hints), hints)
 	}
-	if hints[0].Field != "category" {
-		t.Fatalf("primary should stay first, got %v", hints[0].Field)
-	}
-	if hints[1].Field != "type2" {
-		t.Fatalf("expected backfill type2 first, got %v", hints[1].Field)
-	}
-	if hints[1].Field == "eggGroup" || hints[1].Field == "ability" {
-		t.Fatalf("should not prioritize already-hit queue fields, got %v", hints[1].Field)
+	if hints[0].Field != "eggGroup" || hints[1].Field != "evolutionStage" {
+		t.Fatalf("unexpected order/fields: %+v", hints)
 	}
 }
 

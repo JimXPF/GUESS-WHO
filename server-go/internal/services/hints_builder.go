@@ -180,51 +180,22 @@ func computeStableBonusFields(
 	return picked
 }
 
-// backfillBonusHints 已 hit 的追加提示不占槽，从队列递补未 hit 项（用尽后再展示已 hit）。
-func backfillBonusHints(
+// assembleUnlockedHints 按解锁顺序组装首提示与追加提示；已展示过的提示不会因对比格 hit 而消失。
+func assembleUnlockedHints(
 	primary types.HintInfo,
 	bonusFields []string,
-	maxBonus int,
-	extraHintFields []string,
-	currentHits map[string]bool,
 	ctx bonusHintBuildContext,
+	hitFields map[string]bool,
 ) []types.HintInfo {
-	used := map[string]bool{primary.Field: true}
-	var bonus []types.HintInfo
-
+	hints := []types.HintInfo{primary}
 	for _, field := range bonusFields {
-		if currentHits[field] {
-			continue
-		}
-		hint := ctx.tryBuild(field, currentHits)
+		hint := ctx.tryBuild(field, hitFields)
 		if hint == nil {
 			continue
 		}
-		bonus = append(bonus, *hint)
-		used[field] = true
+		hints = append(hints, *hint)
 	}
-
-	for len(bonus) < maxBonus {
-		field := pickBuildableQueueField(extraHintFields, used, currentHits, false, ctx, currentHits)
-		if field == "" {
-			field = pickBuildableQueueField(extraHintFields, used, currentHits, true, ctx, currentHits)
-		}
-		if field == "" {
-			break
-		}
-		hint := ctx.tryBuild(field, currentHits)
-		if hint == nil {
-			used[field] = true
-			continue
-		}
-		bonus = append(bonus, *hint)
-		used[field] = true
-	}
-
-	out := make([]types.HintInfo, 0, 1+len(bonus))
-	out = append(out, primary)
-	out = append(out, bonus...)
-	return out
+	return hints
 }
 
 // BuildQueuedBonusSessionHints 在第 3/6/9 次尝试时解锁额外提示。
@@ -253,7 +224,7 @@ func BuildQueuedBonusSessionHints(
 	}
 
 	bonusFields := computeStableBonusFields(extraHintFields, hintField, maxBonus, guesses, ctx)
-	hints := backfillBonusHints(primary, bonusFields, maxBonus, extraHintFields, hitFields, ctx)
+	hints := assembleUnlockedHints(primary, bonusFields, ctx, hitFields)
 	return FilterPokemonWeaknessHints(hints, theme, hitFields)
 }
 
