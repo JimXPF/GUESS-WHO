@@ -400,29 +400,44 @@ func UnlockNextProgressiveHint(
 		usedValues[fmt.Sprintf("%s:%v", h.Field, h.Value)] = true
 	}
 
-	var nextField string
-	var rest []string
+	satisfiedSet := make(map[string]bool)
+	for _, f := range state.SatisfiedFields {
+		satisfiedSet[f] = true
+	}
 	hintFieldSet := make(map[string]bool)
 	for _, f := range state.HintFields {
 		hintFieldSet[f] = true
 	}
 
-	for _, field := range state.PendingQueue {
-		if nextField != "" {
-			rest = append(rest, field)
-			continue
+	tryPick := func(allowSatisfied bool) (string, []string) {
+		var picked string
+		var rest []string
+		for _, field := range state.PendingQueue {
+			if picked != "" {
+				rest = append(rest, field)
+				continue
+			}
+			if !allowSatisfied && satisfiedSet[field] {
+				continue
+			}
+			if theme == types.ThemePokemon && field == "weaknessHint" &&
+				!ShouldShowWeaknessHint(CollectProgressivePokemonTypeHits(state.SatisfiedFields)) {
+				continue
+			}
+			info := BuildProgressiveHintInfo(theme, answer, field, compareMove, state.FootballPrimaryField)
+			key := fmt.Sprintf("%s:%v", info.Field, info.Value)
+			if !usedValues[key] && !hintFieldSet[field] {
+				picked = field
+			} else {
+				rest = append(rest, field)
+			}
 		}
-		if theme == types.ThemePokemon && field == "weaknessHint" &&
-			!ShouldShowWeaknessHint(CollectProgressivePokemonTypeHits(state.SatisfiedFields)) {
-			continue
-		}
-		info := BuildProgressiveHintInfo(theme, answer, field, compareMove, state.FootballPrimaryField)
-		key := fmt.Sprintf("%s:%v", info.Field, info.Value)
-		if !usedValues[key] && !hintFieldSet[field] {
-			nextField = field
-		} else {
-			rest = append(rest, field)
-		}
+		return picked, rest
+	}
+
+	nextField, rest := tryPick(false)
+	if nextField == "" {
+		nextField, rest = tryPick(true)
 	}
 
 	if nextField == "" {

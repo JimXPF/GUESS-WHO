@@ -135,7 +135,6 @@ func BuildGameSession(sessionID string) (*types.GameSession, error) {
 	guesses = enrichGuessImages(row.Theme, guesses)
 
 	questionAttemptsForHints := row.QuestionAttempts
-	hitFields := CollectHitFields(guesses)
 
 	var reverseQueries []types.ReverseQueryRecord
 	if row.GameMode == types.ModeReverseBomb {
@@ -155,7 +154,7 @@ func BuildGameSession(sessionID string) (*types.GameSession, error) {
 	} else {
 		hints = BuildSessionHints(
 			row.Theme, answer, row.HintField, extraHintFields,
-			questionAttemptsForHints, activeFields, hitFields,
+			questionAttemptsForHints, activeFields, guesses,
 			row.QuestionCompareMove, progressiveState,
 		)
 	}

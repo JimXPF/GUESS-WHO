@@ -690,7 +690,7 @@ func CountRelayQuestionAttempts(playerOrder []string, questionIndex int) (int, e
 	return total, nil
 }
 
-func collectRelayHitFields(playerOrder []string, questionIndex int) (map[string]bool, error) {
+func collectRelayGuesses(playerOrder []string, questionIndex int) ([]types.GuessRecord, error) {
 	allGuesses := []types.GuessRecord{}
 	qIdx := questionIndex
 	for _, sid := range playerOrder {
@@ -699,6 +699,14 @@ func collectRelayHitFields(playerOrder []string, questionIndex int) (map[string]
 			return nil, err
 		}
 		allGuesses = append(allGuesses, guesses...)
+	}
+	return allGuesses, nil
+}
+
+func collectRelayHitFields(playerOrder []string, questionIndex int) (map[string]bool, error) {
+	allGuesses, err := collectRelayGuesses(playerOrder, questionIndex)
+	if err != nil {
+		return nil, err
 	}
 	return CollectHitFields(allGuesses), nil
 }
@@ -724,14 +732,14 @@ func BuildRelayHintsForRoom(playerOrder []string, theme types.Theme, questionInd
 	if err != nil {
 		return nil, err
 	}
-	hitFields, err := collectRelayHitFields(playerOrder, questionIndex)
+	relayGuesses, err := collectRelayGuesses(playerOrder, questionIndex)
 	if err != nil {
 		return nil, err
 	}
 
 	return BuildSessionHints(
 		theme, answer, row.HintField, extraHintFields,
-		sharedAttempts, activeFields, hitFields,
+		sharedAttempts, activeFields, relayGuesses,
 		row.QuestionCompareMove, nil,
 	), nil
 }

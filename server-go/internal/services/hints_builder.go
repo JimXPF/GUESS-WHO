@@ -16,8 +16,16 @@ func countUnlockedBonusHints(questionAttempts int) int {
 
 // CollectHitFields 汇总猜测记录中命中的字段名。
 func CollectHitFields(guesses []types.GuessRecord) map[string]bool {
+	return CollectHitFieldsUpToAttempts(guesses, 0)
+}
+
+// CollectHitFieldsUpToAttempts 汇总前 maxAttempts 次猜测的 hit 字段；maxAttempts<=0 表示全部。
+func CollectHitFieldsUpToAttempts(guesses []types.GuessRecord, maxAttempts int) map[string]bool {
 	hit := map[string]bool{}
-	for _, g := range guesses {
+	for i, g := range guesses {
+		if maxAttempts > 0 && i >= maxAttempts {
+			break
+		}
 		if g.FieldResults == nil {
 			continue
 		}
@@ -106,6 +114,119 @@ func FilterPokemonWeaknessHints(hints []types.HintInfo, theme types.Theme, hitFi
 	return hints
 }
 
+type bonusHintBuildContext struct {
+	theme        types.Theme
+	answer       types.CharacterEntry
+	hintField    string
+	activeFields []string
+	compareMove  *string
+}
+
+func (ctx bonusHintBuildContext) tryBuild(field string, hitFields map[string]bool) *types.HintInfo {
+	return buildExtraHintForField(ctx.theme, ctx.answer, field, ctx.activeFields, ctx.compareMove, hitFields)
+}
+
+// pickBuildableQueueField 按队列顺序选取下一条可构建的提示字段。
+func pickBuildableQueueField(
+	queue []string,
+	used map[string]bool,
+	skipHit map[string]bool,
+	allowHit bool,
+	ctx bonusHintBuildContext,
+	hitFields map[string]bool,
+) string {
+	for _, field := range queue {
+		if used[field] {
+			continue
+		}
+		if skipHit[field] && !allowHit {
+			continue
+		}
+		if ctx.tryBuild(field, hitFields) == nil {
+			continue
+		}
+		return field
+	}
+	return ""
+}
+
+// computeStableBonusFields 按 3/6/9 次阈值依次解锁，各槽位在对应阈值时点的 hit 状态下选取（顺序稳定）。
+func computeStableBonusFields(
+	extraHintFields []string,
+	primaryField string,
+	maxBonus int,
+	guesses []types.GuessRecord,
+	ctx bonusHintBuildContext,
+) []string {
+	if maxBonus <= 0 {
+		return nil
+	}
+	used := map[string]bool{primaryField: true}
+	var picked []string
+
+	for slot := 0; slot < maxBonus && slot < len(bonusHintThresholds); slot++ {
+		hitsAtThreshold := CollectHitFieldsUpToAttempts(guesses, bonusHintThresholds[slot])
+
+		field := pickBuildableQueueField(extraHintFields, used, hitsAtThreshold, false, ctx, hitsAtThreshold)
+		if field == "" {
+			field = pickBuildableQueueField(extraHintFields, used, hitsAtThreshold, true, ctx, hitsAtThreshold)
+		}
+		if field == "" {
+			break
+		}
+		picked = append(picked, field)
+		used[field] = true
+	}
+	return picked
+}
+
+// backfillBonusHints 已 hit 的追加提示不占槽，从队列递补未 hit 项（用尽后再展示已 hit）。
+func backfillBonusHints(
+	primary types.HintInfo,
+	bonusFields []string,
+	maxBonus int,
+	extraHintFields []string,
+	currentHits map[string]bool,
+	ctx bonusHintBuildContext,
+) []types.HintInfo {
+	used := map[string]bool{primary.Field: true}
+	var bonus []types.HintInfo
+
+	for _, field := range bonusFields {
+		if currentHits[field] {
+			continue
+		}
+		hint := ctx.tryBuild(field, currentHits)
+		if hint == nil {
+			continue
+		}
+		bonus = append(bonus, *hint)
+		used[field] = true
+	}
+
+	for len(bonus) < maxBonus {
+		field := pickBuildableQueueField(extraHintFields, used, currentHits, false, ctx, currentHits)
+		if field == "" {
+			field = pickBuildableQueueField(extraHintFields, used, currentHits, true, ctx, currentHits)
+		}
+		if field == "" {
+			break
+		}
+		hint := ctx.tryBuild(field, currentHits)
+		if hint == nil {
+			used[field] = true
+			continue
+		}
+		bonus = append(bonus, *hint)
+		used[field] = true
+	}
+
+	out := make([]types.HintInfo, 0, 1+len(bonus))
+	out = append(out, primary)
+	out = append(out, bonus...)
+	return out
+}
+
 // BuildQueuedBonusSessionHints 在第 3/6/9 次尝试时解锁额外提示。
 func BuildQueuedBonusSessionHints(
 	theme types.Theme,
@@ -116,48 +237,23 @@ func BuildQueuedBonusSessionHints(
 	activeFields []string,
 	hitFields map[string]bool,
 	compareMove *string,
+	guesses []types.GuessRecord,
 ) []types.HintInfo {
-	hints := buildPrimaryHintList(theme, answer, hintField, activeFields, compareMove)
-	shown := map[string]bool{}
-	for _, h := range hints {
-		shown[h.Field] = true
+	primaryList := buildPrimaryHintList(theme, answer, hintField, activeFields, compareMove)
+	if len(primaryList) == 0 {
+		return nil
 	}
+	primary := primaryList[0]
 
 	maxBonus := countUnlockedBonusHints(questionAttempts)
+	ctx := bonusHintBuildContext{theme, answer, hintField, activeFields, compareMove}
+
 	if maxBonus == 0 {
-		return FilterPokemonWeaknessHints(hints, theme, hitFields)
+		return FilterPokemonWeaknessHints(primaryList, theme, hitFields)
 	}
 
-	var queue []string
-	for _, f := range extraHintFields {
-		if !shown[f] {
-			queue = append(queue, f)
-		}
-	}
-	var notHit, alreadyHit []string
-	for _, f := range queue {
-		if hitFields[f] {
-			alreadyHit = append(alreadyHit, f)
-		} else {
-			notHit = append(notHit, f)
-		}
-	}
-	ordered := append(notHit, alreadyHit...)
-
-	bonusAdded := 0
-	for _, field := range ordered {
-		if bonusAdded >= maxBonus {
-			break
-		}
-		hint := buildExtraHintForField(theme, answer, field, activeFields, compareMove, hitFields)
-		if hint == nil {
-			continue
-		}
-		hints = append(hints, *hint)
-		shown[field] = true
-		bonusAdded++
-	}
-
+	bonusFields := computeStableBonusFields(extraHintFields, hintField, maxBonus, guesses, ctx)
+	hints := backfillBonusHints(primary, bonusFields, maxBonus, extraHintFields, hitFields, ctx)
 	return FilterPokemonWeaknessHints(hints, theme, hitFields)
 }
 
@@ -169,19 +265,17 @@ func BuildSessionHints(
 	extraHintFields []string,
 	questionAttempts int,
 	activeFields []string,
-	hitFields map[string]bool,
+	guesses []types.GuessRecord,
 	compareMove *string,
 	progressiveState *types.ProgressiveState,
 ) []types.HintInfo {
 	if progressiveState != nil {
 		return BuildProgressiveHintsFromState(*progressiveState, theme)
 	}
-	if hitFields == nil {
-		hitFields = map[string]bool{}
-	}
+	hitFields := CollectHitFields(guesses)
 	return BuildQueuedBonusSessionHints(
 		theme, answer, hintField, extraHintFields, questionAttempts,
-		activeFields, hitFields, compareMove,
+		activeFields, hitFields, compareMove, guesses,
 	)
 }
 
