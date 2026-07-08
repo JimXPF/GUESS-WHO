@@ -1,9 +1,9 @@
 [project]
 sub_id = "cc20e44a"
 name = "guess-who"
-requires = ["nodejs-24"]
+requires = ["nodejs-24", "golang-1.26"]
 project_type = "web"
-entrypoint = "dist/server/index.js"
+entrypoint = "server-go/server"
 
 [preview]
 preview_enable = "enabled"

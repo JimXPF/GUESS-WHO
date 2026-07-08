@@ -6,8 +6,10 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
-# 启动生产服务（端口 5000）
-# 清除可能存在的 PORT 环境变量，确保使用 5000
+# 清除环境中的 PORT 变量，确保使用 5000
 unset PORT
 export PORT=5000
-exec node dist/server/index.js
+
+# 启动 Go 后端服务
+cd server-go
+./server
