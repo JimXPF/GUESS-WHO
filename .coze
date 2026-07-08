@@ -1,5 +1,5 @@
 [project]
-sub_id = "cc20e44a"
+sub_id = "12fe68d2"
 name = "guess-who"
 requires = ["nodejs-24", "golang-1.26"]
 project_type = "web"
