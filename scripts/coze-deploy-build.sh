@@ -17,8 +17,10 @@ cd client && pnpm exec vite build && cd ..
 
 # 编译 Go 后端
 cd server-go
-go mod tidy
-go build -o server ./cmd/server
+echo "Running go mod tidy..."
+go mod tidy || { echo "go mod tidy failed"; exit 1; }
+echo "Running go build..."
+go build -o server ./cmd/server || { echo "go build failed"; exit 1; }
 cd ..
 
 echo "Build completed successfully"
