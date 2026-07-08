@@ -6,8 +6,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
-# 清除环境中的 PORT 变量，确保使用 5000
-unset PORT
+# 确保监听所有接口，端口为 5000
+export HOST=0.0.0.0
 export PORT=5000
 
 # 启动 Go 后端服务
