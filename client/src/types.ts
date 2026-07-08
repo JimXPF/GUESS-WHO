@@ -259,12 +259,29 @@ export interface RoomPlayerState {
   scoreBreakdown?: FieldClaim[];
 }
 
+export type RoomKind = 'custom' | 'ladder';
+
+export interface LadderInviteInfo {
+  roomCode: string;
+  theme: Theme;
+  mode: 'battle' | 'relay-chain';
+  hostName: string;
+  hostSessionId: string;
+  playerCount: number;
+  maxPlayers: number;
+  createdAt: number;
+}
+
 export interface RoomState {
   code: string;
   mode: 'battle' | 'relay-chain';
+  roomKind?: RoomKind;
   theme: Theme;
   maxPlayers: number;
-  status: 'waiting' | 'playing' | 'finished';
+  status: 'waiting' | 'countdown' | 'playing' | 'finished';
+  hostSessionId?: string;
+  countdownDeadlineAt?: number | null;
+  lobbyCountdownSeconds?: number;
   players: RoomPlayerState[];
   currentTurnSessionId?: string | null;
   currentTurnPlayer?: string | null;

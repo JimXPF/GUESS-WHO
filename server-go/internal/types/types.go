@@ -382,13 +382,25 @@ type BattleRoundResult struct {
 	RoundLabel       string               `json:"roundLabel,omitempty"`
 }
 
+// RoomKind 区分普通房间与天梯邀请房间。
+type RoomKind string
+
+const (
+	RoomKindCustom RoomKind = "custom"
+	RoomKindLadder RoomKind = "ladder"
+)
+
 // RoomState 是多人房间的广播快照。
 type RoomState struct {
 	Code                      string               `json:"code"`
 	Mode                      string               `json:"mode"`
+	RoomKind                  RoomKind             `json:"roomKind,omitempty"`
 	Theme                     Theme                `json:"theme"`
 	MaxPlayers                int                  `json:"maxPlayers"`
 	Status                    string               `json:"status"`
+	HostSessionID             string               `json:"hostSessionId,omitempty"`
+	CountdownDeadlineAt       *int64               `json:"countdownDeadlineAt,omitempty"`
+	LobbyCountdownSeconds     *int                 `json:"lobbyCountdownSeconds,omitempty"`
 	Players                   []RoomPlayerState    `json:"players"`
 	CurrentTurnSessionID      *string              `json:"currentTurnSessionId,omitempty"`
 	CurrentTurnPlayer         *string              `json:"currentTurnPlayer,omitempty"`
@@ -411,6 +423,22 @@ type RoomState struct {
 	RelayHints                []HintInfo           `json:"relayHints,omitempty"`
 	RelayNotice               *RelayNotice         `json:"relayNotice,omitempty"`
 	RevealedAnswer            *RevealedAnswer      `json:"revealedAnswer,omitempty"`
+}
+
+// RoomStartResponse 是 room:start 的 ack 载荷。
+type RoomStartResponse struct {
+	Room  *RoomState `json:"room,omitempty"`
+	Error string     `json:"error,omitempty"`
+}
+
+// RoomLadderReinviteResponse 是 room:ladder:reinvite 的 ack 载荷。
+type RoomLadderReinviteResponse struct {
+	Error string `json:"error,omitempty"`
+}
+
+// RoomDismissResponse 是 room:dismiss 的 ack 载荷。
+type RoomDismissResponse struct {
+	Error string `json:"error,omitempty"`
 }
 
 // RoomJoinResponse 是 room:create / join / rejoin 的 ack 载荷。

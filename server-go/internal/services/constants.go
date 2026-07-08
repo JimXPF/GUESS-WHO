@@ -23,6 +23,10 @@ const (
 	BattleIntermissionSeconds   = 5
 	BattlePartialPointsPerHit   = 40
 
+	LobbyMaxPlayers      = 5
+	LobbyMinPlayers      = 2
+	LobbyCountdownSeconds = 3
+
 	FullCorrectMinScore = 300
 )
 

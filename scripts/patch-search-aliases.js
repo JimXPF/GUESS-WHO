@@ -7,10 +7,11 @@ const path = require('path');
 const { parse52PokeNicknames } = require('./lib/parse-52poke-nicknames');
 
 const ROOT = path.join(__dirname, '..');
-const CSGO_PATH = path.join(ROOT, 'server', 'data', 'csgo.json');
-const POKEMON_PATH = path.join(ROOT, 'server', 'data', 'pokemon.json');
-const CSGO_NICK = path.join(ROOT, 'server', 'data', 'aliases', 'csgo-nicknames.json');
-const POKEMON_EXTRA = path.join(ROOT, 'server', 'data', 'aliases', 'pokemon-extra.json');
+const POKEMON_PATH = path.join(ROOT, 'server-go', 'data', 'pokemon.json');
+const CSGO_PATH = path.join(ROOT, 'server-go', 'data', 'csgo.json');
+const CSGO_NICK = path.join(ROOT, 'server-go', 'data', 'aliases', 'csgo-nicknames.json');
+const POKEMON_EXTRA = path.join(ROOT, 'server-go', 'data', 'aliases', 'pokemon-extra.json');
+const POKEMON_LEGACY = path.join(ROOT, 'server-go', 'data', 'pokemon-legacy-aliases.json');
 const WIKI_CACHE = path.join(ROOT, 'scripts', 'cache', '52poke-unofficial-names.txt');
 
 function mergeAliases(existing, additions) {
@@ -54,8 +55,20 @@ function patchCsgo() {
 
 function patchPokemon() {
   const raw = JSON.parse(fs.readFileSync(POKEMON_PATH, 'utf-8'));
-  const extraById = JSON.parse(fs.readFileSync(POKEMON_EXTRA, 'utf-8'));
-  delete extraById._comment;
+
+  let extraById = {};
+  if (fs.existsSync(POKEMON_EXTRA)) {
+    extraById = JSON.parse(fs.readFileSync(POKEMON_EXTRA, 'utf-8'));
+    delete extraById._comment;
+  } else {
+    console.warn(`[pokemon] extra aliases missing: ${POKEMON_EXTRA}`);
+  }
+
+  let legacyById = {};
+  if (fs.existsSync(POKEMON_LEGACY)) {
+    legacyById = JSON.parse(fs.readFileSync(POKEMON_LEGACY, 'utf-8'));
+    delete legacyById._comment;
+  }
 
   let byName = new Map();
   if (fs.existsSync(WIKI_CACHE)) {
@@ -69,10 +82,11 @@ function patchPokemon() {
   let updated = 0;
   for (const mon of raw.players) {
     const fromId = extraById[mon.id] || [];
+    const fromLegacy = legacyById[mon.id] || [];
     const fromName = byName.has(mon.name) ? [...byName.get(mon.name)] : [];
     const before = (mon.aliases || []).length;
     mon.aliases = mergeAliases(
-      mergeAliases(mon.aliases, fromId),
+      mergeAliases(mergeAliases(mon.aliases, fromId), fromLegacy),
       fromName
     );
     if (mon.aliases.length > before) updated++;

@@ -12,7 +12,6 @@ import BattleRoundBanner from '../components/BattleRoundBanner';
 import BattleNextCountdown from '../components/BattleNextCountdown';
 import CorrectHistory from '../components/CorrectHistory';
 import RelayOpponentExhaustedModal from '../components/RelayOpponentExhaustedModal';
-import GameEndRevealModal from '../components/GameEndRevealModal';
 import AnswerRevealModal from '../components/AnswerRevealModal';
 import { AttemptsBadge } from '../components/StatSidebar';
 import type { GameSession, GuessRecord, RelayGuessRecord } from '../types';
@@ -38,7 +37,6 @@ export default function MultiplayerGamePage() {
   const [relayNoticeOpen, setRelayNoticeOpen] = useState(false);
   const [relayNoticeName, setRelayNoticeName] = useState('');
   const [seenRelayNoticeId, setSeenRelayNoticeId] = useState(0);
-  const [showEndReveal, setShowEndReveal] = useState(false);
   const [showDrawReveal, setShowDrawReveal] = useState(false);
   const [drawAnswer, setDrawAnswer] = useState<{
     name: string;
@@ -73,10 +71,6 @@ export default function MultiplayerGamePage() {
 
   useEffect(() => {
     if (room?.status !== 'finished' || wentToSettlement) return;
-    if (room.revealedAnswer) {
-      setShowEndReveal(true);
-      return;
-    }
     setWentToSettlement(true);
     sessionStorage.setItem('guess-who-last-room', JSON.stringify(room));
     navigate('/settlement');
@@ -133,15 +127,6 @@ export default function MultiplayerGamePage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleContinueSettlement = () => {
-    setShowEndReveal(false);
-    setWentToSettlement(true);
-    if (room) {
-      sessionStorage.setItem('guess-who-last-room', JSON.stringify(room));
-    }
-    navigate('/settlement');
   };
 
   const handleQuit = async () => {
@@ -389,14 +374,6 @@ export default function MultiplayerGamePage() {
         answerImageUrl={drawAnswer?.imageUrl}
         continueLabel="继续"
         onContinue={() => setShowDrawReveal(false)}
-      />
-
-      <GameEndRevealModal
-        open={showEndReveal}
-        answerName={room?.revealedAnswer?.name ?? '—'}
-        answerImageUrl={room?.revealedAnswer?.imageUrl}
-        finishReason={room?.finishReason}
-        onContinue={handleContinueSettlement}
       />
     </div>
   );

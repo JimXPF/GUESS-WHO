@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updatedAt": "2026-07-03T04:16:05.140Z",
+  "updatedAt": "2026-07-08T09:34:06.125Z",
   "config": {
     "typeChart": {
       "types": [
@@ -593,7 +593,8 @@
         "Metapod",
         "米塔",
         "多王",
-        "铁蛹"
+        "铁蛹",
+        "铁壳昆"
       ],
       "dexNumber": 11,
       "type1": "虫",
@@ -623,7 +624,8 @@
         "Butterfree",
         "肥波",
         "八大蝶",
-        "大蝶"
+        "大蝶",
+        "巴大蝴"
       ],
       "dexNumber": 12,
       "type1": "虫",
@@ -835,7 +837,8 @@
         "Pidgeot",
         "玻吉",
         "阿明",
-        "比胡"
+        "比胡",
+        "比雕鸟"
       ],
       "dexNumber": 18,
       "type1": "一般",
@@ -982,7 +985,8 @@
         "Fearow",
         "法露",
         "大雁",
-        "玉委"
+        "玉委",
+        "比雕"
       ],
       "dexNumber": 22,
       "type1": "一般",
@@ -1964,7 +1968,8 @@
       "englishName": "Venomoth",
       "aliases": [
         "Venomoth",
-        "口呆"
+        "口呆",
+        "末入蛾"
       ],
       "dexNumber": 49,
       "type1": "虫",
@@ -2412,7 +2417,8 @@
       "aliases": [
         "Poliwhirl",
         "皮爾威爾",
-        "蛋蛋"
+        "蛋蛋",
+        "蚊香蛙"
       ],
       "dexNumber": 61,
       "type1": "水",
@@ -2448,7 +2454,8 @@
       "aliases": [
         "Poliwrath",
         "皮爾威琪",
-        "卡拉"
+        "卡拉",
+        "快泳蛙"
       ],
       "dexNumber": 62,
       "type1": "水",
@@ -2508,7 +2515,8 @@
       "englishName": "Kadabra",
       "aliases": [
         "Kadabra",
-        "沙拉"
+        "沙拉",
+        "勇吉拉"
       ],
       "dexNumber": 64,
       "type1": "超能力",
@@ -3126,7 +3134,8 @@
       "englishName": "Slowbro",
       "aliases": [
         "Slowbro",
-        "水箭"
+        "水箭",
+        "呆河马"
       ],
       "dexNumber": 80,
       "type1": "水",
@@ -3540,7 +3549,8 @@
       "aliases": [
         "Cloyster",
         "克勞斯特",
-        "方剑"
+        "方剑",
+        "铁甲贝"
       ],
       "dexNumber": 91,
       "type1": "水",
@@ -3656,7 +3666,8 @@
       "aliases": [
         "Gengar",
         "怪花",
-        "狄鬼"
+        "狄鬼",
+        "鬼斯通"
       ],
       "dexNumber": 94,
       "type1": "幽灵",
@@ -3735,7 +3746,8 @@
       "aliases": [
         "Drowzee",
         "特絡兹",
-        "草宝"
+        "草宝",
+        "催眠兽"
       ],
       "dexNumber": 96,
       "type1": "超能力",
@@ -3774,7 +3786,8 @@
       "aliases": [
         "Hypno",
         "催眠",
-        "合地"
+        "合地",
+        "引梦魔人"
       ],
       "dexNumber": 97,
       "type1": "超能力",
@@ -3890,7 +3903,8 @@
       "aliases": [
         "Voltorb",
         "圍達伯",
-        "阿月"
+        "阿月",
+        "雷电球"
       ],
       "dexNumber": 100,
       "type1": "电",
@@ -3928,7 +3942,8 @@
       "englishName": "Electrode",
       "aliases": [
         "Electrode",
-        "阿利"
+        "阿利",
+        "顽皮弹"
       ],
       "dexNumber": 101,
       "type1": "电",
@@ -4003,7 +4018,8 @@
       "englishName": "Exeggutor",
       "aliases": [
         "Exeggutor",
-        "小雷"
+        "小雷",
+        "椰树兽"
       ],
       "dexNumber": 103,
       "type1": "草",
@@ -4037,7 +4053,8 @@
         "Cubone",
         "古本",
         "怪兽",
-        "可拉"
+        "可拉",
+        "可拉可拉"
       ],
       "dexNumber": 104,
       "type1": "地面",
@@ -4079,7 +4096,8 @@
         "瑪爾",
         "魔怪",
         "可拉可拉",
-        "喀拉喀拉"
+        "喀拉喀拉",
+        "嘎拉嘎拉"
       ],
       "dexNumber": 105,
       "type1": "地面",
@@ -4119,7 +4137,8 @@
       "aliases": [
         "Hitmonlee",
         "哈姆",
-        "小津"
+        "小津",
+        "沙瓦郎"
       ],
       "dexNumber": 106,
       "type1": "格斗",
@@ -4159,7 +4178,8 @@
       "englishName": "Hitmonchan",
       "aliases": [
         "Hitmonchan",
-        "小森"
+        "小森",
+        "艾比郎"
       ],
       "dexNumber": 107,
       "type1": "格斗",
@@ -4311,7 +4331,8 @@
       "englishName": "Rhyhorn",
       "aliases": [
         "Rhyhorn",
-        "山山"
+        "山山",
+        "铁甲犀牛"
       ],
       "dexNumber": 111,
       "type1": "地面",
@@ -4348,7 +4369,8 @@
       "englishName": "Rhydon",
       "aliases": [
         "Rhydon",
-        "奇草"
+        "奇草",
+        "铁甲暴龙"
       ],
       "dexNumber": 112,
       "type1": "地面",
@@ -4465,7 +4487,8 @@
       "englishName": "Kangaskhan",
       "aliases": [
         "Kangaskhan",
-        "鬼通"
+        "鬼通",
+        "袋龙"
       ],
       "dexNumber": 115,
       "type1": "一般",
@@ -4721,7 +4744,9 @@
       "aliases": [
         "Mr. Mime",
         "卡超",
-        "魇偶"
+        "魇偶",
+        "吸盘魔偶",
+        "吸盘小丑"
       ],
       "dexNumber": 122,
       "type1": "超能力",
@@ -4878,7 +4903,8 @@
       "aliases": [
         "Magmar",
         "波球",
-        "鸭嘴龙"
+        "鸭嘴龙",
+        "鸭嘴火龙"
       ],
       "dexNumber": 126,
       "type1": "火",
@@ -4914,7 +4940,8 @@
       "englishName": "Pinsir",
       "aliases": [
         "Pinsir",
-        "金刚"
+        "金刚",
+        "大甲"
       ],
       "dexNumber": 127,
       "type1": "虫",
@@ -5023,7 +5050,8 @@
         "Gyarados",
         "暴鲤龙",
         "红暴",
-        "阿斯"
+        "阿斯",
+        "鲤鱼王"
       ],
       "dexNumber": 130,
       "type1": "水",
@@ -5173,7 +5201,8 @@
         "威皮雷",
         "米米",
         "水怪兽",
-        "水依布"
+        "水依布",
+        "水精灵"
       ],
       "dexNumber": 134,
       "type1": "水",
@@ -5215,7 +5244,8 @@
         "雷布",
         "委比",
         "雷怪兽",
-        "雷依布"
+        "雷依布",
+        "雷精灵"
       ],
       "dexNumber": 135,
       "type1": "电",
@@ -5258,7 +5288,8 @@
         "法拉雷",
         "毛毛",
         "火怪兽",
-        "火依布"
+        "火依布",
+        "火精灵"
       ],
       "dexNumber": 136,
       "type1": "火",
@@ -5299,7 +5330,9 @@
         "雷吉",
         "哥夫",
         "三地龙",
-        "阿昌"
+        "阿昌",
+        "3D龙",
+        "3d龙"
       ],
       "dexNumber": 137,
       "type1": "一般",
@@ -5956,7 +5989,8 @@
         "菊叶龙",
         "巨龙花",
         "宝卡",
-        "巨花兽"
+        "巨花兽",
+        "大菊花"
       ],
       "dexNumber": 154,
       "type1": "草",
@@ -6449,7 +6483,8 @@
         "独角蜘蛛",
         "小蜘蛛",
         "绿蜘蛛",
-        "白海"
+        "白海",
+        "线球"
       ],
       "dexNumber": 167,
       "type1": "虫",
@@ -6936,7 +6971,8 @@
         "Flaaffy",
         "羊咩咩",
         "藤",
-        "绵羊"
+        "绵羊",
+        "绵绵"
       ],
       "dexNumber": 180,
       "type1": "电",
@@ -7120,7 +7156,8 @@
         "Sudowoodo",
         "树才怪",
         "红唇",
-        "假树"
+        "假树",
+        "胡说树"
       ],
       "dexNumber": 185,
       "type1": "岩石",
@@ -7158,7 +7195,8 @@
         "Politoed",
         "牛蛙王",
         "雷击",
-        "大水蛙"
+        "大水蛙",
+        "牛蛙君"
       ],
       "dexNumber": 186,
       "type1": "水",
@@ -7269,7 +7307,8 @@
       "aliases": [
         "Jumpluff",
         "击宝",
-        "飘花兽"
+        "飘花兽",
+        "毽子绵"
       ],
       "dexNumber": 189,
       "type1": "草",
@@ -7425,7 +7464,8 @@
         "花羽蜓",
         "阳阳蜻蜓",
         "洋洋蜻蜓",
-        "天天"
+        "天天",
+        "阳阳玛"
       ],
       "dexNumber": 193,
       "type1": "虫",
@@ -7549,7 +7589,8 @@
         "光精灵",
         "天天",
         "双尾狐",
-        "光依布"
+        "光依布",
+        "太阳精灵"
       ],
       "dexNumber": 196,
       "type1": "超能力",
@@ -7593,7 +7634,8 @@
         "影精灵",
         "雷鸟",
         "纹兽",
-        "月依布"
+        "月依布",
+        "月亮精灵"
       ],
       "dexNumber": 197,
       "type1": "恶",
@@ -7667,7 +7709,8 @@
       "englishName": "Slowking",
       "aliases": [
         "Slowking",
-        "梦雷"
+        "梦雷",
+        "河马王"
       ],
       "dexNumber": 199,
       "type1": "水",
@@ -8944,7 +8987,10 @@
       "name": "多边兽２型",
       "englishName": "Porygon2",
       "aliases": [
-        "Porygon2"
+        "Porygon2",
+        "3D龙2",
+        "3D龙II",
+        "3d龙2"
       ],
       "dexNumber": 233,
       "type1": "一般",
@@ -9050,7 +9096,8 @@
       "aliases": [
         "Tyrogue",
         "方林",
-        "巴拉兽"
+        "巴拉兽",
+        "巴尔郎"
       ],
       "dexNumber": 236,
       "type1": "格斗",
@@ -9080,7 +9127,8 @@
         "Hitmontop",
         "柯波郎",
         "卡波郎",
-        "鲁怪"
+        "鲁怪",
+        "柯波朗"
       ],
       "dexNumber": 237,
       "type1": "格斗",
@@ -9438,7 +9486,8 @@
         "Larvitar",
         "由吉拉",
         "幼甲兽",
-        "红红"
+        "红红",
+        "由基拉"
       ],
       "dexNumber": 246,
       "type1": "岩石",
@@ -9478,7 +9527,8 @@
         "沙吉拉",
         "蛹甲兽",
         "灵灵",
-        "小甲兽"
+        "小甲兽",
+        "沙基拉"
       ],
       "dexNumber": 247,
       "type1": "岩石",
@@ -9520,7 +9570,8 @@
         "巨甲兽",
         "巨大甲兽",
         "巨甲龙",
-        "拉拉"
+        "拉拉",
+        "班吉拉"
       ],
       "dexNumber": 248,
       "type1": "岩石",
@@ -9647,7 +9698,8 @@
         "Celebi",
         "时拉比",
         "拉丁",
-        "火凤"
+        "火凤",
+        "雪拉比"
       ],
       "dexNumber": 251,
       "type1": "超能力",
@@ -10250,7 +10302,8 @@
       "englishName": "Silcoon",
       "aliases": [
         "Silcoon",
-        "小白虫"
+        "小白虫",
+        "甲壳蛹"
       ],
       "dexNumber": 266,
       "type1": "虫",
@@ -10342,7 +10395,8 @@
       "name": "毒粉蛾",
       "englishName": "Dustox",
       "aliases": [
-        "Dustox"
+        "Dustox",
+        "毒粉蝶"
       ],
       "dexNumber": 269,
       "type1": "虫",
@@ -11005,7 +11059,8 @@
         "Slakoth",
         "呆呆猴",
         "食叶兽",
-        "树懒"
+        "树懒",
+        "懒人翁"
       ],
       "dexNumber": 287,
       "type1": "一般",
@@ -11403,7 +11458,8 @@
       "aliases": [
         "Hariyama",
         "相扑熊",
-        "大熊怪"
+        "大熊怪",
+        "超力王"
       ],
       "dexNumber": 297,
       "type1": "格斗",
@@ -12693,7 +12749,8 @@
       "name": "刺球仙人掌",
       "englishName": "Cacnea",
       "aliases": [
-        "Cacnea"
+        "Cacnea",
+        "沙漠奈亚"
       ],
       "dexNumber": 331,
       "type1": "草",
@@ -12733,7 +12790,8 @@
       "name": "梦歌仙人掌",
       "englishName": "Cacturne",
       "aliases": [
-        "Cacturne"
+        "Cacturne",
+        "梦歌奈亚"
       ],
       "dexNumber": 332,
       "type1": "草",
@@ -13376,7 +13434,8 @@
         "Feebas",
         "丑丑鱼",
         "大黄鱼",
-        "丑鲤鱼"
+        "丑鲤鱼",
+        "笨笨鱼"
       ],
       "dexNumber": 349,
       "type1": "水",
@@ -13446,7 +13505,8 @@
       "name": "飘浮泡泡",
       "englishName": "Castform",
       "aliases": [
-        "Castform"
+        "Castform",
+        "漂浮泡泡"
       ],
       "dexNumber": 351,
       "type1": "一般",
@@ -13591,7 +13651,8 @@
       "name": "夜巡灵",
       "englishName": "Duskull",
       "aliases": [
-        "Duskull"
+        "Duskull",
+        "夜骷髅"
       ],
       "dexNumber": 355,
       "type1": "幽灵",
@@ -13628,7 +13689,8 @@
       "name": "彷徨夜灵",
       "englishName": "Dusclops",
       "aliases": [
-        "Dusclops"
+        "Dusclops",
+        "夜巨人"
       ],
       "dexNumber": 356,
       "type1": "幽灵",
@@ -14257,7 +14319,9 @@
         "Salamence",
         "暴飞龙",
         "血翼飞龙",
-        "马达怪"
+        "马达怪",
+        "暴镰鼬",
+        "暴蝾螈"
       ],
       "dexNumber": 373,
       "type1": "龙",

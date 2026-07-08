@@ -36,6 +36,7 @@ func RegisterGameRoutes(r chi.Router) {
 	r.Get("/api/leaderboard", handleLeaderboard)
 	r.Get("/api/leaderboard/daily/today", handleDailyToday)
 	r.Get("/api/health", handleHealth)
+	r.Get("/api/ladder/invites", handleLadderInvites)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v interface{}) {
@@ -246,4 +247,8 @@ func handleDailyToday(w http.ResponseWriter, r *http.Request) {
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok", "backend": "go"})
+}
+
+func handleLadderInvites(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, http.StatusOK, services.ListLadderInvites())
 }

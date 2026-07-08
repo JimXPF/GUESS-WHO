@@ -29,6 +29,8 @@ type RoomPlayerEntry struct {
 type Room struct {
 	Code                       string
 	Mode                       string
+	RoomKind                   string
+	LadderInviteCreatedAt      int64
 	Theme                      types.Theme
 	MaxPlayers                 int
 	Status                     string
@@ -55,6 +57,8 @@ type Room struct {
 	RelayNotice                *types.RelayNotice
 	RelayNoticeSeq             int
 	RevealedAnswer             *types.RevealedAnswer
+	LobbyCountdownTimer        *time.Timer
+	LobbyCountdownDeadlineAt   *int64
 	mu                         sync.Mutex
 }
 
@@ -97,18 +101,11 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 		playerName := strField(payload, "playerName")
 		theme := types.Theme(strField(payload, "theme"))
 		mode := strField(payload, "mode")
-		maxPlayers := intField(payload, "maxPlayers", 2)
+		roomKind := parseRoomKind(strField(payload, "roomKind"))
 
 		if playerName == "" || theme == "" || mode == "" {
 			ackAck(ack, types.RoomJoinResponse{Error: "缺少参数"})
 			return
-		}
-		cap := maxPlayers
-		if cap < 2 {
-			cap = 2
-		}
-		if cap > 5 {
-			cap = 5
 		}
 
 		gameMode := types.GameMode(mode)
@@ -120,11 +117,13 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 		}
 
 		socketID := string(s.Id())
+		nowMs := time.Now().UnixMilli()
 		room := &Room{
 			Code:           code,
 			Mode:           mode,
+			RoomKind:       roomKind,
 			Theme:          theme,
-			MaxPlayers:     cap,
+			MaxPlayers:     services.LobbyMaxPlayers,
 			Status:         "waiting",
 			HostSessionID:  session.SessionID,
 			Players:        map[string]*RoomPlayerEntry{session.SessionID: {SessionID: session.SessionID, PlayerName: playerName, SocketID: &socketID, ScoreBreakdown: []types.FieldClaim{}}},
@@ -133,6 +132,9 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 			PlayerOrder:    []string{session.SessionID},
 			BattlePhase:    "playing",
 			RelayPhase:     "playing",
+		}
+		if roomKind == string(types.RoomKindLadder) {
+			room.LadderInviteCreatedAt = nowMs
 		}
 
 		registryMu.Lock()
@@ -144,6 +146,9 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 		state := roomToState(room)
 		ackAck(ack, types.RoomJoinResponse{Room: state, SessionID: session.SessionID, Session: session})
 		broadcastRoom(io, room)
+		if roomKind == string(types.RoomKindLadder) {
+			publishLadderInvite(io, room)
+		}
 	})
 
 	onEvent(s, "room:rejoin", func(payload map[string]any, ack socketio.Ack) {
@@ -183,9 +188,6 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 		if room.Mode == "relay-chain" && room.Status == "playing" {
 			scheduleRelayTurnTimer(io, room, false)
 		}
-		if room.Status == "waiting" {
-			maybeStartWaitingRoom(io, room)
-		}
 
 		state := roomToState(room)
 		ackAck(ack, types.RoomJoinResponse{Room: state, SessionID: sessionID, Session: session})
@@ -212,7 +214,11 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 		room.mu.Lock()
 		if room.Status != "waiting" {
 			room.mu.Unlock()
-			ackAck(ack, types.RoomJoinResponse{Error: "游戏已开始或已结束"})
+			if room.Status == "countdown" {
+				ackAck(ack, types.RoomJoinResponse{Error: "游戏即将开始，无法加入"})
+			} else {
+				ackAck(ack, types.RoomJoinResponse{Error: "游戏已开始或已结束"})
+			}
 			return
 		}
 		if len(room.Players) >= room.MaxPlayers {
@@ -245,10 +251,126 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 		registryMu.Unlock()
 		s.Join(socketio.Room(roomCode))
 
-		maybeStartWaitingRoom(io, room)
 		state := roomToState(room)
 		ackAck(ack, types.RoomJoinResponse{Room: state, SessionID: session.SessionID, Session: session})
 		broadcastRoom(io, room)
+		syncWaitingLadderInvite(io, room)
+	})
+
+	onEvent(s, "room:start", func(payload map[string]any, ack socketio.Ack) {
+		defer recoverAck(ack)
+		roomCode := strings.ToUpper(strings.TrimSpace(strField(payload, "roomCode")))
+		sessionID := strings.TrimSpace(strField(payload, "sessionId"))
+		if roomCode == "" || sessionID == "" {
+			ackAck(ack, types.RoomStartResponse{Error: "缺少参数"})
+			return
+		}
+
+		registryMu.RLock()
+		room := rooms[roomCode]
+		registryMu.RUnlock()
+		if room == nil {
+			ackAck(ack, types.RoomStartResponse{Error: "房间不存在"})
+			return
+		}
+
+		room.mu.Lock()
+		if room.Status != "waiting" {
+			room.mu.Unlock()
+			ackAck(ack, types.RoomStartResponse{Error: "当前无法开始游戏"})
+			return
+		}
+		if sessionID != room.HostSessionID {
+			room.mu.Unlock()
+			ackAck(ack, types.RoomStartResponse{Error: "仅房主可以开始游戏"})
+			return
+		}
+		connected := countConnectedPlayers(room)
+		if connected < services.LobbyMinPlayers {
+			room.mu.Unlock()
+			ackAck(ack, types.RoomStartResponse{Error: "至少需要 2 人在线才能开始"})
+			return
+		}
+		room.mu.Unlock()
+
+		withdrawLadderInvite(io, room.Code)
+		scheduleLobbyCountdown(io, room)
+		state := roomToState(room)
+		ackAck(ack, types.RoomStartResponse{Room: state})
+		broadcastRoom(io, room)
+	})
+
+	onEvent(s, "room:ladder:reinvite", func(payload map[string]any, ack socketio.Ack) {
+		defer recoverAck(ack)
+		roomCode := strings.ToUpper(strings.TrimSpace(strField(payload, "roomCode")))
+		sessionID := strings.TrimSpace(strField(payload, "sessionId"))
+		if roomCode == "" || sessionID == "" {
+			ackAck(ack, types.RoomLadderReinviteResponse{Error: "缺少参数"})
+			return
+		}
+
+		registryMu.RLock()
+		room := rooms[roomCode]
+		registryMu.RUnlock()
+		if room == nil {
+			ackAck(ack, types.RoomLadderReinviteResponse{Error: "房间不存在"})
+			return
+		}
+
+		room.mu.Lock()
+		if room.RoomKind != string(types.RoomKindLadder) {
+			room.mu.Unlock()
+			ackAck(ack, types.RoomLadderReinviteResponse{Error: "仅天梯同房间好友邀请可再次发起邀请"})
+			return
+		}
+		if room.Status != "waiting" {
+			room.mu.Unlock()
+			ackAck(ack, types.RoomLadderReinviteResponse{Error: "当前无法再次发起邀请"})
+			return
+		}
+		if sessionID != room.HostSessionID {
+			room.mu.Unlock()
+			ackAck(ack, types.RoomLadderReinviteResponse{Error: "仅房主可以再次发起邀请"})
+			return
+		}
+		room.mu.Unlock()
+
+		republishLadderInvite(io, room)
+		ackAck(ack, types.RoomLadderReinviteResponse{})
+	})
+
+	onEvent(s, "room:dismiss", func(payload map[string]any, ack socketio.Ack) {
+		defer recoverAck(ack)
+		roomCode := strings.ToUpper(strings.TrimSpace(strField(payload, "roomCode")))
+		sessionID := strings.TrimSpace(strField(payload, "sessionId"))
+		if roomCode == "" || sessionID == "" {
+			ackAck(ack, types.RoomDismissResponse{Error: "缺少参数"})
+			return
+		}
+
+		registryMu.RLock()
+		room := rooms[roomCode]
+		registryMu.RUnlock()
+		if room == nil {
+			ackAck(ack, types.RoomDismissResponse{Error: "房间不存在"})
+			return
+		}
+
+		room.mu.Lock()
+		if sessionID != room.HostSessionID {
+			room.mu.Unlock()
+			ackAck(ack, types.RoomDismissResponse{Error: "仅房主可以解散房间"})
+			return
+		}
+		if room.Status != "waiting" && room.Status != "countdown" {
+			room.mu.Unlock()
+			ackAck(ack, types.RoomDismissResponse{Error: "当前无法解散房间"})
+			return
+		}
+		room.mu.Unlock()
+
+		dissolveWaitingRoom(io, room, "房间已解散")
+		ackAck(ack, types.RoomDismissResponse{})
 	})
 
 	onEvent(s, "room:guess", func(payload map[string]any, ack socketio.Ack) {
@@ -819,9 +941,11 @@ func roomSnapshot(room *Room) *types.RoomState {
 	state := &types.RoomState{
 		Code:                 room.Code,
 		Mode:                 room.Mode,
+		RoomKind:             types.RoomKind(room.RoomKind),
 		Theme:                room.Theme,
 		MaxPlayers:           room.MaxPlayers,
 		Status:               room.Status,
+		HostSessionID:        room.HostSessionID,
 		Players:              players,
 		CurrentTurnSessionID: room.RelayTurnSessionID,
 		CurrentTurnPlayer:    currentTurnPlayer,
@@ -829,6 +953,12 @@ func roomSnapshot(room *Room) *types.RoomState {
 		RelayRound:           room.RelayRound,
 		FinishReason:         room.FinishReason,
 		RelayNotice:          room.RelayNotice,
+	}
+
+	if room.Status == "countdown" {
+		state.CountdownDeadlineAt = room.LobbyCountdownDeadlineAt
+		countdownSecs := services.LobbyCountdownSeconds
+		state.LobbyCountdownSeconds = &countdownSecs
 	}
 
 	if isRelayPlaying {
@@ -904,20 +1034,50 @@ func countConnectedPlayers(room *Room) int {
 	return count
 }
 
-func maybeStartWaitingRoom(io *socketio.Server, room *Room) {
-	room.mu.Lock()
-	defer room.mu.Unlock()
-	if room.Status != "waiting" {
+func clearLobbyCountdownTimer(room *Room) {
+	if room.LobbyCountdownTimer != nil {
+		room.LobbyCountdownTimer.Stop()
+		room.LobbyCountdownTimer = nil
+	}
+	room.LobbyCountdownDeadlineAt = nil
+}
+
+func cancelLobbyCountdownToWaiting(room *Room) {
+	if room.Status != "countdown" {
 		return
 	}
-	if countConnectedPlayers(room) < room.MaxPlayers {
-		return
-	}
-	startRoomGame(room)
-	if room.Mode == "relay-chain" {
-		scheduleRelayTurnTimer(io, room, true)
-	}
-	io.To(socketio.Room(room.Code)).Emit("game:start", roomSnapshot(room))
+	clearLobbyCountdownTimer(room)
+	room.Status = "waiting"
+}
+
+func scheduleLobbyCountdown(io *socketio.Server, room *Room) {
+	clearLobbyCountdownTimer(room)
+	room.Status = "countdown"
+	deadline := time.Now().UnixMilli() + int64(services.LobbyCountdownSeconds*1000)
+	room.LobbyCountdownDeadlineAt = &deadline
+	code := room.Code
+	room.LobbyCountdownTimer = time.AfterFunc(time.Duration(services.LobbyCountdownSeconds)*time.Second, func() {
+		registryMu.RLock()
+		still := rooms[code]
+		registryMu.RUnlock()
+		if still == nil {
+			return
+		}
+		still.mu.Lock()
+		if still.Status != "countdown" {
+			still.mu.Unlock()
+			return
+		}
+		clearLobbyCountdownTimer(still)
+		startRoomGame(still)
+		if still.Mode == "relay-chain" {
+			scheduleRelayTurnTimer(io, still, true)
+		}
+		state := roomSnapshot(still)
+		still.mu.Unlock()
+		io.To(socketio.Room(code)).Emit("game:start", state)
+		broadcastRoom(io, still)
+	})
 }
 
 func startRoomGame(room *Room) {
@@ -1040,7 +1200,43 @@ func leaveSocket(s *socketio.Socket, io *socketio.Server, sessionID string) stri
 	registryMu.Unlock()
 	s.Leave(socketio.Room(code))
 
-	if room.Status == "playing" && leftSessionID != "" {
+	if leftSessionID == "" {
+		broadcastRoom(io, room)
+		return code
+	}
+
+	room.mu.Lock()
+	isHost := leftSessionID == room.HostSessionID
+	status := room.Status
+	room.mu.Unlock()
+
+	if isHost && (status == "waiting" || status == "countdown") {
+		dissolveWaitingRoom(io, room, "房间已解散")
+		return code
+	}
+
+	if status == "countdown" {
+		room.mu.Lock()
+		removeWaitingPlayer(room, leftSessionID)
+		if countConnectedPlayers(room) < services.LobbyMinPlayers {
+			cancelLobbyCountdownToWaiting(room)
+		}
+		room.mu.Unlock()
+		syncWaitingLadderInvite(io, room)
+		broadcastRoom(io, room)
+		return code
+	}
+
+	if status == "waiting" {
+		room.mu.Lock()
+		removeWaitingPlayer(room, leftSessionID)
+		room.mu.Unlock()
+		syncWaitingLadderInvite(io, room)
+		broadcastRoom(io, room)
+		return code
+	}
+
+	if status == "playing" {
 		room.mu.Lock()
 		clearRelayTurnTimer(room)
 		clearBattleIntermissionTimer(room)
@@ -1051,16 +1247,118 @@ func leaveSocket(s *socketio.Socket, io *socketio.Server, sessionID string) stri
 		}
 		endRoom(room, playerName+" 已退出")
 		room.mu.Unlock()
-		io.To(socketio.Room(code)).Emit("game:finished", roomToState(room))
-	} else if room.Status == "waiting" && leftSessionID == room.HostSessionID {
-		room.mu.Lock()
-		endRoom(room, "房主已离开")
-		room.mu.Unlock()
-		registryMu.Lock()
-		delete(rooms, code)
-		registryMu.Unlock()
+		state := roomToState(room)
+		io.To(socketio.Room(code)).Emit("game:finished", state)
+		broadcastRoom(io, room)
+		return code
 	}
 
 	broadcastRoom(io, room)
 	return code
+}
+
+func removeWaitingPlayer(room *Room, sessionID string) {
+	delete(room.Players, sessionID)
+	for i, sid := range room.PlayerOrder {
+		if sid == sessionID {
+			room.PlayerOrder = append(room.PlayerOrder[:i], room.PlayerOrder[i+1:]...)
+			break
+		}
+	}
+}
+
+func dissolveWaitingRoom(io *socketio.Server, room *Room, reason string) {
+	if room == nil {
+		return
+	}
+	code := room.Code
+	room.mu.Lock()
+	clearLobbyCountdownTimer(room)
+	room.mu.Unlock()
+
+	withdrawLadderInvite(io, code)
+
+	io.To(socketio.Room(code)).Emit("room:dismissed", map[string]string{
+		"roomCode": code,
+		"reason": reason,
+	})
+
+	room.mu.Lock()
+	socketIDs := make([]string, 0, len(room.Players))
+	for _, entry := range room.Players {
+		if entry != nil && entry.SocketID != nil {
+			socketIDs = append(socketIDs, *entry.SocketID)
+		}
+	}
+	room.mu.Unlock()
+
+	registryMu.Lock()
+	delete(rooms, code)
+	for _, sid := range socketIDs {
+		delete(socketToRoom, sid)
+	}
+	registryMu.Unlock()
+}
+
+func parseRoomKind(raw string) string {
+	if raw == string(types.RoomKindLadder) {
+		return string(types.RoomKindLadder)
+	}
+	return string(types.RoomKindCustom)
+}
+
+func buildLadderInvite(room *Room) services.LadderInviteInfo {
+	hostName := "玩家"
+	if entry := room.Players[room.HostSessionID]; entry != nil {
+		hostName = entry.PlayerName
+	}
+	createdAt := room.LadderInviteCreatedAt
+	if createdAt == 0 {
+		createdAt = time.Now().UnixMilli()
+	}
+	return services.LadderInviteInfo{
+		RoomCode:      room.Code,
+		Theme:         room.Theme,
+		Mode:          room.Mode,
+		HostName:      hostName,
+		HostSessionID: room.HostSessionID,
+		PlayerCount:   len(room.Players),
+		MaxPlayers:    room.MaxPlayers,
+		CreatedAt:     createdAt,
+	}
+}
+
+func publishLadderInvite(io *socketio.Server, room *Room) {
+	if room == nil || room.RoomKind != string(types.RoomKindLadder) {
+		return
+	}
+	room.mu.Lock()
+	info := services.RegisterLadderInvite(buildLadderInvite(room))
+	room.mu.Unlock()
+	io.Emit("ladder:invite", info)
+}
+
+func republishLadderInvite(io *socketio.Server, room *Room) {
+	if room == nil || room.RoomKind != string(types.RoomKindLadder) {
+		return
+	}
+	room.mu.Lock()
+	room.LadderInviteCreatedAt = time.Now().UnixMilli()
+	info := services.RegisterLadderInvite(buildLadderInvite(room))
+	room.mu.Unlock()
+	io.Emit("ladder:invite", info)
+}
+
+func syncWaitingLadderInvite(io *socketio.Server, room *Room) {
+	if room == nil || room.RoomKind != string(types.RoomKindLadder) || room.Status != "waiting" {
+		return
+	}
+	publishLadderInvite(io, room)
+}
+
+func withdrawLadderInvite(io *socketio.Server, roomCode string) {
+	if services.UnregisterLadderInvite(roomCode) == nil {
+		return
+	}
+	io.Emit("ladder:invite:withdraw", map[string]string{"roomCode": strings.ToUpper(strings.TrimSpace(roomCode))})
 }

@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { ROOM_KEY, SESSION_KEY } from '../api';
 import { getGameSocket } from '../gameSocket';
-import type { GameSession, RoomState } from '../types';
+import type { GameSession, LadderInviteInfo, RoomKind, RoomState } from '../types';
 
 interface RoomCreateResult {
   room?: RoomState;
@@ -33,6 +33,19 @@ interface RoomLeaveResult {
   room?: RoomState;
 }
 
+interface RoomStartResult {
+  room?: RoomState;
+  error?: string;
+}
+
+interface RoomLadderReinviteResult {
+  error?: string;
+}
+
+interface RoomDismissResult {
+  error?: string;
+}
+
 interface GameRoomContextValue {
   connected: boolean;
   room: RoomState | null;
@@ -41,9 +54,12 @@ interface GameRoomContextValue {
     playerName: string,
     theme: RoomState['theme'],
     mode: RoomState['mode'],
-    maxPlayers: number
+    roomKind?: RoomKind
   ) => Promise<RoomCreateResult>;
   joinRoom: (roomCode: string, playerName: string) => Promise<RoomJoinResult>;
+  startRoom: (roomCode: string, sessionId: string) => Promise<RoomStartResult>;
+  resendLadderInvite: (roomCode: string, sessionId: string) => Promise<RoomLadderReinviteResult>;
+  dismissRoom: (roomCode: string, sessionId: string) => Promise<RoomDismissResult>;
   submitRoomGuess: (
     roomCode: string,
     sessionId: string,
@@ -121,12 +137,32 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
       setRoom(state);
       sessionStorage.setItem('guess-who-last-room', JSON.stringify(state));
     };
+    const onLadderInvite = (invite: LadderInviteInfo) => {
+      window.dispatchEvent(new CustomEvent('guess-who:ladder-invite', { detail: invite }));
+    };
+    const onLadderInviteWithdraw = (payload: { roomCode?: string }) => {
+      window.dispatchEvent(
+        new CustomEvent('guess-who:ladder-invite-withdraw', { detail: payload })
+      );
+    };
+    const clearLocalRoom = () => {
+      setRoom(null);
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(ROOM_KEY);
+    };
+    const onRoomDismissed = () => {
+      clearLocalRoom();
+      window.dispatchEvent(new CustomEvent('guess-who:room-dismissed'));
+    };
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('room:state', onRoomState);
     socket.on('game:start', onGameStart);
     socket.on('game:finished', onGameFinished);
+    socket.on('ladder:invite', onLadderInvite);
+    socket.on('ladder:invite:withdraw', onLadderInviteWithdraw);
+    socket.on('room:dismissed', onRoomDismissed);
 
     if (socket.connected) onConnect();
 
@@ -136,6 +172,9 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
       socket.off('room:state', onRoomState);
       socket.off('game:start', onGameStart);
       socket.off('game:finished', onGameFinished);
+      socket.off('ladder:invite', onLadderInvite);
+      socket.off('ladder:invite:withdraw', onLadderInviteWithdraw);
+      socket.off('room:dismissed', onRoomDismissed);
     };
   }, []);
 
@@ -144,16 +183,46 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
       playerName: string,
       theme: RoomState['theme'],
       mode: RoomState['mode'],
-      maxPlayers: number
+      roomKind: RoomKind = 'custom'
     ) =>
       emitWithAck<RoomCreateResult>('room:create', {
         playerName,
         theme,
         mode,
-        maxPlayers,
+        roomKind,
       }).then((result) => {
         if (result.room) setRoom(result.room);
         return result;
+      }),
+    []
+  );
+
+  const startRoom = useCallback(
+    (roomCode: string, sessionId: string) =>
+      emitWithAck<RoomStartResult>('room:start', { roomCode, sessionId }).then(
+        (result) => {
+          if (result.room) setRoom(result.room);
+          return result;
+        }
+      ),
+    []
+  );
+
+  const resendLadderInvite = useCallback(
+    (roomCode: string, sessionId: string) =>
+      emitWithAck<RoomLadderReinviteResult>('room:ladder:reinvite', {
+        roomCode,
+        sessionId,
+      }),
+    []
+  );
+
+  const dismissRoom = useCallback(
+    (roomCode: string, sessionId: string) =>
+      emitWithAck<RoomDismissResult>('room:dismiss', { roomCode, sessionId }).finally(() => {
+        setRoom(null);
+        localStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(ROOM_KEY);
       }),
     []
   );
@@ -208,11 +277,14 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
       setRoom,
       createRoom,
       joinRoom,
+      startRoom,
+      resendLadderInvite,
+      dismissRoom,
       submitRoomGuess,
       leaveRoom,
       rejoinRoom,
     }),
-    [connected, room, createRoom, joinRoom, submitRoomGuess, leaveRoom, rejoinRoom]
+    [connected, room, createRoom, joinRoom, startRoom, resendLadderInvite, dismissRoom, submitRoomGuess, leaveRoom, rejoinRoom]
   );
 
   return <GameRoomContext.Provider value={value}>{children}</GameRoomContext.Provider>;
