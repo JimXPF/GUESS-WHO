@@ -6,8 +6,11 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
-# 安装前端依赖
+# 安装根目录依赖
 pnpm install
+
+# 安装前端依赖
+cd client && pnpm install && cd ..
 
 # 构建前端
 cd client && pnpm exec vite build && cd ..
