@@ -1,9 +1,8 @@
 [project]
 sub_id = "12fe68d2"
 name = "guess-who"
-requires = ["golang-1.24"]
+requires = ["golang-1.26"]
 project_type = "web"
-entrypoint = "server-go/cmd/server/main.go"
 
 [preview]
 preview_enable = "enabled"
@@ -15,10 +14,6 @@ run = ["bash", "scripts/coze-preview-run.sh"]
 [deploy]
 build = ["bash", "scripts/coze-deploy-build.sh"]
 run = ["bash", "scripts/coze-deploy-run.sh"]
-
-[deploy.profile]
-kind = "service"
-flavor = "web"
 
 [subprojects]
 path = ["."]
