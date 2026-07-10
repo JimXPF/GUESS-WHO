@@ -6,15 +6,6 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
-# 安装根目录依赖
-pnpm install
-
-# 安装前端依赖并构建
-cd client
-pnpm install
-pnpm exec vite build
-cd ..
-
 # 编译 Go 后端
 cd server-go
 echo "Running go mod tidy..."
