@@ -9,11 +9,11 @@ cd "$PROJECT_DIR"
 # 安装根目录依赖
 pnpm install
 
-# 安装前端依赖
-cd client && pnpm install && cd ..
-
-# 构建前端
-cd client && pnpm exec vite build && cd ..
+# 安装前端依赖并构建
+cd client
+pnpm install
+pnpm exec vite build
+cd ..
 
 # 编译 Go 后端
 cd server-go
