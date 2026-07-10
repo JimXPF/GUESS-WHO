@@ -17,7 +17,9 @@ import (
 )
 
 func main() {
-	if _, err := db.Init(""); err != nil {
+	// 使用 /tmp 目录存储数据库，避免只读文件系统问题
+	dbPath := "/tmp/guess-who.db"
+	if _, err := db.Init(dbPath); err != nil {
 		log.Fatalf("failed to init database: %v", err)
 	}
 	defer db.Close()
