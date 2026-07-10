@@ -3,6 +3,7 @@ sub_id = "12fe68d2"
 name = "guess-who"
 requires = ["golang-1.26"]
 project_type = "web"
+entrypoint = "server-go/cmd/server/main.go"
 
 [preview]
 preview_enable = "enabled"
