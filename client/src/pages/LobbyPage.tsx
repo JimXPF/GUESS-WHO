@@ -74,7 +74,7 @@ export default function LobbyPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const inviteCode = (searchParams.get(ROOM_INVITE_PARAM) || '').trim().toUpperCase();
-  const { connected, room, createRoom, joinRoom, startRoom, resendLadderInvite, dismissRoom, leaveRoom } =
+  const { connected, room, createRoom, joinRoom, startRoom, resendLadderInvite, dismissRoom, leaveRoom, rejoinRoom } =
     useGameRoom();
   const [playerName] = useState(() => localStorage.getItem(PLAYER_NAME_KEY) || '');
   const [theme] = useState<Theme>(
@@ -96,6 +96,21 @@ export default function LobbyPage() {
   const [dismissing, setDismissing] = useState(false);
   const [error, setError] = useState('');
   const autoJoinAttempted = useRef(false);
+  const rejoinAttempted = useRef(false);
+
+  const activeRoomCode = room?.code ?? roomCode;
+  const activeSessionId = sessionId || localStorage.getItem(SESSION_KEY);
+  const inRoom = Boolean(
+    activeRoomCode &&
+      activeSessionId &&
+      room?.players.some((p) => p.sessionId === activeSessionId)
+  );
+
+  const clearInviteFromUrl = useCallback(() => {
+    autoJoinAttempted.current = false;
+    rejoinAttempted.current = false;
+    navigate('/lobby', { replace: true });
+  }, [navigate]);
 
   const connectedCount = useMemo(
     () => room?.players.filter((p) => p.connected).length ?? 0,
@@ -132,11 +147,35 @@ export default function LobbyPage() {
     if (room?.code) {
       setRoomCode(room.code);
     }
-    const sid = localStorage.getItem(SESSION_KEY);
+    const sid = sessionId || localStorage.getItem(SESSION_KEY);
     if (sid && room?.players.some((p) => p.sessionId === sid)) {
       setSessionId(sid);
     }
-  }, [room]);
+  }, [room, sessionId]);
+
+  useEffect(() => {
+    if (!connected || loading || rejoinAttempted.current) return;
+    const sid = sessionId || localStorage.getItem(SESSION_KEY);
+    const code = (inviteCode || roomCode || localStorage.getItem(ROOM_KEY) || '').trim().toUpperCase();
+    if (!sid || !code) return;
+    if (room?.players.some((p) => p.sessionId === sid)) return;
+
+    rejoinAttempted.current = true;
+    rejoinRoom(code, sid).then((result) => {
+      if (result.error || !result.room?.players.length) {
+        rejoinAttempted.current = false;
+        localStorage.removeItem(SESSION_KEY);
+        localStorage.removeItem(ROOM_KEY);
+        setRoomCode(null);
+        setSessionId(null);
+        if (result.error) setError(result.error);
+        if (inviteCode) clearInviteFromUrl();
+        return;
+      }
+      setRoomCode(result.room.code);
+      setSessionId(result.sessionId ?? sid);
+    });
+  }, [connected, loading, sessionId, roomCode, inviteCode, room, rejoinRoom, clearInviteFromUrl]);
 
   useEffect(() => {
     const onRoomDismissed = () => {
@@ -149,9 +188,7 @@ export default function LobbyPage() {
   }, [navigate]);
 
   useEffect(() => {
-    if (room?.status === 'playing' && sessionId) {
-      localStorage.setItem(SESSION_KEY, sessionId);
-      localStorage.setItem(ROOM_KEY, room.code);
+    if (room?.status === 'playing' && sessionId && room.code) {
       navigate('/multiplayer');
     }
   }, [room?.status, sessionId, navigate, room?.code]);
@@ -175,8 +212,6 @@ export default function LobbyPage() {
           setRoomCode(result.room.code);
           setSessionId(result.sessionId);
           if (result.room.status === 'playing') {
-            localStorage.setItem(SESSION_KEY, result.sessionId);
-            localStorage.setItem(ROOM_KEY, result.room.code);
             navigate('/multiplayer');
           }
         }
@@ -227,11 +262,11 @@ export default function LobbyPage() {
   };
 
   const handleStart = async () => {
-    if (!roomCode || !sessionId) return;
+    if (!activeRoomCode || !sessionId) return;
     setStarting(true);
     setError('');
     try {
-      const result = await startRoom(roomCode, sessionId);
+      const result = await startRoom(activeRoomCode, sessionId);
       if (result.error) {
         setError(result.error);
       }
@@ -241,12 +276,12 @@ export default function LobbyPage() {
   };
 
   const handleResendLadderInvite = async () => {
-    if (!roomCode || !sessionId) return;
+    if (!activeRoomCode || !sessionId) return;
     setResendingInvite(true);
     setError('');
     setInviteResent(false);
     try {
-      const result = await resendLadderInvite(roomCode, sessionId);
+      const result = await resendLadderInvite(activeRoomCode, sessionId);
       if (result.error) {
         setError(result.error);
         return;
@@ -275,11 +310,11 @@ export default function LobbyPage() {
   };
 
   const handleDismissRoom = async () => {
-    if (!roomCode || !sessionId) return;
+    if (!activeRoomCode || !sessionId) return;
     setDismissing(true);
     setError('');
     try {
-      const result = await dismissRoom(roomCode, sessionId);
+      const result = await dismissRoom(activeRoomCode, sessionId);
       if (result.error) {
         setError(result.error);
         return;
@@ -293,8 +328,7 @@ export default function LobbyPage() {
     }
   };
 
-  const inviteUrl = roomCode ? buildLobbyInviteUrl(roomCode) : '';
-  const inRoom = Boolean(roomCode);
+  const inviteUrl = activeRoomCode ? buildLobbyInviteUrl(activeRoomCode) : '';
   const showCountdown = room?.status === 'countdown';
   const isLadderRoom = room?.roomKind === 'ladder';
 
@@ -378,52 +412,26 @@ export default function LobbyPage() {
 
         {!inRoom ? (
           <>
-            {inviteCode && (
+            {inviteCode && loading && (
               <p className="text-sm text-center text-apple-blue bg-apple-blue/5 rounded-lg py-2">
                 正在加入房间 {inviteCode}…
               </p>
             )}
 
-            {!inviteCode && (
-              <div className="space-y-3">
-                <p className="text-sm text-apple-gray">
-                  选择创建方式，房间最多 5 人，至少 2 人由房主开始游戏
-                </p>
-                <div className="grid grid-cols-1 gap-2">
-                  {ROOM_CREATE_OPTIONS.map((option) => {
-                    const selected = roomCreateKind === option.kind;
-                    return (
-                      <button
-                        key={option.kind}
-                        type="button"
-                        className={`text-left rounded-xl border px-3 py-3 transition-colors ${
-                          selected
-                            ? 'border-apple-blue bg-apple-blue/5 ring-1 ring-apple-blue/30'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                        onClick={() => setRoomCreateKind(option.kind)}
-                      >
-                        <p className="text-sm font-semibold">{option.title}</p>
-                        <p className="text-xs text-apple-gray mt-1">{option.description}</p>
-                      </button>
-                    );
-                  })}
-                </div>
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  className="btn-primary w-full"
-                  onClick={handleCreate}
-                  disabled={loading || !connected}
-                >
-                  {roomCreateKind === 'ladder' ? '邀请天梯同房间好友' : '创建房间'}
-                </motion.button>
-              </div>
+            {inviteCode && !loading && (
+              <button
+                type="button"
+                className="text-xs text-apple-blue w-full text-center"
+                onClick={clearInviteFromUrl}
+              >
+                取消加入，创建新房间
+              </button>
             )}
 
-            <div className={`${inviteCode ? '' : 'border-t border-gray-100 pt-4'}`}>
-              <label className="block text-sm font-medium mb-2">加入房间</label>
+            <div className="space-y-3">
+              <label className="block text-sm font-medium">加入房间</label>
               <input
-                className="input-field mb-2 uppercase"
+                className="input-field uppercase"
                 placeholder="输入 6 位房间号"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
@@ -436,6 +444,41 @@ export default function LobbyPage() {
               >
                 {loading && inviteCode ? '加入中...' : '加入'}
               </button>
+            </div>
+
+            <div className="border-t border-gray-100 pt-4 space-y-3">
+              <p className="text-sm font-medium">创建房间</p>
+              <p className="text-sm text-apple-gray">
+                选择创建方式，房间最多 5 人，至少 2 人由房主开始游戏
+              </p>
+              <div className="grid grid-cols-1 gap-2">
+                {ROOM_CREATE_OPTIONS.map((option) => {
+                  const selected = roomCreateKind === option.kind;
+                  return (
+                    <button
+                      key={option.kind}
+                      type="button"
+                      className={`text-left rounded-xl border px-3 py-3 transition-colors ${
+                        selected
+                          ? 'border-apple-blue bg-apple-blue/5 ring-1 ring-apple-blue/30'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setRoomCreateKind(option.kind)}
+                    >
+                      <p className="text-sm font-semibold">{option.title}</p>
+                      <p className="text-xs text-apple-gray mt-1">{option.description}</p>
+                    </button>
+                  );
+                })}
+              </div>
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                className="btn-primary w-full"
+                onClick={handleCreate}
+                disabled={loading || !connected}
+              >
+                {roomCreateKind === 'ladder' ? '邀请天梯同房间好友' : '创建房间'}
+              </motion.button>
             </div>
           </>
         ) : (
@@ -465,7 +508,7 @@ export default function LobbyPage() {
               <p className="text-sm text-apple-gray">
                 {isLadderRoom ? '房间号（也可手动分享）' : '房间号（分享给好友）'}
               </p>
-              <p className="text-4xl font-bold tracking-widest text-apple-blue mt-1">{roomCode}</p>
+              <p className="text-4xl font-bold tracking-widest text-apple-blue mt-1">{activeRoomCode}</p>
               <p className="text-xs text-apple-gray break-all mt-2">邀请链接：{inviteUrl}</p>
             </div>
 

@@ -1,6 +1,7 @@
 # Stop Guess Who dev processes (API :3001, Vite :5173, previous CMD/session)
 param(
-    [int]$CurrentSessionPid = 0
+    [int]$CurrentSessionPid = 0,
+    [switch]$PortsOnly
 )
 
 $ErrorActionPreference = 'SilentlyContinue'
@@ -27,10 +28,8 @@ function Get-TerminalSessionPid {
 function Stop-ProcessTree {
     param([int]$ProcessId)
     if ($ProcessId -le 0) { return }
-    Get-CimInstance Win32_Process |
-        Where-Object { $_.ParentProcessId -eq $ProcessId } |
-        ForEach-Object { Stop-ProcessTree -ProcessId $_.ProcessId }
-    Stop-Process -Id $ProcessId -Force -ErrorAction SilentlyContinue
+    # taskkill /T 比递归 WMI 枚举快得多，避免 start.bat 长时间无输出
+    & taskkill /PID $ProcessId /T /F 2>$null | Out-Null
 }
 
 function Stop-PortListeners {
@@ -78,6 +77,23 @@ function Stop-ProjectNodeProcesses {
         }
 }
 
+function Stop-GoBackendProcesses {
+    @('go.exe', 'server.exe') | ForEach-Object {
+        Get-CimInstance Win32_Process -Filter "Name = '$_'" -ErrorAction SilentlyContinue |
+            Where-Object {
+                $_.CommandLine -and (
+                    $_.CommandLine -like "*$root*" -or
+                    $_.CommandLine -like '*server-go*' -or
+                    $_.CommandLine -like '*cmd/server*'
+                )
+            } |
+            ForEach-Object {
+                Write-Host "  Go backend PID $($_.ProcessId)"
+                Stop-ProcessTree -ProcessId $_.ProcessId
+            }
+    }
+}
+
 function Stop-PreviousDevTerminals {
     param(
         [int]$KeepSessionPid = 0
@@ -99,6 +115,7 @@ function Stop-PreviousDevTerminals {
             $_.Name.ToLower() -in @('cmd.exe', 'powershell.exe', 'pwsh.exe') -and
             $_.CommandLine -and
             $_.CommandLine -match $rootPattern -and
+            $_.CommandLine -match '(start-dev|dev:inner|dev-server|concurrently|npm run dev)' -and
             $_.ProcessId -ne $KeepSessionPid -and
             $_.ProcessId -ne $PID
         } |
@@ -114,9 +131,13 @@ if ($CurrentSessionPid -le 0) {
     $CurrentSessionPid = Get-TerminalSessionPid
 }
 
-Stop-PreviousDevTerminals -KeepSessionPid $CurrentSessionPid
+if (-not $PortsOnly) {
+    Stop-PreviousDevTerminals -KeepSessionPid $CurrentSessionPid
+    Stop-ProjectNodeProcesses
+}
+
 Stop-PortListeners -PortList $ports
-Stop-ProjectNodeProcesses
+Stop-GoBackendProcesses
 
 Start-Sleep -Milliseconds 800
 Write-Host '[INFO] Done stopping processes.'

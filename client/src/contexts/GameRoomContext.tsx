@@ -74,6 +74,11 @@ const GameRoomContext = createContext<GameRoomContextValue | null>(null);
 
 const EMIT_TIMEOUT_MS = 15000;
 
+function persistRoomSession(roomCode: string, sessionId: string) {
+  localStorage.setItem(SESSION_KEY, sessionId);
+  localStorage.setItem(ROOM_KEY, roomCode);
+}
+
 function emitWithAck<T>(
   event: string,
   payload: unknown,
@@ -124,7 +129,13 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
           'room:rejoin',
           { roomCode, sessionId },
           (result: RoomJoinResult) => {
-            if (result.room) setRoom(result.room);
+            if (result.room && result.sessionId) {
+              setRoom(result.room);
+              persistRoomSession(result.room.code, result.sessionId);
+              return;
+            }
+            localStorage.removeItem(SESSION_KEY);
+            localStorage.removeItem(ROOM_KEY);
           }
         );
       }
@@ -191,7 +202,10 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
         mode,
         roomKind,
       }).then((result) => {
-        if (result.room) setRoom(result.room);
+        if (result.room && result.sessionId) {
+          setRoom(result.room);
+          persistRoomSession(result.room.code, result.sessionId);
+        }
         return result;
       }),
     []
@@ -231,7 +245,10 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
     (roomCode: string, playerName: string) =>
       emitWithAck<RoomJoinResult>('room:join', { roomCode, playerName }).then(
         (result) => {
-          if (result.room) setRoom(result.room);
+          if (result.room && result.sessionId) {
+            setRoom(result.room);
+            persistRoomSession(result.room.code, result.sessionId);
+          }
           return result;
         }
       ),
@@ -242,7 +259,10 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
     (roomCode: string, sessionId: string) =>
       emitWithAck<RoomJoinResult>('room:rejoin', { roomCode, sessionId }).then(
         (result) => {
-          if (result.room) setRoom(result.room);
+          if (result.room && result.sessionId) {
+            setRoom(result.room);
+            persistRoomSession(result.room.code, result.sessionId);
+          }
           return result;
         }
       ),

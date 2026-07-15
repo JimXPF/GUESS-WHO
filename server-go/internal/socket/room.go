@@ -530,7 +530,7 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 
 	onEvent(s, "room:leave", func(payload map[string]any, ack socketio.Ack) {
 		sessionID := strings.TrimSpace(strField(payload, "sessionId"))
-		code := leaveSocket(s, io, sessionID)
+		code := leaveSocket(s, io, sessionID, true)
 		var state *types.RoomState
 		if code != "" {
 			if room := GetRoom(code); room != nil && room.Status == "finished" {
@@ -541,7 +541,7 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 	})
 
 	s.On("disconnect", func(...any) {
-		leaveSocket(s, io, "")
+		leaveSocket(s, io, "", false)
 	})
 }
 
@@ -1164,7 +1164,7 @@ func finishRoomIfNeeded(room *Room) bool {
 	return true
 }
 
-func leaveSocket(s *socketio.Socket, io *socketio.Server, sessionID string) string {
+func leaveSocket(s *socketio.Socket, io *socketio.Server, sessionID string, explicit bool) string {
 	socketID := string(s.Id())
 	registryMu.RLock()
 	code := socketToRoom[socketID]
@@ -1206,18 +1206,30 @@ func leaveSocket(s *socketio.Socket, io *socketio.Server, sessionID string) stri
 	}
 
 	room.mu.Lock()
-	isHost := leftSessionID == room.HostSessionID
 	status := room.Status
 	room.mu.Unlock()
 
-	if isHost && (status == "waiting" || status == "countdown") {
+	// 等待大厅里 socket 断开只标记离线，不移除玩家、不解散房间。
+	if !explicit && (status == "waiting" || status == "countdown") {
+		syncWaitingLadderInvite(io, room)
+		broadcastRoom(io, room)
+		return code
+	}
+
+	room.mu.Lock()
+	isHost := leftSessionID == room.HostSessionID
+	room.mu.Unlock()
+
+	if explicit && isHost && (status == "waiting" || status == "countdown") {
 		dissolveWaitingRoom(io, room, "房间已解散")
 		return code
 	}
 
 	if status == "countdown" {
 		room.mu.Lock()
-		removeWaitingPlayer(room, leftSessionID)
+		if explicit {
+			removeWaitingPlayer(room, leftSessionID)
+		}
 		if countConnectedPlayers(room) < services.LobbyMinPlayers {
 			cancelLobbyCountdownToWaiting(room)
 		}
@@ -1229,14 +1241,16 @@ func leaveSocket(s *socketio.Socket, io *socketio.Server, sessionID string) stri
 
 	if status == "waiting" {
 		room.mu.Lock()
-		removeWaitingPlayer(room, leftSessionID)
+		if explicit {
+			removeWaitingPlayer(room, leftSessionID)
+		}
 		room.mu.Unlock()
 		syncWaitingLadderInvite(io, room)
 		broadcastRoom(io, room)
 		return code
 	}
 
-	if status == "playing" {
+	if status == "playing" && leftSessionID != "" {
 		room.mu.Lock()
 		clearRelayTurnTimer(room)
 		clearBattleIntermissionTimer(room)
