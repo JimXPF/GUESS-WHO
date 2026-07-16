@@ -196,7 +196,7 @@
         "Bulbasaur",
         "蒜头王八",
         "妙蛙",
-        "布爾巴索",
+        "布尔巴索",
         "巨菇",
         "种蛙"
       ],
@@ -662,7 +662,7 @@
       "englishName": "Weedle",
       "aliases": [
         "Weedle",
-        "威頓",
+        "威顿",
         "可斯",
         "角虫"
       ],
@@ -1099,7 +1099,7 @@
         "Pikachu",
         "皮卡",
         "皮神",
-        "皮瓊",
+        "皮琼",
         "厄讹",
         "比卡丘",
         "倍加超",
@@ -1392,7 +1392,7 @@
       "aliases": [
         "Nidorino",
         "尼多利诺",
-        "雷尼歐",
+        "雷尼欧",
         "古西",
         "尼多卡诺"
       ],
@@ -2162,7 +2162,7 @@
       "englishName": "Psyduck",
       "aliases": [
         "Psyduck",
-        "賽德克",
+        "赛德克",
         "大钳"
       ],
       "dexNumber": 54,
@@ -2416,7 +2416,7 @@
       "englishName": "Poliwhirl",
       "aliases": [
         "Poliwhirl",
-        "皮爾威爾",
+        "皮尔威尔",
         "蛋蛋",
         "蚊香蛙"
       ],
@@ -2453,7 +2453,7 @@
       "englishName": "Poliwrath",
       "aliases": [
         "Poliwrath",
-        "皮爾威琪",
+        "皮尔威琪",
         "卡拉",
         "快泳蛙"
       ],
@@ -2592,7 +2592,7 @@
       "englishName": "Machop",
       "aliases": [
         "Machop",
-        "馬克",
+        "马克",
         "比拉"
       ],
       "dexNumber": 66,
@@ -2899,7 +2899,7 @@
       "englishName": "Geodude",
       "aliases": [
         "Geodude",
-        "絆倒",
+        "绊倒",
         "石兽"
       ],
       "dexNumber": 74,
@@ -3055,7 +3055,7 @@
       "englishName": "Rapidash",
       "aliases": [
         "Rapidash",
-        "羅皮達斯",
+        "罗皮达斯",
         "宝石"
       ],
       "dexNumber": 78,
@@ -3095,7 +3095,7 @@
       "englishName": "Slowpoke",
       "aliases": [
         "Slowpoke",
-        "絲露精靈",
+        "丝露精灵",
         "工"
       ],
       "dexNumber": 79,
@@ -3511,7 +3511,7 @@
       "englishName": "Shellder",
       "aliases": [
         "Shellder",
-        "多殼的",
+        "多壳的",
         "方红"
       ],
       "dexNumber": 90,
@@ -3548,7 +3548,7 @@
       "englishName": "Cloyster",
       "aliases": [
         "Cloyster",
-        "克勞斯特",
+        "克劳斯特",
         "方剑",
         "铁甲贝"
       ],
@@ -3745,7 +3745,7 @@
       "englishName": "Drowzee",
       "aliases": [
         "Drowzee",
-        "特絡兹",
+        "特络兹",
         "草宝",
         "催眠兽"
       ],
@@ -3902,7 +3902,7 @@
       "englishName": "Voltorb",
       "aliases": [
         "Voltorb",
-        "圍達伯",
+        "围达伯",
         "阿月",
         "雷电球"
       ],
@@ -4093,7 +4093,7 @@
       "englishName": "Marowak",
       "aliases": [
         "Marowak",
-        "瑪爾",
+        "玛尔",
         "魔怪",
         "可拉可拉",
         "喀拉喀拉",
@@ -4293,7 +4293,7 @@
       "englishName": "Weezing",
       "aliases": [
         "Weezing",
-        "韋京",
+        "韦京",
         "基纳"
       ],
       "dexNumber": 110,
@@ -5089,7 +5089,7 @@
         "Lapras",
         "乘龙",
         "成龙",
-        "拉皮爾",
+        "拉皮尔",
         "阿露"
       ],
       "dexNumber": 131,
@@ -5158,7 +5158,7 @@
       "aliases": [
         "Eevee",
         "伊布",
-        "依維",
+        "依维",
         "布伊",
         "依布"
       ],
@@ -5565,7 +5565,7 @@
         "Snorlax",
         "卡比",
         "睡神",
-        "斯諾雷",
+        "斯诺雷",
         "童童"
       ],
       "dexNumber": 143,
@@ -5607,7 +5607,7 @@
       "englishName": "Articuno",
       "aliases": [
         "Articuno",
-        "阿撮達",
+        "阿撮达",
         "兹古"
       ],
       "dexNumber": 144,
@@ -5644,7 +5644,7 @@
       "englishName": "Zapdos",
       "aliases": [
         "Zapdos",
-        "伊撲",
+        "伊扑",
         "阿西"
       ],
       "dexNumber": 145,
@@ -5681,7 +5681,7 @@
       "englishName": "Moltres",
       "aliases": [
         "Moltres",
-        "莫達尼",
+        "莫达尼",
         "西木"
       ],
       "dexNumber": 146,
@@ -5832,7 +5832,7 @@
       "aliases": [
         "Mewtwo",
         "超梦",
-        "梅２號",
+        "梅２号",
         "灵怪"
       ],
       "dexNumber": 150,
@@ -11570,7 +11570,7 @@
       "aliases": [
         "Skitty",
         "圆尾猫",
-        "松葉鼠"
+        "松叶鼠"
       ],
       "dexNumber": 300,
       "type1": "一般",
@@ -12038,7 +12038,7 @@
     },
     {
       "id": "minun",
-      "name": "負电拍拍",
+      "name": "负电拍拍",
       "englishName": "Minun",
       "aliases": [
         "Minun"
