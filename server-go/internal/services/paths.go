@@ -10,7 +10,10 @@ func resolveDataDir() string {
 	candidates := []string{
 		"data",
 		filepath.Join("server-go", "data"),
+		filepath.Join("..", "data"),
 		filepath.Join("..", "server-go", "data"),
+		filepath.Join("..", "..", "data"),
+		filepath.Join("..", "..", "server-go", "data"),
 	}
 	if exe, err := os.Executable(); err == nil {
 		exeDir := filepath.Dir(exe)
@@ -21,6 +24,18 @@ func resolveDataDir() string {
 	}
 	if wd, err := os.Getwd(); err == nil {
 		candidates = append(candidates, filepath.Join(wd, "data"))
+		dir := wd
+		for i := 0; i < 6; i++ {
+			candidates = append(candidates,
+				filepath.Join(dir, "data"),
+				filepath.Join(dir, "server-go", "data"),
+			)
+			parent := filepath.Dir(dir)
+			if parent == dir {
+				break
+			}
+			dir = parent
+		}
 	}
 	for _, p := range candidates {
 		if _, err := os.Stat(filepath.Join(p, "pokemon.json")); err == nil {

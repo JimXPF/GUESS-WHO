@@ -11,6 +11,8 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/mozillazg/go-pinyin"
+
 	"guess-who/server-go/internal/types"
 )
 
@@ -147,6 +149,23 @@ func GetCharacter(theme types.Theme, id string) (types.CharacterEntry, bool) {
 
 var nameSegmentSplit = regexp.MustCompile(`[·・\-—－–]`)
 
+// 联想命中优先级（越高越靠前）：中文正式名 > 别称 > 拼音 > 英文。
+const (
+	matchTierChinese = 3000
+	matchTierAlias   = 2000
+	matchTierPinyin  = 1000
+	matchTierEnglish = 0
+)
+
+var pinyinArgs = func() pinyin.Args {
+	a := pinyin.NewArgs()
+	a.Style = pinyin.Normal
+	a.Fallback = func(r rune, _ pinyin.Args) []string {
+		return []string{string(r)}
+	}
+	return a
+}()
+
 // NormalizeText 转小写并去除空格/标点，用于名称匹配。
 func NormalizeText(text string) string {
 	text = strings.TrimSpace(text)
@@ -167,13 +186,27 @@ func NormalizeText(text string) string {
 	return text
 }
 
+func hasCJK(text string) bool {
+	for _, r := range text {
+		if unicode.Is(unicode.Han, r) {
+			return true
+		}
+	}
+	return false
+}
+
 func isCharSubsequence(key, query string) bool {
+	keyRunes := []rune(key)
+	queryRunes := []rune(query)
+	if len(queryRunes) == 0 {
+		return false
+	}
 	i := 0
-	for _, ch := range key {
-		if i < len(query) && ch == rune(query[i]) {
+	for _, ch := range keyRunes {
+		if i < len(queryRunes) && ch == queryRunes[i] {
 			i++
 		}
-		if i == len(query) {
+		if i == len(queryRunes) {
 			return true
 		}
 	}
@@ -181,22 +214,28 @@ func isCharSubsequence(key, query string) bool {
 }
 
 func scoreNameKey(key, normalized string) int {
-	if key == "" {
+	if key == "" || normalized == "" {
 		return -1
 	}
 	if key == normalized {
 		return 100
 	}
+	queryRunes := []rune(normalized)
+	keyRunes := []rune(key)
 	if strings.HasPrefix(key, normalized) {
-		return 90 - (len(key) - len(normalized))
+		return 90 - (len(keyRunes) - len(queryRunes))
+	}
+	// 单字符查询只允许精确/前缀，避免拼音/英文被子序列误伤（几乎所有词都含 a/e/i…）
+	if len(queryRunes) <= 1 {
+		return -1
 	}
 	if isCharSubsequence(key, normalized) {
-		return 85 - (len(key)-len(normalized))*2
+		return 85 - (len(keyRunes)-len(queryRunes))*2
 	}
 	if strings.Contains(key, normalized) {
-		return 70 - (len(key) - len(normalized))
+		return 70 - (len(keyRunes) - len(queryRunes))
 	}
-	if strings.Contains(normalized, key) && len(key) >= 2 {
+	if strings.Contains(normalized, key) && len(keyRunes) >= 2 {
 		return 45
 	}
 	return -1
@@ -217,6 +256,102 @@ func scoreNameMatch(raw, normalized string) int {
 		}
 	}
 	return best
+}
+
+func toPinyinForms(text string) (full string, initials string) {
+	if !hasCJK(text) {
+		return "", ""
+	}
+	parts := pinyin.Pinyin(text, pinyinArgs)
+	var fullB, initB strings.Builder
+	for _, syls := range parts {
+		if len(syls) == 0 || syls[0] == "" {
+			continue
+		}
+		s := strings.ToLower(syls[0])
+		fullB.WriteString(s)
+		initB.WriteByte(s[0])
+	}
+	return fullB.String(), initB.String()
+}
+
+func scorePinyinMatch(raw, normalized string) int {
+	if !hasCJK(raw) {
+		return -1
+	}
+	full, initials := toPinyinForms(raw)
+	best := scoreNameKey(full, normalized)
+	if initials != "" {
+		if s := scoreNameKey(initials, normalized); s > best {
+			best = s
+		}
+	}
+	return best
+}
+
+type matchCandidate struct {
+	raw  string
+	tier int
+}
+
+func scoreCandidate(c matchCandidate, normalized string) int {
+	base := scoreNameMatch(c.raw, normalized)
+	if base < 0 {
+		return -1
+	}
+	return c.tier + base
+}
+
+func collectMatchCandidates(entry types.CharacterEntry, theme types.Theme) []matchCandidate {
+	var out []matchCandidate
+	seen := map[string]bool{}
+	add := func(raw string, tier int) {
+		raw = strings.TrimSpace(raw)
+		if raw == "" {
+			return
+		}
+		key := fmt.Sprintf("%d:%s", tier, NormalizeText(raw))
+		if seen[key] {
+			return
+		}
+		seen[key] = true
+		out = append(out, matchCandidate{raw: raw, tier: tier})
+	}
+
+	if theme == types.ThemeCSGO {
+		id := entry.ID()
+		name := entry.Name()
+		// CS 选手主键是英文 ID；若 name 含中文则按中文档，否则与 ID 同属英文档。
+		if hasCJK(name) {
+			add(name, matchTierChinese)
+		} else if name != "" && NormalizeText(name) != NormalizeText(id) {
+			add(name, matchTierEnglish)
+		}
+		add(id, matchTierEnglish)
+		for _, a := range stringSliceField(entry, "aliases") {
+			if hasCJK(a) {
+				add(a, matchTierAlias)
+			} else {
+				add(a, matchTierEnglish)
+			}
+		}
+		return out
+	}
+
+	name := entry.Name()
+	add(name, matchTierChinese)
+	if en, ok := entry["englishName"].(string); ok && en != "" {
+		add(en, matchTierEnglish)
+	}
+	for _, a := range stringSliceField(entry, "aliases") {
+		if hasCJK(a) {
+			add(a, matchTierAlias)
+		} else {
+			// 英文别名（常与 englishName 重复）归英文档，避免压过中文/拼音。
+			add(a, matchTierEnglish)
+		}
+	}
+	return out
 }
 
 // GetDisplayName 返回条目的展示名称。
@@ -307,6 +442,7 @@ type SearchResult struct {
 }
 
 // SearchCharacters 返回带评分的名称搜索结果。
+// 命中优先级：中文正式名 > 中文别称 > 拼音（全拼/首字母）> 英文名/英文别名/CS ID。
 func SearchCharacters(theme types.Theme, query string, limit int) ([]SearchResult, error) {
 	if limit <= 0 {
 		limit = 8
@@ -320,53 +456,41 @@ func SearchCharacters(theme types.Theme, query string, limit int) ([]SearchResul
 		return nil, err
 	}
 
-	type keyEntry struct {
-		key   string
-		label string
-		raw   string
-		hasRaw bool
-	}
-
 	var scored []SearchResult
 	for _, entry := range bank {
-		var keys []keyEntry
-		if theme == types.ThemeCSGO {
-			displayLabel := GetDisplayName(entry, theme)
-			keys = append(keys, keyEntry{key: NormalizeText(entry.ID()), label: displayLabel})
-			if name := entry.Name(); name != "" && NormalizeText(name) != NormalizeText(entry.ID()) {
-				keys = append(keys, keyEntry{key: NormalizeText(name), label: displayLabel, raw: name, hasRaw: true})
+		candidates := collectMatchCandidates(entry, theme)
+		best := -1
+		for _, c := range candidates {
+			if s := scoreCandidate(c, normalized); s > best {
+				best = s
 			}
-			for _, a := range stringSliceField(entry, "aliases") {
-				keys = append(keys, keyEntry{key: NormalizeText(a), label: displayLabel, raw: a, hasRaw: true})
-			}
-		} else {
-			name := entry.Name()
-			keys = append(keys, keyEntry{key: NormalizeText(name), label: name, raw: name, hasRaw: true})
-			if en, ok := entry["englishName"].(string); ok && en != "" {
-				keys = append(keys, keyEntry{key: NormalizeText(en), label: name, raw: en, hasRaw: true})
-			}
-			for _, a := range stringSliceField(entry, "aliases") {
-				keys = append(keys, keyEntry{key: NormalizeText(a), label: name, raw: a, hasRaw: true})
+			// 拼音只对中文正式名生效（全拼/首字母），避免「阿王/阿大」等别称拼音刷屏。
+			if c.tier == matchTierChinese {
+				if s := scorePinyinMatch(c.raw, normalized); s >= 0 {
+					tiered := matchTierPinyin + s
+					if tiered > best {
+						best = tiered
+					}
+				}
 			}
 		}
-		sublabel := getSearchSublabel(entry, theme)
-		for _, k := range keys {
-			score := -1
-			if k.hasRaw {
-				score = scoreNameMatch(k.raw, normalized)
-			} else {
-				score = scoreNameKey(k.key, normalized)
-			}
-			if score >= 0 {
-				scored = append(scored, SearchResult{
-					ID: entry.ID(), Label: k.label, Sublabel: sublabel, Score: score,
-				})
-				break
-			}
+		if best < 0 {
+			continue
 		}
+		scored = append(scored, SearchResult{
+			ID:       entry.ID(),
+			Label:    GetDisplayName(entry, theme),
+			Sublabel: getSearchSublabel(entry, theme),
+			Score:    best,
+		})
 	}
 
-	sort.Slice(scored, func(i, j int) bool { return scored[i].Score > scored[j].Score })
+	sort.SliceStable(scored, func(i, j int) bool {
+		if scored[i].Score != scored[j].Score {
+			return scored[i].Score > scored[j].Score
+		}
+		return scored[i].Label < scored[j].Label
+	})
 	seen := map[string]bool{}
 	out := make([]SearchResult, 0, limit)
 	for _, item := range scored {
