@@ -173,6 +173,20 @@ export default function MultiplayerGamePage() {
     myAttemptsLeft <= 0 || !isMyTurn || isIntermission;
   const turnPlayerName = room.currentTurnPlayer || '其他玩家';
 
+  const handleIntermissionExpired = useCallback(() => {
+    if (!roomCode || !sessionId) return;
+    // 给服务端题间定时器一点余量，再拉一次房间态（防漏广播）
+    window.setTimeout(() => {
+      rejoinRoom(roomCode, sessionId);
+    }, 400);
+  }, [roomCode, sessionId, rejoinRoom]);
+
+  const emptyHint = isRelay
+    ? isMyTurn
+      ? '输入猜测开始接龙'
+      : `等待 ${turnPlayerName} 作答`
+    : '输入名字开始猜测';
+
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden">
       <header className="shrink-0 z-40 bg-apple-bg/90 backdrop-blur-xl border-b border-gray-200/50 safe-top">
@@ -205,6 +219,7 @@ export default function MultiplayerGamePage() {
             mode={room.mode}
             currentTurnSessionId={room.currentTurnSessionId}
             currentTurnPlayer={room.currentTurnPlayer}
+            maxAttemptsPerQuestion={session.maxAttempts ?? 10}
           />
         </aside>
 
@@ -216,6 +231,7 @@ export default function MultiplayerGamePage() {
               mode={room.mode}
               currentTurnSessionId={room.currentTurnSessionId}
               currentTurnPlayer={room.currentTurnPlayer}
+              maxAttemptsPerQuestion={session.maxAttempts ?? 10}
             />
             {isRelay && !isRelayIntermission && (
               <RelayTurnCountdown
@@ -264,11 +280,7 @@ export default function MultiplayerGamePage() {
             {displayGuesses.length === 0 ? (
               <div className="glass-card p-6 sm:p-8 text-center text-apple-gray">
                 <p className="font-medium">还没有猜测记录</p>
-                <p className="text-sm mt-1">
-                  {isRelay && !isMyTurn
-                    ? `等待 ${turnPlayerName} 作答`
-                    : session.guessPlaceholder || '输入猜测开始接龙'}
-                </p>
+                <p className="text-sm mt-1">{emptyHint}</p>
               </div>
             ) : (
               displayGuesses.map((guess, i) => (
@@ -296,6 +308,7 @@ export default function MultiplayerGamePage() {
             <BattleNextCountdown
               deadlineAt={room.intermissionDeadlineAt}
               seconds={room.battleIntermissionSeconds ?? 5}
+              onExpired={handleIntermissionExpired}
             />
             </div>
           ) : isRelay && !isMyTurn ? (

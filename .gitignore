@@ -16,3 +16,8 @@ scripts/cache/
 client/tsconfig.tsbuildinfo
 server-go/server.exe
 server-go/*.exe
+
+# Colleague Rust backend (separate GitLab repo; do not commit)
+/server-rust/
+gitlab.env
+**/gitlab.env

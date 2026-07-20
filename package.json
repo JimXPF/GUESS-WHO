@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-dev.ps1",
+    "dev:rust": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-rust-dev.ps1",
     "dev:inner": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/kill-dev.ps1 -PortsOnly; concurrently -k -n server,client -c blue,green \"npm run dev:server\" \"npm run dev:client:wait\"",
     "dev:server": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-server.ps1",
     "dev:client:wait": "node scripts/wait-for-backend.js && npm run dev --prefix client",

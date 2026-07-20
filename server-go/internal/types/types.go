@@ -325,15 +325,17 @@ type FieldClaim struct {
 
 // RoomPlayerState 是多人房间快照中的单个玩家。
 type RoomPlayerState struct {
-	SessionID      string        `json:"sessionId"`
-	PlayerName     string        `json:"playerName"`
-	Score          int           `json:"score"`
-	CorrectCount   int           `json:"correctCount"`
-	AttemptsLeft   int           `json:"attemptsLeft"`
-	QuestionIndex  int           `json:"questionIndex"`
-	Status         SessionStatus `json:"status"`
-	Connected      bool          `json:"connected"`
-	ScoreBreakdown []FieldClaim  `json:"scoreBreakdown,omitempty"`
+	SessionID        string        `json:"sessionId"`
+	PlayerName       string        `json:"playerName"`
+	Score            int           `json:"score"`
+	CorrectCount     int           `json:"correctCount"`
+	AttemptsLeft     int           `json:"attemptsLeft"`
+	QuestionAttempts int           `json:"questionAttempts"`
+	HitCount         int           `json:"hitCount"`
+	QuestionIndex    int           `json:"questionIndex"`
+	Status           SessionStatus `json:"status"`
+	Connected        bool          `json:"connected"`
+	ScoreBreakdown   []FieldClaim  `json:"scoreBreakdown,omitempty"`
 }
 
 // RelayCorrectRecord 是接龙模式下的历史正确答案。

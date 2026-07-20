@@ -9,7 +9,6 @@ import {
   ROOM_KEY,
 } from '../api';
 import CharacterAvatar from '../components/CharacterAvatar';
-import LobbyCountdown from '../components/LobbyCountdown';
 import { useGameRoom } from '../hooks/useGameRoom';
 import { GAME_MODE_LABELS, GameMode, RoomKind, RoomPlayerState, THEME_LABELS, Theme } from '../types';
 
@@ -329,7 +328,6 @@ export default function LobbyPage() {
   };
 
   const inviteUrl = activeRoomCode ? buildLobbyInviteUrl(activeRoomCode) : '';
-  const showCountdown = room?.status === 'countdown';
   const isLadderRoom = room?.roomKind === 'ladder';
 
   return (
@@ -369,13 +367,6 @@ export default function LobbyPage() {
           </div>
         )}
       </AnimatePresence>
-
-      {showCountdown && (
-        <LobbyCountdown
-          deadlineAt={room?.countdownDeadlineAt}
-          seconds={room?.lobbyCountdownSeconds ?? 3}
-        />
-      )}
 
       <div className="w-full max-w-md glass-card p-6 space-y-5">
         <div className="flex items-center justify-between">

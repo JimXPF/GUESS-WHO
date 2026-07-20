@@ -1,46 +1,19 @@
 # Guess Who — 游戏设计文档
 
-> **用途**：供 AI 或接手开发者快速理解玩法、实现逻辑、题库结构与工程架构。  
-> **代码入口**：`server-go/internal/services/game_service.go`（状态机）、`compare_engine.go`（比对）、`reverse_bomb.go` / `progressive_hint.go`（模式专项）。
+> **纯阅读**：先弄清玩法、出题与提示，再看实现与架构。  
+> **权威实现**：`server-go/internal/services/`（状态机、比对、逆向、逐步提示）。
+
+## 阅读顺序
+
+| 顺序 | 章节 | 适合 |
+|------|------|------|
+| 1 | **§一～三** 游戏规则 · 出题/提示 · 计分 | 产品、设计、开发（先读） |
+| 2 | **§四～六** 实现逻辑 · 题库 · 技术架构 | 开发深入 |
+| 3 | 文末「界面与状态」 | 设计走查 |
 
 ---
 
-## 文档结构
-
-| 章节 | 内容 |
-|------|------|
-| [§0 PWA 接入待替换](#0-pwa-电竞平台接入待替换) | 身份、房间、会话等需对接平台的项 |
-| [§一 游戏玩法](#一游戏玩法) | 面向玩家/产品的规则说明 |
-| [§1.2 各模式游玩说明](#12-各模式游玩说明产品功能介绍) | **产品向**：如何开始、怎么玩、每步反馈 |
-| [§1.3 模式规则速查](#13-模式规则速查) | 规则参数速查表 |
-| [§1.4 计分与结算](#14-计分与结算) | 分数表、揭晓时机、排行榜 |
-| [§二 实现逻辑](#二实现逻辑) | 出题、状态机、特殊处理（开发必读） |
-| [§三 题库与字段](#三题库与字段设计) | JSON 结构、四主题字段速查 |
-| [§四 技术架构](#四技术架构) | 栈、DB、API、本地开发、部署 |
-
----
-
-## 0. PWA 电竞平台接入待替换
-
-当前为**独立 Web 小游戏**实现；嵌入 PWA 电竞平台后，下列标识与存储需替换为**平台统一身份与房间服务**（标注 【PWA】）。
-
-| 现状 | 位置 | 平台接入方案（待实现） |
-|------|------|------------------------|
-| **玩家昵称** `player_name` | 首页手填 → `POST /api/game/start` body | 【PWA】 改用平台 **userId + displayName**，禁止客户端自填唯一标识 |
-| **用户唯一键** `player_key` | `daily_player_attempts.player_key`；`getClientKey()` | 【PWA】 现为 `uid:{localStorage UUID}` 或回退 `ip:`；改为 **平台 userId** |
-| **请求头** `X-User-Id` | `client/src/api.ts` 注入；`server/utils/clientKey.ts` 读取 | 【PWA】 改为平台 **JWT / Session Token**，服务端验签后取 userId |
-| **会话 ID** `sessions.id` | UUID v4，前端 `localStorage` `guess-who-session-id` | 【PWA】 可保留局内 UUID，或改为平台 **matchId**；需定义恢复/断线策略 |
-| **多人房间码** `room_code` | 内存 Map + 6 位随机码（`roomService.ts`） | 【PWA】 改为平台 **Lobby / Room ID**；房间生命周期由平台或 Redis 管理 |
-| **Socket 连接** | 无鉴权，`/socket.io` 明文 join | 【PWA】 握手携带平台 token；房间权限校验 |
-| **排行榜键** | `leaderboard.player_name` 文本 | 【PWA】 改为 **userId** 存榜 + displayName 展示；防同名冲突 |
-| **每日限次** | `UNIQUE(challenge_date, theme, player_key)` | 【PWA】 `player_key` → 平台 userId |
-| **接龙认领** `FieldClaim.playerName` | 房间内显示名 | 【PWA】 绑定 userId，展示用平台昵称 |
-
-**暂可保留（局内逻辑）**：`answer_id`、`question_index`、`active_fields`、`progressive_state` / 逆向 `ReverseState` 结构——与平台身份正交。
-
----
-
-## 一、游戏玩法
+## 一、游戏规则
 
 ### 1.1 产品概览
 
@@ -50,13 +23,12 @@
 |------|------|
 | 主题 | CS 选手、2026 世界杯足球、NBA、宝可梦 Gen1–3 |
 | 单人模式 | 经典六项、每日一题、逐步提示、逆向轰炸 |
-| 多人模式 | 对战 2–5 人、接龙 2–5 人（Socket.io 房间，【PWA】 见 §0） |
+| 多人模式 | 对战 2–5 人、接龙 2–5 人（Socket.io 房间） |
 | 核心交互 | 搜索建议（模糊）+ 提交猜测（**精确匹配**题库名/别名/id） |
 
-### 1.2 各模式游玩说明（产品功能介绍）
+### 1.2 各模式怎么玩
 
-> 面向产品、设计与新玩家：说明**从进入到结束**的完整路径——做什么、看到什么反馈。  
-> 界面清单见 [`docs/UI_SCREENS.md`](UI_SCREENS.md)；本节侧重**玩法与反馈**。
+> 从进入到结束：做什么、看到什么。界面结构见文末「界面与状态」；参数见 §1.3；出题/提示见 **§二**。
 
 #### 通用：如何进入游戏
 
@@ -209,87 +181,165 @@
 
 ---
 
-### 1.3 模式规则速查
+### 1.3 模式参数速查（与上文流程对照）
 
-#### 经典六项 `classic-six`
+| 模式 | 机会 / 局量 | 核心差异 |
+|------|-------------|----------|
+| 经典 | 10 次，答对 +2（上限 10）；无限下一题 | 对比格 + 3/6/9 提示 |
+| 每日 | 20 次；每主题每天 1 次 | 全员同题；结算始终显示答案 |
+| 逐步 | 整局 3 命，跨题不补 | 无对比格；提示队列判定 |
+| 逆向 | 每轮 5 筛 × 固定 3 轮 | 100 卡池；轮末弹窗含答案 |
+| 对战 | 2–5 人；10 题；每题各 10 次 | 先猜对赢题；平局按 hit×40 |
+| 接龙 | 2–5 人；30 题；每人整局 10 次 | 轮流 30s；字段认领计分 |
 
-| 项 | 规则 |
-|----|------|
-| 机会 | 初始 10，答对 +2（上限 10） |
-| UI | 6 列对比格 + 1 条首提示；猜 3/6/9 次各解锁 1 条额外提示（已 hit 字段递补队列下一条，见 §2.4） |
-| 对比格 | CS/足球/NBA 固定 6 字段；**宝可梦每题动态 4–6 字段** |
-| 结束 | 机会耗尽 → 弹窗揭晓（§1.4）；答对仅题内恭喜；可无限「下一题」 |
-| 排行榜 | `leaderboard`，`game_mode=classic-six` |
+多人公共：大厅 **5 槽**、房主 ≥2 人在线可开局、开局 **3 秒**倒计时；猜测走 Socket `room:guess`（不走单人 REST）。
 
-#### 每日一题 `daily-one`
 
-| 项 | 规则 |
-|----|------|
-| 题目 | 每主题每天 1 题（UTC+8），全员同答案（种子随机） |
-| 机会 | 20 次；**每人每主题每日 1 次**（【PWA】 设备 UUID / 平台 userId） |
-| 排名 | 猜测次数少优先，其次用时 |
-| 失败 | `failed`，弹窗 + 结算页揭晓答案，不入总分榜 |
-| 猜对 | 题内恭喜，无弹窗；结算页**仍展示**今日答案 |
+---
 
-#### 逐步提示 `progressive-hint`
+## 二、出题规则与提示规则
 
-| 项 | 规则 |
-|----|------|
-| 生命 | 整局 3 条命，跨题不补 |
-| UI | **无对比格**；提示逐条解锁 |
-| 判定 | 每次猜：检查**已解锁的全部提示**是否相对答案命中 |
-| 全提示命中 + 人错 | 解锁下一条（不扣命） |
-| 未全命中 | 扣 1 命 |
-| 额外命中 | 猜中尚未解锁的队列字段仅记入 `satisfiedFields`，**不阻止**后续正式提示 |
-| 结束 | 命尽 → 弹窗揭晓（§1.4）；猜对仅题内恭喜 |
-| 排行榜 | `game_mode=progressive-hint` |
+> 开发与设计先读懂「题怎么来、提示怎么给」。代码入口与状态机见 **§四**。
 
-#### 逆向轰炸 `reverse-bomb`
+### 2.1 出题（选题）
 
-| 项 | 规则 |
-|----|------|
-| 目标 | 已知有隐藏答案，用自提条件筛卡片，最终猜人 |
-| 题库 | 每轮 **100** 张（含答案），从**可用题库**抽样（足球/NBA 同经典 `isPlayable*`）；卡格、淘汰、条件下拉均限本题池/存活池，**禁止回退全库** |
-| 筛选 | 5 次；每轮 **二选一** 字段配置条件（`==`/`!=` 或数值 `>=`/`<=`） |
-| 判定 | 看隐藏答案是否满足条件 → 淘汰不一致卡 |
-| 第 4 次筛选前 | 1 条准确提示（字段不在当轮二选一里） |
-| 结案 | 存活=1 自动成功；筛尽 → 1 次终极猜测 |
-| 局数 | **固定 3 轮**，三轮总分排名 |
-| 揭晓 | 每轮结束 **弹窗**含答案（猜对/猜错/筛至唯一）；结算页不重复（见 `reverseRoundHistory`） |
-| 排行榜 | `game_mode=reverse-bomb` |
+出题两步：**① 从可玩池抽答案** → **② 为该答案生成对比列与提示**。各模式共用筛选；差异主要在随机源与是否预生成整局队列。
 
-#### 对战 `battle`
+| 模式 | 怎么选题 |
+|------|----------|
+| 经典 / 逐步 | 即时随机（避开本局已用过的答案） |
+| 每日一题 | UTC+8 日期 + 主题种子 → **全员同题** |
+| 逆向轰炸 | 先定答案，再从同池抽 **100** 张卡（含答案） |
+| 对战 | 开局预生成 **10** 题队列 |
+| 接龙 | 开局预生成 **30** 题队列 |
 
-| 项 | 规则 |
-|----|------|
-| 人数 | 2–5 人，同房共享 **10 题**（`BATTLE_QUESTION_COUNT`） |
-| 机会 | **每题**各 10 次（题间重置）；先完全猜对者赢本题 |
-| 计分 | 猜对按次数 `scoreForQuestion`（500→…→最低 300）；无人猜对则平局，按字段 hit 每项 +40 |
-| 提示 | 同房同题 `extra_hint_fields` 一致；各自 `question_attempts` 独立解锁（§2.4） |
-| 题间 | 5 秒间歇（`BATTLE_INTERMISSION_SECONDS`）后下一题 |
-| 排行榜 | 仅房间结算页 |
+**可玩池（答案必须来自）**
 
-#### 接龙 `relay-chain`
+| 主题 | 规则 |
+|------|------|
+| CS / 宝可梦 | 全库 |
+| 足球 | 仅白名单联赛球员（`allowedClubLeagues`） |
+| NBA | 有 2025 起生涯且出场达标 |
 
-| 项 | 规则 |
-|----|------|
-| 人数 | 2–5 人，同房共享 **30 题**（`QUESTION_QUEUE_SIZE`，`roomService.ts`） |
-| 回合 | **轮流**作答，每回合 **30 秒**；超时 **-50 分并消耗 1 次机会**，然后轮转 |
-| 机会 | 每人整局 **10 次**（跨题累计，题间不重置）；完全猜对 +2（上限 10）；**须全员机会用尽**才触发局结束 |
-| 计分 | 字段首次认领 +80；已认领字段再 hit 不加分；已认领字段答错 -25；完全猜对查表（§1.4）；超时 -50 |
-| 提示 | **全队**本题累计猜测次数解锁（`buildRelayHintsForRoom`，规则同 §2.4） |
-| 本题结束 | 任一人完全猜对 → 5 秒间歇 → 下一题（认领重置） |
-| 局结束 | 30 题打完，或**全员**机会用尽 → 弹窗揭晓（§1.4） |
-| 排行榜 | 仅房间结算页 |
+足球注意：**筛库**与**首提示**是两件事——非白名单球员不会成为答案；首提示在已选答案上，联赛/足联 50/50。
 
-#### 对战 / 接龙 — 公共
+### 2.2 经典系提示（经典 / 每日 / 对战 / 接龙）
 
-| 项 | 规则 |
-|----|------|
-| 房间 | Socket.io 大厅，**固定 5 槽**；**房主**在 ≥2 人在线时开始；开局前 **3 秒倒计时**（【PWA】 见 §0） |
-| 通信 | 猜测走 `room:guess`；REST `/api/game/guess` 有 `room_code` 时拒绝 |
+适用：`classic-six` / `daily-one` / `battle` / `relay-chain`。实现：`pickQuestionHintsWithRng` → 存 `hint_field` + `extra_hint_fields`；展示：`BuildQueuedBonusSessionHints`。
 
-### 1.4 计分与结算
+#### A. 出题时如何生成提示队列
+
+出题一次定死两条数据（之后不再重抽队列本身）：
+
+| 字段 | 含义 |
+|------|------|
+| `hint_field` | **首提示**，开局立刻展示 |
+| `extra_hint_fields` | **额外提示有序队列**，最多 **3** 条（对应阈值 3/6/9），先存库不展示 |
+
+**各主题怎么抽**（`pickQuestionHintsWithRng` / 宝可梦 `BuildPokemonQuestion`）
+
+| 主题 | 首提示 `hint_field` | 额外队列 `extra_hint_fields`（最多 3） |
+|------|---------------------|----------------------------------------|
+| CS | 对比 6 项 **shuffle** 后取第 1 项 | 同池第 2～4 项（去掉 name / 排除字段） |
+| 足球 | `clubLeague` 或 `confederation`（有则 50/50；**不进对比格**） | 足球对比提示池 shuffle，**去掉已作首提示的那项**，取前 3 |
+| NBA | 固定 `divisionPosition`（赛区·选秀轮次；**不进对比格**） | NBA 额外池 shuffle，取前 3 |
+| 宝可梦 | 首提示池随机 1：`category` / `ability` / `eggGroup` / `moveHint` / `weaknessHint` | `GetPokemonBonusHintFields(activeFields)` shuffle，去掉首提示，取前 3 |
+
+排除规则：`name`、主题级 `IsHintFieldExcluded` / NBA 排除字段不能进提示池。宝可梦若首提示是 `moveHint`，对比格会加 `learnableMove` 并写入 `compareMove`。
+
+#### B. 何时解锁额外槽位
+
+`BONUS_HINT_THRESHOLDS = [3, 6, 9]`：本题猜测次数 ≥ 阈值时，多开放 1 个额外槽（最多 3）。
+
+| 模式 | 计数口径 |
+|------|----------|
+| 经典 / 每日 | 本题自己的 `question_attempts` |
+| 对战 | 每人独立计数（同题 `extra_hint_fields` 相同，解锁进度可不同） |
+| 接龙 | **全队**本题总猜测次数 |
+
+#### C. 解锁时如何从队列取字段（命中跳过 / 递补）
+
+每个额外槽位在**对应阈值那一刻**选定字段，之后该槽选择保持稳定（用「前 N 次猜测」的 hit 快照，而不是用当前全部 hit 重算乱序）。
+
+对第 `k` 个槽（阈值 = 3/6/9）：
+
+1. 取**前阈值次猜测**里对比格结果为 **hit** 的字段集合  
+2. 按 `extra_hint_fields` **队列顺序**找下一条：  
+   - 未用过  
+   - **优先跳过**此时已 hit 的字段（不把「玩家已经从对比格知道的信息」再占一个提示槽）  
+   - 且该字段当前能构建出有效提示（宝可梦特殊字段见下）  
+3. 若队列里**没有**未 hit 可构建项 → **放宽**：允许选已 hit 的字段（避免槽位空着）  
+4. 仍没有 → 该槽及后续不再解锁  
+
+**已展示的提示不会因为后来 hit 而从界面消失**（首提示 + 已解锁额外提示都保留）。
+
+宝可梦附加限制：
+
+| 情况 | 行为 |
+|------|------|
+| 队列项是 `weaknessHint`，但 `type1` 或 `type2` 已 hit | **跳过 / 不展示**该弱点提示（`ShouldShowWeaknessHint`） |
+| 队列项是 `moveHint`，但对比列没有 `learnableMove` | 不可构建，跳过 |
+| 普通字段不在本题 `activeFields` | 不可构建，跳过 |
+
+#### D. 小例子
+
+队列：`[rating, team, age]`，阈值 3/6/9。
+
+| 时刻 | 前 N 次 hit | 本槽选取 |
+|------|-------------|----------|
+| 第 3 次猜完 | 无 | 取 `rating`（队列第 1） |
+| 第 6 次猜完 | 已 hit `rating` | 跳过 `rating`，取 `team` |
+| 第 9 次猜完 | 已 hit `rating`、`team` | 跳过前两项，取 `age` |
+
+若第 6 次时队列剩余全已 hit，则允许把已 hit 的下一项填进槽位（放宽规则），而不是空槽。
+
+### 2.3 逐步提示
+
+逐步模式**不用**上面的 3/6/9 额外队列；另建 `pendingQueue`。
+
+#### A. 队列如何生成（`BuildProgressiveHintQueueFromSetup`）
+
+| 主题 | 首条 `firstField` | `pendingQueue` |
+|------|-------------------|----------------|
+| 足球 | 联赛或足联（50/50） | 足球提示池去掉首条后 shuffle |
+| NBA | `divisionPosition` | NBA 额外池去掉 divisionPosition 后 shuffle |
+| 宝可梦 | 本题 `hintField` | activeFields + bonus + extra 去重，去掉首条后 shuffle |
+| CS | 本题 `hintField` | 对比提示池去掉 name/首条/排除项后 shuffle |
+
+开局只展示首条；其余在 `pendingQueue` 排队。
+
+#### B. 猜一次怎么判定
+
+| 结果 | 行为 |
+|------|------|
+| 猜对名字 | 恭喜；**不**因提示解锁；命数不恢复 |
+| 猜错，且**未满足**当前已解锁的全部提示 | **扣 1 命**；提示不增加 |
+| 猜错，但已满足**全部已解锁提示** | **不扣命**；从队列解锁下一条 |
+
+猜中**尚未解锁**的字段 → 只记入 `satisfiedFields`，**不提前弹出**该提示，也不从队列删除（正式解锁时再处理）。
+
+#### C. 解锁下一条时的跳过逻辑（`UnlockNextProgressiveHint`）
+
+按 `pendingQueue` 顺序尝试取下一条：
+
+1. **优先跳过**已在 `satisfiedFields` 里的字段（玩家其实已通过猜测满足过，不必再作为「新提示」）  
+2. 跳过与已展示提示 **field:value 完全重复** 的项  
+3. 跳过已在 `hintFields` 里的字段  
+4. 宝可梦：`weaknessHint` 在 type1/type2 已满足时跳过  
+5. 若按「跳过已满足」找不到 → **放宽**：允许选已满足字段（仍要过重复/弱点检查）  
+6. 仍没有 → 队列耗尽，不再解锁  
+
+### 2.4 逆向轰炸（筛选，不是提示主路径）
+
+- 每轮 5 次筛选：二选一字段 + 条件，按隐藏答案淘汰卡片  
+- 第 4 次筛选前给 1 条准确提示（字段不在当轮二选一）  
+- 存活剩 1 → 自动成功；筛尽 → 终极猜人  
+- 卡池/条件下拉**禁止回退全库**，只在本题 100 卡内操作  
+
+
+---
+
+## 三、计分与结算
 
 **经典 / 逐步 / 对战（本题完全猜对）**：1→500，2→420，3→340，4+→`max(300, 340-(n-3)×55)`（`scoreForQuestion`，最低 300）。
 
@@ -321,9 +371,7 @@
 | 中途退出 | — | 是（当前题答案） |
 | 多人正常打完（题数用尽） | — | 否 |
 
-**服务端**：`submitGuess` 仅在**猜错且机会/命尽**时返回 `correctAnswer`；`getGameSession` 用 `buildRevealedAnswer` 附加 `revealedAnswer`（`quit` 与 `daily-one` 始终；其余仅当前题未猜中）。**多人**：`roomService.endRoom` 在正常打完时不写 `revealedAnswer`，退出/耗尽才写。
 
-**前端入口**：单人 `GamePage` · 多人 `MultiplayerGamePage` · 结算 `ResultPage` / `SettlementPage`（`AnswerRevealPanel`）。
 
 | 模式 | 排行榜 |
 |------|--------|
@@ -333,9 +381,9 @@
 
 ---
 
-## 二、实现逻辑
+## 四、实现逻辑
 
-### 2.1 模块与关键函数
+### 4.1 模块与关键函数
 
 | 模块 | 职责 | 关键函数 |
 |------|------|----------|
@@ -351,11 +399,11 @@
 | `progressiveHint.ts` | 逐步提示状态机 | `createInitialProgressiveState` 初始态 · `submitProgressiveGuess` 判定 · `unlockNextProgressiveHint` 解锁下一条 |
 | `reverseBomb.ts` | 逆向池、筛选、计分 | `createInitialReverseState` 100 卡池 · `submitReverseQuery` 提交条件 · `finishReverseRound` 轮次结算 |
 | `dailyChallenge.ts` | 每日种子题 | `getOrCreateDailyChallenge` 同日同题 |
-| `roomService.ts` | 多人 Socket 房间（【PWA】 内存态） | `registerRoomHandlers` 事件注册 · `roomToState` 广播快照 · `maybeStartWaitingRoom` 在线满员开局 · `scheduleRelayTurnTimer` 接龙回合计时 · `endRoom` 房间结束 |
+| `roomService.ts` | 多人 Socket 房间 | `registerRoomHandlers` 事件注册 · `roomToState` 广播快照 · `maybeStartWaitingRoom` 在线满员开局 · `scheduleRelayTurnTimer` 接龙回合计时 · `endRoom` 房间结束 |
 | `relayScoring.ts` | 接龙认领计分 | `scoreRelayGuess` 单次猜测计分 · `applyClaimsToFieldResults` 对比格标注认领人 · 完全猜对查表见 `types.computeRelayFullCorrectBonus` |
 | `relayTurn.ts` | 接龙回合轮转 | `advanceRelayTurn` 切换当前玩家 · `ensureRelayTurnActive` 校验回合有效性 |
 
-### 2.2 猜题主流程
+### 4.2 猜题主流程
 
 **单人** — `POST /api/game/guess` → `submitGuess`
 
@@ -375,7 +423,19 @@ findCharacterByGuess（精确：name / englishName / aliases；CS 含 id）
 
 **Session 状态**：`playing` → 答对 `question_done` → 下一题；耗尽 `game_over`；每日失败 `failed`。
 
-### 2.3 出题 Pipeline
+### 4.3 出题 / 提示 — 实现入口
+
+产品规则见 **§二**。实现侧关键路径：
+
+| 步骤 | 函数 / 位置 |
+|------|-------------|
+| 抽答案 | `pickRandomCharacter`（足球/NBA 可玩过滤） |
+| 生成对比列+提示 | `resolveQuestionSetup` / `buildPokemonQuestion` / `pickQuestionHints` |
+| 展示提示列表 | `buildSessionHints` · `buildQueuedBonusSessionHints` · `buildRelayHintsForRoom` |
+| 逐步状态机 | `progressiveHint.ts` / `progressiveQueue.ts` |
+| 逆向卡池与筛选 | `reverseBomb.ts`（`questionPoolIds` 不得空池扫全库） |
+
+#### 出题 Pipeline（实现细节）
 
 出题分两步：**① 从可玩池抽答案** → **② 为该答案生成对比列与提示**。各模式共用同一套筛选与 `resolveQuestionSetup`，仅随机源与是否批量预生成不同。
 
@@ -415,73 +475,9 @@ findCharacterByGuess（精确：name / englishName / aliases；CS 含 id）
 
 **每日一题**：`seed = hash(UTC+8日期:theme)` → 确定性选题 → `daily_challenges` 表缓存。
 
-### 2.4 模式专项
 
-#### 经典 / 对战 / 每日 / 接龙 — 提示 Pipeline
 
-适用：`classic-six`、`daily-one`、`battle`（`buildQueuedBonusSessionHints`）；接龙全队次数见 `buildRelayHintsForRoom`。
-
-**通用规则**
-
-- 开局展示 **1 条**首提示（`hint_field`）
-- 出题时预抽 **3 条**有序额外提示（`extra_hint_fields`），存库作队列
-- 本题第 **3 / 6 / 9** 次猜测各解锁 **1 个槽位**（`BONUS_HINT_THRESHOLDS` → `countUnlockedBonusHints`）
-- 每解锁 1 槽，从队列取下一条展示：**未 hit 优先**（`collectHitFields`）；队列未 hit 项用尽后再展示 **已 hit** 项
-- 对比格已 hit 的字段**不会占槽空缺**，自动递补队列中下一条
-
-**对战额外**：同房 `generateQuestionQueue` 种子固定 → 每题 `extra_hint_fields` 相同；各自 `question_attempts` 独立 → 解锁进度不同步。
-
-**接龙额外**：提示解锁看**全队**本题总猜测次数（`countRelayQuestionAttempts`）；hit 字段集合亦全队合并（`collectRelayHitFields`）。
-
-**各主题：首提示与额外池来源**
-
-| 主题 | 首提示（`hint_field`） | 额外 3 条预抽池 |
-|------|------------------------|-----------------|
-| csgo | 对比 6 项 shuffle 第 1 项 | 同 6 项 shuffle 第 2–4 项 |
-| football | `buildFootballPrimaryHint`：已选答案上联赛/足联 50/50（**筛库已在 pickRandomCharacter 完成**） | 对比 6 项 shuffle |
-| nba | `divisionPosition` 赛区·选秀轮次（合成，**不进对比格**） | 对比 6 项 shuffle |
-| pokemon | 见 `buildPokemonQuestion` 首提示池随机 1 项 | `activeFields` + bonus 字段 shuffle（见 §3.3、§2.6） |
-
-#### 逐步提示队列
-
-```
-buildProgressiveHintQueueFromSetup → firstField + pendingQueue（shuffle）
-createInitialProgressiveState      → hints[0] 展示，其余排队
-猜错且 allHintsHit                 → unlockNextProgressiveHint（跳过 field:value 重复、已解锁）
-updateProgressiveSatisfiedFields     → 记录额外命中，不删 pendingQueue
-```
-
-| 主题 | firstField | pendingQueue |
-|------|------------|--------------|
-| football | 联赛或足联（50/50） | club, nationalTeam, age, marketValue, height, position |
-| nba | divisionPosition | team, age, height, draft, playoffCount |
-| pokemon | setup.hintField | activeFields + bonus 去重 |
-| csgo | setup.hintField | hint 池其余 |
-
-#### 逆向轰炸
-
-```
-createInitialReverseState
-  getReverseQuestionBank → pickReverseQuestionPoolIds（100，含答案）
-  pickReverseFieldChoices（2 个有区分度字段，避 recentChoiceFields）
-
-submitReverseQuery / getReverseValues
-  getAlivePool(questionPoolIds) → 淘汰 / 枚举（均限本题池，禁止 getBank 全量）
-
-submitReverseQuery（续）
-  判答案是否满足 → 淘汰卡 → attempts_left--
-  queries≥3 → buildReverseAccurateHint
-  存活=1 → finishReverseRound（autoDeduce 计分）
-  attempts=0 → phase=guessing
-
-finishReverseRound → roundHistory；第 3 轮 → game_over + 写榜
-```
-
-**题库约束**：`questionPoolIds` 写入 `ReverseState`；缺失时 `ensureReverseQuestionPoolIds` 补池。凡涉及卡格/枚举/淘汰的路径须带 `answerId` 解析池，不得空池时扫全库。
-
-**逆向-only 字段**：CS 雷达五维、NBA 赛区/出场、足球 league/confederation 合成、宝可梦 `pokemonWeakTo`/`pokemonResistTo` 等（见 `reverseBomb.ts` `EXTRA_REVERSE_FIELD_DEFS` / `SYNTHETIC_REVERSE_FIELDS`）。
-
-#### 接龙 `relay-chain`
+### 4.4 接龙计分实现 `relay-chain`
 
 **计分查表**（`types.ts` → `computeRelayFullCorrectBonus`）
 
@@ -515,12 +511,12 @@ buildRelayHintsForRoom(playerOrder, theme, questionIndex)
 | `scheduleRelayTurnTimer` | `roomService.ts` | 30s 回合计时，触发超时处理并轮转 |
 | `finishRoomIfNeeded` | `roomService.ts` | 接龙：全员 `attemptsLeft≤0` 时结束房间 |
 
-#### 对战 / 接龙 — 多人公共（实现）
+### 4.5 多人公共（实现）
 
-- 每玩家独立 `sessions` 行，共享 `room_code`（【PWA】）
+- 每玩家独立 `sessions` 行，共享 `room_code`
 - 揭晓：对战猜对 → `BattleRoundBanner`；对战平局 → `AnswerRevealModal`；房间因退出/耗尽结束 → `GameEndRevealModal` + `/settlement` 的 `revealedAnswer`（`endRoom` 正常打完「十道题已完成」/「题目已完成」不写揭晓）
 
-### 2.5 比对引擎要点 `compareEngine.ts`
+### 4.6 比对引擎要点 `compareEngine.ts`
 
 | 结果 | 含义 |
 |------|------|
@@ -535,7 +531,7 @@ buildRelayHintsForRoom(playerOrder, theme, questionIndex)
 - `clubLeague` / `confederation` = meta 映射字符串相等
 - 宝可梦 `moveHint` / `weaknessHint` 专用逻辑
 
-### 2.6 特殊处理清单
+### 4.7 特殊处理清单
 
 | 场景 | 处理 |
 |------|------|
@@ -544,7 +540,7 @@ buildRelayHintsForRoom(playerOrder, theme, questionIndex)
 | 足球年龄 | 基准年 `config.ageReferenceYear`（2026） |
 | NBA 球队展示 | 存英文代码，hint/UI 用 `config.teams` 中文 |
 | NBA 可玩 | `hasCareerSince2025` 且 GP≥30（2025 起常规+季后） |
-| 足球可玩 | 见 §2.3 · `config.allowedClubLeagues` + `isPlayableFootballAnswer` |
+| 足球可玩 | 见 §二 / §4.3 · `config.allowedClubLeagues` + `isPlayableFootballAnswer` |
 | CS 年龄 | 优先 `birthDate` 动态算 |
 | 逆向数值输入 | 不预填；枚举/数值运算符见 `reverseBomb.validateCondition` |
 | 答案揭晓 | `buildRevealedAnswer`：`quit`/`daily-one` 必返；逆向当前轮已在 `roundHistory` 则不返；其余看本题是否猜中 |
@@ -552,9 +548,11 @@ buildRelayHintsForRoom(playerOrder, theme, questionIndex)
 
 ---
 
-## 三、题库与字段设计
+---
 
-### 3.1 文件布局
+## 五、题库与字段设计
+
+### 5.1 文件布局
 
 ```
 server/data/
@@ -590,7 +588,7 @@ server/data/
 
 **非后台配置**：`geo/nationality-regions.json` 供 `compareEngine` 国籍 close 判定，CS `nationality` 与足球 `nationalTeam` 共用。
 
-### 3.2 字段角色
+### 5.2 字段角色
 
 | 角色 | 说明 | 示例 |
 |------|------|------|
@@ -601,7 +599,7 @@ server/data/
 | 过滤 | 能否成为随机答案（选手字段或 config 规则） | NBA `hasCareerSince2025` |
 | 运行时 | 不在 JSON，会话生成 | `compareMove`（首提示为 moveHint 时） |
 
-### 3.3 四主题速查
+### 5.3 四主题速查
 
 > 字段中文名与 `server/types.ts` 中 `THEME_FIELD_DEFS` / `getFieldLabel()` 一致。  
 > **经典 / 对战 / 每日 / 接龙**的提示解锁与预抽规则见 [§2.4 提示 Pipeline](#经典--对战--每日--接龙--提示-pipeline)；本节只列字段与主题特有问题。
@@ -647,7 +645,7 @@ server/data/
 | config | `typeChart`（属性克制，§3.1） |
 | 蛋群 close | 共享蛋群但单/双蛋群数不同 → close + 文案 |
 
-### 3.4 可玩规模（参考）
+### 5.4 可玩规模（参考）
 
 | 主题 | 入库 | 可玩 |
 |------|------|------|
@@ -660,18 +658,20 @@ server/data/
 
 ---
 
-## 四、技术架构
+---
 
-### 4.1 技术栈
+## 六、技术架构
+
+### 6.1 技术栈
 
 | 层 | 选型 |
 |----|------|
 | 前端 | React 18 + TS + Vite + Tailwind |
 | 后端 | **Go + chi + modernc/sqlite**（纯 Go SQLite，已完全替代原 Node 后端） |
-| 实时 | Socket.io `/socket.io`（【PWA】 待平台鉴权） |
+| 实时 | Socket.io `/socket.io` |
 | 题库 | 静态 JSON，运行时只读 |
 
-### 4.2 目录（关键路径）
+### 6.2 目录（关键路径）
 
 ```
 client/src/pages/     GamePage, ResultPage, LobbyPage, MultiplayerGamePage, SettlementPage
@@ -685,26 +685,26 @@ server-go/data/                   题库 JSON
 scripts/                          数据同步（puppeteer 等，非运行时）；start-dev.ps1 / kill-dev.ps1
 ```
 
-### 4.3 数据库（核心表）
+### 6.3 数据库（核心表）
 
 | 表 | 用途 |
 |----|------|
-| `sessions` | 局状态：answer_id, active_fields, attempts, score, status, progressive_state, room_code（【PWA】） |
+| `sessions` | 局状态：answer_id, active_fields, attempts, score, status, progressive_state, room_code |
 | `guesses` | 每次猜测 + field_results JSON |
-| `leaderboard` | 单人模式总分榜（【PWA】 player_name → userId） |
+| `leaderboard` | 单人模式总分榜 |
 | `daily_challenges` | 每日题目缓存 |
 | `daily_leaderboard` | 每日成功榜 |
-| `daily_player_attempts` | 每人每日一次（【PWA】 player_key） |
+| `daily_player_attempts` | 每人每日一次 |
 
 `progressive_state` / 逆向：复用同列存 `ProgressiveState` 或 `ReverseState` JSON。
 
 **生产扩展**：Go 后端为单二进制部署，SQLite 文件持久化即可；多实例建议外置 PostgreSQL + Redis 房间状态。原 Node `sql.js` 方案已废弃。
 
-### 4.4 API 摘要
+### 6.4 API 摘要
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/api/game/start` | body: playerName【PWA】, theme, gameMode |
+| POST | `/api/game/start` | body: playerName, theme, gameMode |
 | POST | `/api/game/guess` | 单人猜测（有 room_code 拒绝） |
 | POST | `/api/game/next` | 下一题 |
 | POST | `/api/game/quit` | 退出写榜 |
@@ -715,11 +715,11 @@ scripts/                          数据同步（puppeteer 等，非运行时）
 
 **Socket 事件**：`room:create` | `room:join` | `room:rejoin` | `room:guess` | `room:leave` | `room:state` | `game:start` | `game:finished`
 
-### 4.5 前端路由
+### 6.5 前端路由
 
 `/` 首页 · `/game` 单人（`CongratsBanner` / `AnswerRevealModal` / 逆向 `roundModal`） · `/lobby` 多人大厅 · `/multiplayer` 对局 · `/settlement` 多人结算 · `/result` 单人结算（`revealedAnswer`） · `/leaderboard` 榜
 
-### 4.6 本地开发
+### 6.6 本地开发
 
 | 命令 | 说明 |
 |------|------|
@@ -741,7 +741,7 @@ scripts/                          数据同步（puppeteer 等，非运行时）
 
 开发地址：前端 http://localhost:5173 ，API/Socket 由 Vite 代理到 http://127.0.0.1:3001 。
 
-### 4.7 生产部署
+### 6.7 生产部署
 
 ```bash
 npm run build    # client 构建 + server-go 编译 server.exe
@@ -759,7 +759,9 @@ npm start        # 运行 server-go/server.exe，PORT 默认 3001
 
 ---
 
-## 附录：常量与枚举
+---
+
+## 附录 A：常量与枚举
 
 ```typescript
 type GameMode = 'classic-six' | 'daily-one' | 'progressive-hint' | 'reverse-bomb' | 'battle' | 'relay-chain'
@@ -792,3 +794,8 @@ RELAY_TIMEOUT_PENALTY = 50
 ---
 
 *版本：2026-07。规则以 `server-go/internal/`、`server-go/data/*.json` 为准。*
+
+
+## 附录 B：嵌入平台时的身份替换（备忘）
+
+独立 Web 原型里的昵称 / localStorage / 自研房间码，接入平台后改为平台 userId、Token、Lobby。**局内规则与出题/提示逻辑可不变。** 产品侧入口与邀请见页面「前端接入功能」手写说明。

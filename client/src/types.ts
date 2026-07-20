@@ -253,6 +253,10 @@ export interface RoomPlayerState {
   score: number;
   correctCount: number;
   attemptsLeft: number;
+  /** 本题已猜测次数（对战紧迫感） */
+  questionAttempts?: number;
+  /** 本题对比格最佳命中字段数 */
+  hitCount?: number;
   questionIndex: number;
   status: SessionStatus;
   connected: boolean;

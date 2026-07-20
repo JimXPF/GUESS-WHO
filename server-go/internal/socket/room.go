@@ -758,24 +758,29 @@ func scheduleRelayIntermission(io *socketio.Server, room *Room) {
 			return
 		}
 		still.mu.Lock()
-		defer still.mu.Unlock()
 		if still.RelayPhase != "intermission" {
+			still.mu.Unlock()
 			return
 		}
 		winnerID := still.RelayIntermissionWinnerID
 		if winnerID == nil {
+			still.mu.Unlock()
 			return
 		}
 		advanced := advanceRelayRoomQuestion(still, *winnerID)
-		if !advanced && still.Status == "finished" {
-			io.To(socketio.Room(still.Code)).Emit("game:finished", roomSnapshot(still))
-		} else {
+		finished := !advanced && still.Status == "finished"
+		if !finished {
 			turnRoom := relayTurnRoom(still)
 			services.EnsureRelayTurnActive(turnRoom)
 			syncRelayTurnRoom(still, turnRoom)
 			scheduleRelayTurnTimer(io, still, true)
 		}
-		broadcastRoom(io, still)
+		state := roomSnapshot(still)
+		still.mu.Unlock()
+		if finished {
+			io.To(socketio.Room(code)).Emit("game:finished", state)
+		}
+		io.To(socketio.Room(code)).Emit("room:state", state)
 	})
 }
 
@@ -792,15 +797,18 @@ func scheduleBattleIntermission(io *socketio.Server, room *Room) {
 			return
 		}
 		still.mu.Lock()
-		defer still.mu.Unlock()
 		if still.BattlePhase != "intermission" {
+			still.mu.Unlock()
 			return
 		}
 		advanced := advanceBattleRoomQuestion(still)
-		if !advanced && still.Status == "finished" {
-			io.To(socketio.Room(still.Code)).Emit("game:finished", roomSnapshot(still))
+		finished := !advanced && still.Status == "finished"
+		state := roomSnapshot(still)
+		still.mu.Unlock()
+		if finished {
+			io.To(socketio.Room(code)).Emit("game:finished", state)
 		}
-		broadcastRoom(io, still)
+		io.To(socketio.Room(code)).Emit("room:state", state)
 	})
 }
 
@@ -916,8 +924,12 @@ func roomSnapshot(room *Room) *types.RoomState {
 			ps.Score = sess.Score
 			ps.CorrectCount = sess.CorrectCount
 			ps.AttemptsLeft = sess.AttemptsLeft
+			ps.QuestionAttempts = sess.QuestionAttempts
 			ps.QuestionIndex = sess.QuestionIndex
 			ps.Status = sess.Status
+		}
+		if hit, err := services.GetBestHitCountForQuestion(sid, room.CurrentQuestionIndex); err == nil {
+			ps.HitCount = hit
 		}
 		players = append(players, ps)
 	}
@@ -1051,6 +1063,7 @@ func cancelLobbyCountdownToWaiting(room *Room) {
 }
 
 func scheduleLobbyCountdown(io *socketio.Server, room *Room) {
+	room.mu.Lock()
 	clearLobbyCountdownTimer(room)
 	room.Status = "countdown"
 	deadline := time.Now().UnixMilli() + int64(services.LobbyCountdownSeconds*1000)
@@ -1076,8 +1089,12 @@ func scheduleLobbyCountdown(io *socketio.Server, room *Room) {
 		state := roomSnapshot(still)
 		still.mu.Unlock()
 		io.To(socketio.Room(code)).Emit("game:start", state)
-		broadcastRoom(io, still)
+		io.To(socketio.Room(code)).Emit("room:state", state)
 	})
+	state := roomSnapshot(room)
+	room.mu.Unlock()
+	// 立即广播倒计时态，确保非房主也能看到 3-2-1
+	_ = io.To(socketio.Room(code)).Emit("room:state", state)
 }
 
 func startRoomGame(room *Room) {
