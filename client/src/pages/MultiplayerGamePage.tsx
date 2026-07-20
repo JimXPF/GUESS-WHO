@@ -138,6 +138,16 @@ export default function MultiplayerGamePage() {
     navigate('/settlement');
   };
 
+  // hooks must stay above any early return (React #310)
+  const handleIntermissionExpired = useCallback(() => {
+    if (!roomCode || !sessionId) return;
+    void advanceIntermission(roomCode, sessionId).finally(() => {
+      window.setTimeout(() => {
+        rejoinRoom(roomCode, sessionId);
+      }, 300);
+    });
+  }, [roomCode, sessionId, rejoinRoom, advanceIntermission]);
+
   if (!session || !room) {
     return (
       <div className="h-[100dvh] flex items-center justify-center">
@@ -173,16 +183,6 @@ export default function MultiplayerGamePage() {
   const inputDisabled =
     myAttemptsLeft <= 0 || !isMyTurn || isIntermission;
   const turnPlayerName = room.currentTurnPlayer || '其他玩家';
-
-  const handleIntermissionExpired = useCallback(() => {
-    if (!roomCode || !sessionId) return;
-    // 客户端主动推进题间（不依赖服务端 AfterFunc，Coze 等环境更稳）
-    void advanceIntermission(roomCode, sessionId).finally(() => {
-      window.setTimeout(() => {
-        rejoinRoom(roomCode, sessionId);
-      }, 300);
-    });
-  }, [roomCode, sessionId, rejoinRoom, advanceIntermission]);
 
   const emptyHint = isIntermission
     ? '本题已结束，请等待下一题'
