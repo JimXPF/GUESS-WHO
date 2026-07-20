@@ -28,7 +28,7 @@ import {
 
 export default function MultiplayerGamePage() {
   const navigate = useNavigate();
-  const { room, submitRoomGuess, leaveRoom, rejoinRoom } = useGameRoom();
+  const { room, submitRoomGuess, leaveRoom, rejoinRoom, advanceIntermission } = useGameRoom();
   const [session, setSession] = useState<GameSession | null>(null);
   const [guessText, setGuessText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -159,13 +159,14 @@ export default function MultiplayerGamePage() {
   const isMyTurn =
     !isRelay ||
     (room.currentTurnSessionId === sessionId && myAttemptsLeft > 0);
-  const battleGuesses = session.guesses.filter(
-    (g) =>
-      g.fieldResults !== null &&
-      (isIntermission && roundResult
+  const battleGuesses = session.guesses.filter((g) => {
+    if (g.fieldResults === null) return false;
+    const qIdx =
+      isIntermission && roundResult
         ? roundResult.questionIndex
-        : g.questionIndex === session.questionIndex)
-  );
+        : session.questionIndex;
+    return g.questionIndex === qIdx;
+  });
   const relayGuesses: RelayGuessRecord[] = room.relayGuesses ?? [];
   const displayGuesses: Array<GuessRecord & { playerName?: string; sessionId?: string }> =
     isRelay ? relayGuesses : battleGuesses;
@@ -175,17 +176,21 @@ export default function MultiplayerGamePage() {
 
   const handleIntermissionExpired = useCallback(() => {
     if (!roomCode || !sessionId) return;
-    // 给服务端题间定时器一点余量，再拉一次房间态（防漏广播）
-    window.setTimeout(() => {
-      rejoinRoom(roomCode, sessionId);
-    }, 400);
-  }, [roomCode, sessionId, rejoinRoom]);
+    // 客户端主动推进题间（不依赖服务端 AfterFunc，Coze 等环境更稳）
+    void advanceIntermission(roomCode, sessionId).finally(() => {
+      window.setTimeout(() => {
+        rejoinRoom(roomCode, sessionId);
+      }, 300);
+    });
+  }, [roomCode, sessionId, rejoinRoom, advanceIntermission]);
 
-  const emptyHint = isRelay
-    ? isMyTurn
-      ? '输入猜测开始接龙'
-      : `等待 ${turnPlayerName} 作答`
-    : '输入名字开始猜测';
+  const emptyHint = isIntermission
+    ? '本题已结束，请等待下一题'
+    : isRelay
+      ? isMyTurn
+        ? '输入名字开始猜测'
+        : `等待 ${turnPlayerName} 作答`
+      : '输入名字开始猜测';
 
   return (
     <div className="h-[100dvh] flex flex-col overflow-hidden">

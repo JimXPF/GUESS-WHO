@@ -46,6 +46,11 @@ interface RoomDismissResult {
   error?: string;
 }
 
+interface RoomAdvanceIntermissionResult {
+  room?: RoomState;
+  error?: string;
+}
+
 interface GameRoomContextValue {
   connected: boolean;
   room: RoomState | null;
@@ -68,6 +73,10 @@ interface GameRoomContextValue {
   ) => Promise<RoomGuessResult>;
   leaveRoom: (sessionId: string) => Promise<RoomLeaveResult>;
   rejoinRoom: (roomCode: string, sessionId: string) => Promise<RoomJoinResult>;
+  advanceIntermission: (
+    roomCode: string,
+    sessionId: string
+  ) => Promise<RoomAdvanceIntermissionResult>;
 }
 
 const GameRoomContext = createContext<GameRoomContextValue | null>(null);
@@ -290,6 +299,18 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const advanceIntermission = useCallback(
+    (roomCode: string, sessionId: string) =>
+      emitWithAck<RoomAdvanceIntermissionResult>('room:advance-intermission', {
+        roomCode,
+        sessionId,
+      }).then((result) => {
+        if (result.room) setRoom(result.room);
+        return result;
+      }),
+    []
+  );
+
   const value = useMemo(
     () => ({
       connected,
@@ -303,8 +324,21 @@ export function GameRoomProvider({ children }: { children: ReactNode }) {
       submitRoomGuess,
       leaveRoom,
       rejoinRoom,
+      advanceIntermission,
     }),
-    [connected, room, createRoom, joinRoom, startRoom, resendLadderInvite, dismissRoom, submitRoomGuess, leaveRoom, rejoinRoom]
+    [
+      connected,
+      room,
+      createRoom,
+      joinRoom,
+      startRoom,
+      resendLadderInvite,
+      dismissRoom,
+      submitRoomGuess,
+      leaveRoom,
+      rejoinRoom,
+      advanceIntermission,
+    ]
   );
 
   return <GameRoomContext.Provider value={value}>{children}</GameRoomContext.Provider>;

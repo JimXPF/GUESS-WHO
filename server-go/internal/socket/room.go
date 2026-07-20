@@ -528,6 +528,88 @@ func registerSocketHandlers(io *socketio.Server, s *socketio.Socket) {
 		broadcastRoom(io, room)
 	})
 
+	// 客户端题间倒计时归零后主动推进（补 AfterFunc 不可靠的环境，如部分托管平台）
+	onEvent(s, "room:advance-intermission", func(payload map[string]any, ack socketio.Ack) {
+		defer recoverAck(ack)
+		roomCode := strings.ToUpper(strings.TrimSpace(strField(payload, "roomCode")))
+		sessionID := strings.TrimSpace(strField(payload, "sessionId"))
+		if roomCode == "" || sessionID == "" {
+			ackAck(ack, map[string]any{"error": "缺少参数"})
+			return
+		}
+		registryMu.RLock()
+		room := rooms[roomCode]
+		registryMu.RUnlock()
+		if room == nil {
+			ackAck(ack, map[string]any{"error": "房间不存在"})
+			return
+		}
+
+		room.mu.Lock()
+		if _, ok := room.Players[sessionID]; !ok {
+			room.mu.Unlock()
+			ackAck(ack, map[string]any{"error": "未找到玩家"})
+			return
+		}
+		if room.Status != "playing" {
+			state := roomSnapshot(room)
+			room.mu.Unlock()
+			ackAck(ack, map[string]any{"room": state})
+			return
+		}
+
+		now := time.Now().UnixMilli()
+		// 允许客户端在 deadline 前后 1.5s 内推进，避免时钟偏差
+		canAdvance := false
+		if room.Mode == "battle" && room.BattlePhase == "intermission" {
+			if room.IntermissionDeadlineAt == nil || now+1500 >= *room.IntermissionDeadlineAt {
+				canAdvance = true
+			}
+		}
+		if room.Mode == "relay-chain" && room.RelayPhase == "intermission" {
+			if room.IntermissionDeadlineAt == nil || now+1500 >= *room.IntermissionDeadlineAt {
+				canAdvance = true
+			}
+		}
+		if !canAdvance {
+			state := roomSnapshot(room)
+			room.mu.Unlock()
+			ackAck(ack, map[string]any{"room": state})
+			return
+		}
+
+		var finished bool
+		if room.Mode == "battle" {
+			clearBattleIntermissionTimer(room)
+			advanced := advanceBattleRoomQuestion(room)
+			finished = !advanced && room.Status == "finished"
+		} else if room.Mode == "relay-chain" {
+			clearRelayIntermissionTimer(room)
+			winnerID := room.RelayIntermissionWinnerID
+			if winnerID == nil {
+				state := roomSnapshot(room)
+				room.mu.Unlock()
+				ackAck(ack, map[string]any{"room": state})
+				return
+			}
+			advanced := advanceRelayRoomQuestion(room, *winnerID)
+			finished = !advanced && room.Status == "finished"
+			if !finished {
+				turnRoom := relayTurnRoom(room)
+				services.EnsureRelayTurnActive(turnRoom)
+				syncRelayTurnRoom(room, turnRoom)
+				scheduleRelayTurnTimer(io, room, true)
+			}
+		}
+		state := roomSnapshot(room)
+		room.mu.Unlock()
+		if finished {
+			io.To(socketio.Room(roomCode)).Emit("game:finished", state)
+		}
+		io.To(socketio.Room(roomCode)).Emit("room:state", state)
+		ackAck(ack, map[string]any{"room": state})
+	})
+
 	onEvent(s, "room:leave", func(payload map[string]any, ack socketio.Ack) {
 		sessionID := strings.TrimSpace(strField(payload, "sessionId"))
 		code := leaveSocket(s, io, sessionID, true)
