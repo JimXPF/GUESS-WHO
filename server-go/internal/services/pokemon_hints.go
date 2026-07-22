@@ -281,11 +281,23 @@ func GetPokemonReverseMatchupValues(alivePool []types.CharacterEntry, kind strin
 	return values
 }
 
-func formatMatchupLine(m PokemonTypeMatchup) string {
-	if m.Kind == "weakness" {
-		return fmt.Sprintf("弱点：%s属性 ×%v", m.Type, m.Mult)
+// formatMatchupMultiplier 统一倍率展示：*2 / *4 / *1/2 / *1/4 / 无效
+func formatMatchupMultiplier(mult float64) string {
+	if mult == 0 {
+		return "无效"
 	}
-	return fmt.Sprintf("抗性：%s属性 %s", m.Type, FormatResistanceMultiplier(m.Mult))
+	if mult > 1 {
+		if mult == float64(int(mult)) {
+			return fmt.Sprintf("*%d", int(mult))
+		}
+		return fmt.Sprintf("*%v", mult)
+	}
+	return "*" + FormatResistanceMultiplier(mult)
+}
+
+func formatMatchupLine(m PokemonTypeMatchup) string {
+	// 语义：该属性攻击打中本题宝可梦时的倍率
+	return fmt.Sprintf("受到%s属性攻击 %s", m.Type, formatMatchupMultiplier(m.Mult))
 }
 
 // FormatPokemonTypeMatchupHintValue 从该宝可梦的全部弱/抗中随机抽取一条展示（同题稳定）。

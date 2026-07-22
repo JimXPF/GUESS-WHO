@@ -240,12 +240,12 @@
 
 | 主题 | 首提示 `hint_field` | 额外队列 `extra_hint_fields`（最多 3） |
 |------|---------------------|----------------------------------------|
-| CS | 对比 6 项 **shuffle** 后取第 1 项 | 同池第 2～4 项（去掉 name / 排除字段） |
-| 足球 | `clubLeague` 或 `confederation`（有则 50/50；**不进对比格**） | 足球对比提示池 shuffle，**去掉已作首提示的那项**，取前 3 |
-| NBA | 固定 `divisionPosition`（赛区·选秀轮次；**不进对比格**） | NBA 额外池 shuffle，取前 3 |
-| 宝可梦 | 首提示池随机 1：`category` / `ability` / `eggGroup` / `moveHint` / `weaknessHint` | `GetPokemonBonusHintFields(activeFields)` shuffle，去掉首提示，取前 3 |
+| CS | 对比 6 项 **shuffle** 后取第 1 项：`team` 战队 · `nationality` 国籍 · `age` 年龄 · `rating` 近三月Rating · `top20Count` TOP 20次数 · `position` 位置 | 同池第 2～4 项（去掉 `name` 名称 / 排除字段） |
+| 足球 | `clubLeague` 联赛 或 `confederation` 洲际赛区（有则 50/50；**不进对比格**） | 足球对比提示池 shuffle：`club` 俱乐部 · `nationalTeam` 国家队 · `age` 年龄 · `marketValue` 身价 · `height` 身高 · `position` 位置；**去掉已作首提示的那项**，取前 3 |
+| NBA | 固定 `divisionPosition` 赛区·选秀轮次（**不进对比格**） | NBA 额外池 shuffle：`team` 球队 · `age` 年龄 · `height` 身高 · `draft` 选秀 · `playoffCount` 季后赛次数 · `position` 位置，取前 3 |
+| 宝可梦 | 首提示池随机 1：`category` 分类 / `ability` 特性 / `eggGroup` 生蛋群 / `moveHint` 可学会招式 / `weaknessHint` 属性相克 | `GetPokemonBonusHintFields(activeFields)` shuffle（本题对比列 + 首提示池剩余项），去掉首提示，取前 3 |
 
-排除规则：`name`、主题级 `IsHintFieldExcluded` / NBA 排除字段不能进提示池。宝可梦若首提示是 `moveHint`，对比格会加 `learnableMove` 并写入 `compareMove`。
+排除规则：`name` 名称、主题级 `IsHintFieldExcluded` / NBA 排除字段不能进提示池。宝可梦若首提示是 `moveHint` 可学会招式，对比格会加 `learnableMove` 可学习技能 并写入 `compareMove`（运行时选定的招式名）。
 
 #### B. 何时解锁额外槽位
 
@@ -277,19 +277,19 @@
 
 | 情况 | 行为 |
 |------|------|
-| 队列项是 `weaknessHint`，但 `type1` 或 `type2` 已 hit | **跳过 / 不展示**该弱点提示（`ShouldShowWeaknessHint`） |
-| 队列项是 `moveHint`，但对比列没有 `learnableMove` | 不可构建，跳过 |
-| 普通字段不在本题 `activeFields` | 不可构建，跳过 |
+| 队列项是 `weaknessHint` 属性相克，但 `type1` 属性1 或 `type2` 属性2 已 hit | **跳过 / 不展示**该弱点提示（`ShouldShowWeaknessHint`） |
+| 队列项是 `moveHint` 可学会招式，但对比列没有 `learnableMove` 可学习技能 | 不可构建，跳过 |
+| 普通字段不在本题 `activeFields`（本题对比列） | 不可构建，跳过 |
 
 #### D. 小例子
 
-队列：`[rating, team, age]`，阈值 3/6/9。
+队列：`[rating 近三月Rating, team 战队, age 年龄]`，阈值 3/6/9。
 
 | 时刻 | 前 N 次 hit | 本槽选取 |
 |------|-------------|----------|
-| 第 3 次猜完 | 无 | 取 `rating`（队列第 1） |
-| 第 6 次猜完 | 已 hit `rating` | 跳过 `rating`，取 `team` |
-| 第 9 次猜完 | 已 hit `rating`、`team` | 跳过前两项，取 `age` |
+| 第 3 次猜完 | 无 | 取 `rating` 近三月Rating（队列第 1） |
+| 第 6 次猜完 | 已 hit `rating` 近三月Rating | 跳过 `rating`，取 `team` 战队 |
+| 第 9 次猜完 | 已 hit `rating`、`team` | 跳过前两项，取 `age` 年龄 |
 
 若第 6 次时队列剩余全已 hit，则允许把已 hit 的下一项填进槽位（放宽规则），而不是空槽。
 
@@ -301,10 +301,10 @@
 
 | 主题 | 首条 `firstField` | `pendingQueue` |
 |------|-------------------|----------------|
-| 足球 | 联赛或足联（50/50） | 足球提示池去掉首条后 shuffle |
-| NBA | `divisionPosition` | NBA 额外池去掉 divisionPosition 后 shuffle |
-| 宝可梦 | 本题 `hintField` | activeFields + bonus + extra 去重，去掉首条后 shuffle |
-| CS | 本题 `hintField` | 对比提示池去掉 name/首条/排除项后 shuffle |
+| 足球 | `clubLeague` 联赛 或 `confederation` 洲际赛区（50/50） | 足球提示池去掉首条后 shuffle |
+| NBA | `divisionPosition` 赛区·选秀 | NBA 额外池去掉 `divisionPosition` 后 shuffle |
+| 宝可梦 | 本题 `hintField`（同经典首提示池：`category` 分类 / `ability` 特性 / `eggGroup` 生蛋群 / `moveHint` 可学会招式 / `weaknessHint` 属性相克） | `activeFields` 对比列 + bonus + extra 去重，去掉首条后 shuffle |
+| CS | 本题 `hintField`（对比 6 项之一） | 对比提示池去掉 `name` 名称 / 首条 / 排除项后 shuffle |
 
 开局只展示首条；其余在 `pendingQueue` 排队。
 
@@ -325,7 +325,7 @@
 1. **优先跳过**已在 `satisfiedFields` 里的字段（玩家其实已通过猜测满足过，不必再作为「新提示」）  
 2. 跳过与已展示提示 **field:value 完全重复** 的项  
 3. 跳过已在 `hintFields` 里的字段  
-4. 宝可梦：`weaknessHint` 在 type1/type2 已满足时跳过  
+4. 宝可梦：`weaknessHint` 属性相克 在 `type1` 属性1 / `type2` 属性2 已满足时跳过  
 5. 若按「跳过已满足」找不到 → **放宽**：允许选已满足字段（仍要过重复/弱点检查）  
 6. 仍没有 → 队列耗尽，不再解锁  
 
@@ -469,7 +469,7 @@ findCharacterByGuess（精确：name / englishName / aliases；CS 含 id）
 | 阶段 | 函数 | 作用 |
 |------|------|------|
 | ① 筛题库 | `isPlayableFootballAnswer` | 答案**必须**来自 `allowedClubLeagues` 内联赛球员 |
-| ② 首提示 | `buildFootballPrimaryHint` | 在**已选答案**上，有联赛且有足联则 **50/50** 展示 `clubLeague` 或 `confederation`（不进对比格） |
+| ② 首提示 | `buildFootballPrimaryHint` | 在**已选答案**上，有联赛且有足联则 **50/50** 展示 `clubLeague` 联赛 或 `confederation` 洲际赛区（不进对比格） |
 
 非白名单联赛球员（如伊朗联赛）不入池，故不会成为答案，也不会作为首提示的联赛项出现。
 
@@ -527,16 +527,16 @@ buildRelayHintsForRoom(playerOrder, theme, questionIndex)
 **数值 close 阈值（摘要）**：CS age±2 rating±0.08；足球 age±2 身价±20% 身高±3cm；NBA age±2 身高±3cm 季后赛±1；宝可梦种族±15 总和±30。
 
 **合成提示判定**（逐步/提示用，`progressiveHint.evaluateHintHit`）：
-- `divisionPosition` = 同赛区 **且** 同选秀轮次（不含年份）
-- `clubLeague` / `confederation` = meta 映射字符串相等
-- 宝可梦 `moveHint` / `weaknessHint` 专用逻辑
+- `divisionPosition` 赛区·选秀 = 同赛区 **且** 同选秀轮次（不含年份）
+- `clubLeague` 联赛 / `confederation` 洲际赛区 = meta 映射字符串相等
+- 宝可梦 `moveHint` 可学会招式 / `weaknessHint` 属性相克 专用逻辑
 
 ### 4.7 特殊处理清单
 
 | 场景 | 处理 |
 |------|------|
-| 宝可梦首提示=moveHint | 对比格加 `learnableMove`，session 存 `compareMove` |
-| 宝可梦 weaknessHint | 首提示池与 3/6/9 额外提示池均可随机抽到（与其它字段同等概率，**不优先**）；展示完整相克列表（弱点 ×2/×4、抗性 1/2/1/4/无效）；**不进对比格**；type1/type2 hit 后不再展示 |
+| 宝可梦首提示=`moveHint` 可学会招式 | 对比格加 `learnableMove` 可学习技能，session 存 `compareMove`（运行时招式） |
+| 宝可梦 `weaknessHint` 属性相克 | 首提示池与 3/6/9 额外提示池均可随机抽到（与其它字段同等概率，**不优先**）；文案统一为「受到XX属性攻击 *2 / *4 / *1/2 / *1/4 / 无效」；**不进对比格**；`type1`/`type2` hit 后不再展示 |
 | 足球年龄 | 基准年 `config.ageReferenceYear`（2026） |
 | NBA 球队展示 | 存英文代码，hint/UI 用 `config.teams` 中文 |
 | NBA 可玩 | `hasCareerSince2025` 且 GP≥30（2025 起常规+季后） |
@@ -577,10 +577,10 @@ server/data/
 
 | 主题 | `config` 块（可后台配置） |
 |------|---------------------------|
-| csgo | `positionGroups`、`teamIgls`、`roleOverrides` |
-| football | `confederations`、`clubLeagues`、`allowedClubLeagues`、`ageReferenceYear`、`positionGroups` |
-| nba | `teams`、`divisions`、`positions`、`schools`、`playableMinTotalGpSince2025`、`positionGroups` |
-| pokemon | `typeChart`（`types` + `chart`，属性克制） |
+| csgo | `positionGroups` 位置合并组、`teamIgls` 各队 IGL、`roleOverrides` 角色覆盖 |
+| football | `confederations` 足联表、`clubLeagues` 联赛表、`allowedClubLeagues` 允许联赛白名单、`ageReferenceYear` 年龄参考年、`positionGroups` 位置合并组 |
+| nba | `teams` 球队表、`divisions` 赛区表、`positions` 位置表、`schools` 学校表、`playableMinTotalGpSince2025` 可玩出场门槛、`positionGroups` 位置合并组 |
+| pokemon | `typeChart`（`types` 属性列表 + `chart` 克制表） |
 
 **昵称**：写在每位选手的 `aliases[]`，不再使用独立 alias 文件。
 
@@ -592,17 +592,17 @@ server/data/
 
 | 角色 | 说明 | 示例 |
 |------|------|------|
-| 身份 | id、name、**aliases**（昵称/别名，搜索与精确猜均匹配） | CS 的 `id` 即提交名 |
-| 对比 | 进对比格，hit/close/miss | `team`, `height` |
-| 提示 | 仅 hint，或运行时合成 | `divisionPosition`, `clubLeague` |
-| config | 主题级配置（联赛表、位置合并、克制表等） | football `allowedClubLeagues` |
-| 过滤 | 能否成为随机答案（选手字段或 config 规则） | NBA `hasCareerSince2025` |
-| 运行时 | 不在 JSON，会话生成 | `compareMove`（首提示为 moveHint 时） |
+| 身份 | `id` 标识、`name` 名称、**`aliases` 昵称/别名**（搜索与精确猜均匹配） | CS 的 `id` 即提交名 |
+| 对比 | 进对比格，hit/close/miss | `team` 战队/球队、`height` 身高 |
+| 提示 | 仅 hint，或运行时合成 | `divisionPosition` 赛区·选秀、`clubLeague` 联赛 |
+| config | 主题级配置（联赛表、位置合并、克制表等） | football `allowedClubLeagues` 允许联赛白名单 |
+| 过滤 | 能否成为随机答案（选手字段或 config 规则） | NBA `hasCareerSince2025` 是否有 2025 起生涯 |
+| 运行时 | 不在 JSON，会话生成 | `compareMove`（首提示为 `moveHint` 可学会招式 时） |
 
 ### 5.3 四主题速查
 
-> 字段中文名与 `server/types.ts` 中 `THEME_FIELD_DEFS` / `getFieldLabel()` 一致。  
-> **经典 / 对战 / 每日 / 接龙**的提示解锁与预抽规则见 [§2.4 提示 Pipeline](#经典--对战--每日--接龙--提示-pipeline)；本节只列字段与主题特有问题。
+> 字段中文名与 `server-go/internal/types` 中 `ThemeFieldDefs` / `GetFieldLabel()` 一致（下文凡出现 `` `field` `` 均附中文注释）。  
+> **经典 / 对战 / 每日 / 接龙**的提示解锁与预抽规则见 **§2.2**；本节只列字段与主题特有问题。
 
 #### CS `csgo` — 147 人，无过滤
 
@@ -611,7 +611,7 @@ server/data/
 | 对比 6 项 | `team` 战队 · `nationality` 国籍 · `age` 年龄 · `rating` 近三月Rating · `top20Count` TOP 20次数 · `position` 位置 |
 | 提示字段来源 | 首提示与额外提示均来自上表 6 项（无合成首提示） |
 | 逆向额外 | `firepowerStat` 火力值 · `sniperStat` 狙击值 · `breakthroughStat` 突破 · `tradeStat` 补枪值 · `clutchStat` 残局值 · `utilityStat` 道具值（完美雷达回填） |
-| config | `positionGroups`、`teamIgls`、`roleOverrides`（见 §3.1） |
+| config | `positionGroups` 位置合并组、`teamIgls` 各队 IGL、`roleOverrides` 角色覆盖（见 §3.1） |
 
 #### 足球 `football` — ~1248 入库，可玩=白名单联赛球员
 
@@ -620,7 +620,7 @@ server/data/
 | 对比 6 项 | `club` 俱乐部 · `nationalTeam` 国家队 · `age` 年龄 · `marketValue` 身价(万欧元) · `height` 身高(cm) · `position` 位置 |
 | 题库筛选 | 见 §2.3 `isPlayableFootballAnswer` |
 | 合成首提示 | 见 §2.3 `buildFootballPrimaryHint` |
-| config | `confederations`, `clubLeagues`, `allowedClubLeagues`, `ageReferenceYear`, `positionGroups` |
+| config | `confederations` 足联表、`clubLeagues` 联赛表、`allowedClubLeagues` 允许联赛白名单、`ageReferenceYear` 年龄参考年、`positionGroups` 位置合并组 |
 | 允许联赛 | 见 `config.allowedClubLeagues`（英超、西甲、意甲、德甲、法甲、美职联、沙特联、J/K/中超等） |
 
 #### NBA `nba` — ~538 入库，~415 可玩
@@ -630,7 +630,7 @@ server/data/
 | 对比 6 项 | `team` 球队 · `age` 年龄 · `height` 身高(cm) · `draft` 选秀 · `playoffCount` 季后赛次数 · `position` 位置 |
 | 合成首提示 | `divisionPosition` 赛区·选秀轮次（不进对比格） |
 | 过滤 | `max(totalGpSince2025,bestGpSince2025) >= 30` 且 `hasCareerSince2025` |
-| config | `teams`, `divisions`, `positions`, `schools`, `playableMinTotalGpSince2025`, `positionGroups` |
+| config | `teams` 球队表、`divisions` 赛区表、`positions` 位置表、`schools` 学校表、`playableMinTotalGpSince2025` 可玩出场门槛、`positionGroups` 位置合并组 |
 | 球队 | JSON 存英文代码如 `Cavaliers`，展示用中文 |
 | 逆向额外 | `currentSeasonGp` 本赛季出场 · `maxCareerGpSince2025` 2025来最高出场 · `division` 赛区（合成） |
 
@@ -639,10 +639,10 @@ server/data/
 | 项 | 内容 |
 |----|------|
 | 对比（动态） | 必含 `type1` 属性1 + 1 项种族值（`baseStatTotal` 种族值总和 / `hp` HP / `attack` 攻击 / `defense` 防御 / `spAttack` 特攻 / `spDefense` 特防 / `speed` 速度 中随机 1 项）+ 最多 4 项可选：`type2` 属性2 · `evolutionStage` 进化阶段 · `category` 分类 · `ability` 特性 · `eggGroup` 生蛋群；首提示为 `moveHint` 时另加 `learnableMove` 可学习技能 |
-| 首提示池 | `category` · `ability` · `eggGroup` · `moveHint` · **`weaknessHint`**（属性相克，见下） |
-| weaknessHint | 首提示或 3/6/9 额外槽**随机**抽取（与其它 bonus 字段同等）；展示完整相克（弱点 ×N、抗性 1/2/1/4/无效）；不进对比格；type1/type2 hit 后隐藏 |
-| 逆向弱点/抗性 | 底部可选 `pokemonWeakTo`（弱点）· `pokemonResistTo`（抗性），与其它逆向字段一样随机出现在 2 个候选里；选属性类型（不展示倍率）：×2/×4 算弱点，×1/×1/2/×1/4/无效 算抗性 |
-| config | `typeChart`（属性克制，§3.1） |
+| 首提示池 | `category` 分类 · `ability` 特性 · `eggGroup` 生蛋群 · `moveHint` 可学会招式 · **`weaknessHint` 属性相克**（见下） |
+| `weaknessHint` 属性相克 | 首提示或 3/6/9 额外槽**随机**抽取（与其它 bonus 字段同等）；文案「受到XX属性攻击 *2 / *4 / *1/2 / *1/4 / 无效」；不进对比格；`type1` 属性1 / `type2` 属性2 hit 后隐藏 |
+| 逆向弱点/抗性 | 底部可选 `pokemonWeakTo` 弱点 · `pokemonResistTo` 抗性，与其它逆向字段一样随机出现在 2 个候选里；选属性类型（不展示倍率）：*2/*4 算弱点，*1/*1/2/*1/4/无效 算抗性 |
+| config | `typeChart` 属性克制表（§3.1） |
 | 蛋群 close | 共享蛋群但单/双蛋群数不同 → close + 文案 |
 
 ### 5.4 可玩规模（参考）

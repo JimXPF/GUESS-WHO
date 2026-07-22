@@ -839,10 +839,10 @@ func SubmitReverseQuery(
 	compareMove *string,
 ) (ReverseQueryOutcome, error) {
 	if errMsg := ValidateCondition(theme, condition); errMsg != "" {
-		return ReverseQueryOutcome{}, fmt.Errorf(errMsg)
+		return ReverseQueryOutcome{}, fmt.Errorf("%s", errMsg)
 	}
 	if errMsg := ValidateFieldInChoices(condition.Field, state.FieldChoices); errMsg != "" {
-		return ReverseQueryOutcome{}, fmt.Errorf(errMsg)
+		return ReverseQueryOutcome{}, fmt.Errorf("%s", errMsg)
 	}
 
 	poolBefore, err := GetAlivePool(theme, queriesBefore, state.QuestionPoolIds, answer.ID())
