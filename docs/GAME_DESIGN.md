@@ -277,7 +277,7 @@
 
 | 情况 | 行为 |
 |------|------|
-| 队列项是 `weaknessHint` 属性相克，但 `type1` 属性1 或 `type2` 属性2 已 hit | **跳过 / 不展示**该弱点提示（`ShouldShowWeaknessHint`） |
+| 队列项是 `weaknessHint` 属性相克，但 `type1` 属性1 或 `type2` 属性2 已 hit | **跳过该队列项**（不占新槽）；**已展示的弱点提示仍保留** |
 | 队列项是 `moveHint` 可学会招式，但对比列没有 `learnableMove` 可学习技能 | 不可构建，跳过 |
 | 普通字段不在本题 `activeFields`（本题对比列） | 不可构建，跳过 |
 
@@ -536,7 +536,7 @@ buildRelayHintsForRoom(playerOrder, theme, questionIndex)
 | 场景 | 处理 |
 |------|------|
 | 宝可梦首提示=`moveHint` 可学会招式 | 对比格加 `learnableMove` 可学习技能，session 存 `compareMove`（运行时招式） |
-| 宝可梦 `weaknessHint` 属性相克 | 首提示池与 3/6/9 额外提示池均可随机抽到（与其它字段同等概率，**不优先**）；文案统一为「受到XX属性攻击 *2 / *4 / *1/2 / *1/4 / 无效」；**不进对比格**；`type1`/`type2` hit 后不再展示 |
+| 宝可梦 `weaknessHint` 属性相克 | 首提示池与 3/6/9 额外提示池均可随机抽到（与其它字段同等概率，**不优先**）；文案统一为「受到XX属性攻击 *2 / *4 / *1/2 / *1/4 / 无效」；**不进对比格**；`type1`/`type2` 已 hit 时**不再新解锁**该提示，但**已展示的不撤回** |
 | 足球年龄 | 基准年 `config.ageReferenceYear`（2026） |
 | NBA 球队展示 | 存英文代码，hint/UI 用 `config.teams` 中文 |
 | NBA 可玩 | `hasCareerSince2025` 且 GP≥30（2025 起常规+季后） |
@@ -640,7 +640,7 @@ server/data/
 |----|------|
 | 对比（动态） | 必含 `type1` 属性1 + 1 项种族值（`baseStatTotal` 种族值总和 / `hp` HP / `attack` 攻击 / `defense` 防御 / `spAttack` 特攻 / `spDefense` 特防 / `speed` 速度 中随机 1 项）+ 最多 4 项可选：`type2` 属性2 · `evolutionStage` 进化阶段 · `category` 分类 · `ability` 特性 · `eggGroup` 生蛋群；首提示为 `moveHint` 时另加 `learnableMove` 可学习技能 |
 | 首提示池 | `category` 分类 · `ability` 特性 · `eggGroup` 生蛋群 · `moveHint` 可学会招式 · **`weaknessHint` 属性相克**（见下） |
-| `weaknessHint` 属性相克 | 首提示或 3/6/9 额外槽**随机**抽取（与其它 bonus 字段同等）；文案「受到XX属性攻击 *2 / *4 / *1/2 / *1/4 / 无效」；不进对比格；`type1` 属性1 / `type2` 属性2 hit 后隐藏 |
+| `weaknessHint` 属性相克 | 首提示或 3/6/9 额外槽**随机**抽取（与其它 bonus 字段同等）；文案「受到XX属性攻击 *2 / *4 / *1/2 / *1/4 / 无效」；不进对比格；`type1`/`type2` 已 hit 时跳过**未展示**的队列项，已展示保留 |
 | 逆向弱点/抗性 | 底部可选 `pokemonWeakTo` 弱点 · `pokemonResistTo` 抗性，与其它逆向字段一样随机出现在 2 个候选里；选属性类型（不展示倍率）：*2/*4 算弱点，*1/*1/2/*1/4/无效 算抗性 |
 | config | `typeChart` 属性克制表（§3.1） |
 | 蛋群 close | 共享蛋群但单/双蛋群数不同 → close + 文案 |

@@ -68,6 +68,40 @@ func TestAssembleUnlockedHintsKeepsHitBonus(t *testing.T) {
 	}
 }
 
+func TestQueuedHintsKeepWeaknessAfterTypeHit(t *testing.T) {
+	answer := types.CharacterEntry{
+		"id": "gliscor", "name": "天蝎王",
+		"type1": "地面", "type2": "飞行",
+		"category": "牙蝎宝可梦", "ability": "沙隐",
+		"evolutionStage": "最终进化", "eggGroup": "虫",
+		"baseStatTotal": 510,
+	}
+	active := []string{"type1", "type2", "baseStatTotal", "ability", "evolutionStage", "category"}
+	extra := []string{"category", "ability", "eggGroup"}
+	guesses := []types.GuessRecord{
+		missGuess(),
+		hitGuess("type2", "category"),
+		hitGuess("type2", "evolutionStage", "category"),
+	}
+	hitFields := CollectHitFields(guesses)
+
+	hints := BuildQueuedBonusSessionHints(
+		types.ThemePokemon, answer, "weaknessHint", extra,
+		3, active, hitFields, nil, guesses,
+	)
+	if len(hints) < 2 {
+		t.Fatalf("expected primary weakness + bonus kept, got %+v", hints)
+	}
+	if hints[0].Field != "weaknessHint" {
+		t.Fatalf("primary weakness should remain after type hit, got %+v", hints)
+	}
+	for _, h := range hints {
+		if h.Field == "weaknessHint" && h.Value == "" {
+			t.Fatalf("weakness value should stay visible: %+v", h)
+		}
+	}
+}
+
 func TestCollectHitFieldsUpToAttempts(t *testing.T) {
 	guesses := []types.GuessRecord{
 		missGuess(),

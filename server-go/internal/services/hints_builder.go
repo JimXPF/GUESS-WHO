@@ -78,6 +78,8 @@ func buildExtraHintForField(
 			return &h
 		}
 		if field == "weaknessHint" {
+			// 仅用于「从队列新选槽」：属性已 hit 则跳过尚未展示的弱点提示。
+			// 已解锁/已展示的提示组装见 assembleUnlockedHints，不会再走此过滤。
 			if !ShouldShowWeaknessHint(hitFields) {
 				return nil
 			}
@@ -100,20 +102,6 @@ func buildExtraHintForField(
 	return &h
 }
 
-// FilterPokemonWeaknessHints 当属性字段命中时移除弱点提示。
-func FilterPokemonWeaknessHints(hints []types.HintInfo, theme types.Theme, hitFields map[string]bool) []types.HintInfo {
-	if theme == types.ThemePokemon && !ShouldShowWeaknessHint(hitFields) {
-		var out []types.HintInfo
-		for _, h := range hints {
-			if h.Field != "weaknessHint" {
-				out = append(out, h)
-			}
-		}
-		return out
-	}
-	return hints
-}
-
 type bonusHintBuildContext struct {
 	theme        types.Theme
 	answer       types.CharacterEntry
@@ -124,6 +112,11 @@ type bonusHintBuildContext struct {
 
 func (ctx bonusHintBuildContext) tryBuild(field string, hitFields map[string]bool) *types.HintInfo {
 	return buildExtraHintForField(ctx.theme, ctx.answer, field, ctx.activeFields, ctx.compareMove, hitFields)
+}
+
+// tryBuildUnlocked 组装已解锁提示：不再因后续属性 hit 隐藏 weaknessHint。
+func (ctx bonusHintBuildContext) tryBuildUnlocked(field string) *types.HintInfo {
+	return buildExtraHintForField(ctx.theme, ctx.answer, field, ctx.activeFields, ctx.compareMove, nil)
 }
 
 // pickBuildableQueueField 按队列顺序选取下一条可构建的提示字段。
@@ -185,11 +178,11 @@ func assembleUnlockedHints(
 	primary types.HintInfo,
 	bonusFields []string,
 	ctx bonusHintBuildContext,
-	hitFields map[string]bool,
+	_ map[string]bool,
 ) []types.HintInfo {
 	hints := []types.HintInfo{primary}
 	for _, field := range bonusFields {
-		hint := ctx.tryBuild(field, hitFields)
+		hint := ctx.tryBuildUnlocked(field)
 		if hint == nil {
 			continue
 		}
@@ -220,12 +213,11 @@ func BuildQueuedBonusSessionHints(
 	ctx := bonusHintBuildContext{theme, answer, hintField, activeFields, compareMove}
 
 	if maxBonus == 0 {
-		return FilterPokemonWeaknessHints(primaryList, theme, hitFields)
+		return primaryList
 	}
 
 	bonusFields := computeStableBonusFields(extraHintFields, hintField, maxBonus, guesses, ctx)
-	hints := assembleUnlockedHints(primary, bonusFields, ctx, hitFields)
-	return FilterPokemonWeaknessHints(hints, theme, hitFields)
+	return assembleUnlockedHints(primary, bonusFields, ctx, hitFields)
 }
 
 // BuildSessionHints 组装当前题目对会话可见的全部提示。
