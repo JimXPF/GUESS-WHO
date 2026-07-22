@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSession, SESSION_KEY, ROOM_KEY } from '../api';
 import { useGameRoom } from '../hooks/useGameRoom';
@@ -46,6 +46,16 @@ export default function MultiplayerGamePage() {
   const sessionId = localStorage.getItem(SESSION_KEY) || '';
   const roomCode = localStorage.getItem(ROOM_KEY) || '';
 
+  // All hooks must run unconditionally before any early return (React #310).
+  const handleIntermissionExpired = useCallback(() => {
+    if (!roomCode || !sessionId) return;
+    void advanceIntermission(roomCode, sessionId).finally(() => {
+      window.setTimeout(() => {
+        rejoinRoom(roomCode, sessionId);
+      }, 300);
+    });
+  }, [roomCode, sessionId, rejoinRoom, advanceIntermission]);
+
   const loadSession = useCallback(async () => {
     if (!sessionId) {
       navigate('/');
@@ -73,7 +83,7 @@ export default function MultiplayerGamePage() {
     if (room?.status !== 'finished' || wentToSettlement) return;
     setWentToSettlement(true);
     sessionStorage.setItem('guess-who-last-room', JSON.stringify(room));
-    navigate('/settlement');
+    navigate('/settlement', { replace: true });
   }, [room, wentToSettlement, navigate]);
 
   useEffect(() => {
@@ -135,18 +145,8 @@ export default function MultiplayerGamePage() {
     if (settlementRoom) {
       sessionStorage.setItem('guess-who-last-room', JSON.stringify(settlementRoom));
     }
-    navigate('/settlement');
+    navigate('/settlement', { replace: true });
   };
-
-  // hooks must stay above any early return (React #310)
-  const handleIntermissionExpired = useCallback(() => {
-    if (!roomCode || !sessionId) return;
-    void advanceIntermission(roomCode, sessionId).finally(() => {
-      window.setTimeout(() => {
-        rejoinRoom(roomCode, sessionId);
-      }, 300);
-    });
-  }, [roomCode, sessionId, rejoinRoom, advanceIntermission]);
 
   if (!session || !room) {
     return (

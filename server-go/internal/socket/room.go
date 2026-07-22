@@ -1309,7 +1309,7 @@ func leaveSocket(s *socketio.Socket, io *socketio.Server, sessionID string, expl
 	room.mu.Unlock()
 
 	// 等待大厅里 socket 断开只标记离线，不移除玩家、不解散房间。
-	if !explicit && (status == "waiting" || status == "countdown") {
+	if !explicit && status == "waiting" {
 		syncWaitingLadderInvite(io, room)
 		broadcastRoom(io, room)
 		return code
@@ -1319,26 +1319,12 @@ func leaveSocket(s *socketio.Socket, io *socketio.Server, sessionID string, expl
 	isHost := leftSessionID == room.HostSessionID
 	room.mu.Unlock()
 
-	if explicit && isHost && (status == "waiting" || status == "countdown") {
-		dissolveWaitingRoom(io, room, "房间已解散")
-		return code
-	}
-
-	if status == "countdown" {
-		room.mu.Lock()
-		if explicit {
-			removeWaitingPlayer(room, leftSessionID)
-		}
-		if countConnectedPlayers(room) < services.LobbyMinPlayers {
-			cancelLobbyCountdownToWaiting(room)
-		}
-		room.mu.Unlock()
-		syncWaitingLadderInvite(io, room)
-		broadcastRoom(io, room)
-		return code
-	}
-
+	// 未开局：房主主动退出 → 解散；其他人主动退出 → 移出座位。
 	if status == "waiting" {
+		if explicit && isHost {
+			dissolveWaitingRoom(io, room, "房间已解散")
+			return code
+		}
 		room.mu.Lock()
 		if explicit {
 			removeWaitingPlayer(room, leftSessionID)
@@ -1349,8 +1335,10 @@ func leaveSocket(s *socketio.Socket, io *socketio.Server, sessionID string, expl
 		return code
 	}
 
-	if status == "playing" && leftSessionID != "" {
+	// 倒计时中 / 对局中：任一玩家退出或断线 → 整局结束，其余人进结算。
+	if (status == "countdown" || status == "playing") && leftSessionID != "" {
 		room.mu.Lock()
+		clearLobbyCountdownTimer(room)
 		clearRelayTurnTimer(room)
 		clearBattleIntermissionTimer(room)
 		clearRelayIntermissionTimer(room)

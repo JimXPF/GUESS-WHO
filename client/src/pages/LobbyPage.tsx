@@ -192,6 +192,13 @@ export default function LobbyPage() {
     }
   }, [room?.status, sessionId, navigate, room?.code]);
 
+  // 对局中他人退出会把房间标为 finished；大厅也要进结算（含倒计时阶段退出）
+  useEffect(() => {
+    if (room?.status !== 'finished') return;
+    sessionStorage.setItem('guess-who-last-room', JSON.stringify(room));
+    navigate('/settlement', { replace: true });
+  }, [room, navigate]);
+
   const handleJoin = useCallback(
     async (code: string) => {
       const trimmed = code.trim().toUpperCase();
