@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"guess-who/server-go/internal/api"
@@ -17,8 +18,8 @@ import (
 )
 
 func main() {
-	// 使用 /tmp 目录存储数据库，避免只读文件系统问题
-	dbPath := "/tmp/guess-who.db"
+	// 使用系统临时目录存库（Windows/Linux 均可写；勿写死 /tmp）
+	dbPath := filepath.Join(os.TempDir(), "guess-who.db")
 	if _, err := db.Init(dbPath); err != nil {
 		log.Fatalf("failed to init database: %v", err)
 	}
