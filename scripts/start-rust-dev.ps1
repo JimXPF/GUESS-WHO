@@ -1,7 +1,7 @@
-# Start Rust backend (untouched) + local Vite client pointed at it
+# Start PWA Rust backend + local Vite client pointed at it
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$rustDir = Join-Path $root 'server-rust'
+$rustDir = Join-Path $root 'PWA_Server_Rust'
 $clientDir = Join-Path $root 'client'
 
 function Assert-Command([string]$Name) {
@@ -38,7 +38,7 @@ function Resolve-RustPort {
 Set-Location $root
 
 if (-not (Test-Path (Join-Path $rustDir 'Cargo.toml'))) {
-    throw "server-rust/Cargo.toml missing. Put the Rust backend at server-rust/ first, then re-run."
+    throw "PWA_Server_Rust/Cargo.toml missing. Clone guess_game_server into PWA_Server_Rust first, then re-run."
 }
 
 # Ensure cargo is on PATH (fresh rustup install) before Assert-Command
@@ -50,12 +50,12 @@ if (Test-Path $cargoBin) {
 Assert-Command node
 Assert-Command npm
 
-# Local runtime env for Rust server (do not commit; do not touch Rust sources)
+# Local runtime env for Rust server (do not commit)
 $rustEnv = Join-Path $rustDir '.env'
 $rustEnvExample = Join-Path $rustDir '.env.example'
 if (-not (Test-Path $rustEnv) -and (Test-Path $rustEnvExample)) {
     Copy-Item $rustEnvExample $rustEnv
-    Write-Host '[INFO] Created server-rust/.env from .env.example'
+    Write-Host '[INFO] Created PWA_Server_Rust/.env from .env.example'
 }
 
 $port = Resolve-RustPort
@@ -92,20 +92,33 @@ if (-not $env:RUST_LOG) { $env:RUST_LOG = 'guess_game_server=info,tower_http=inf
 
 Assert-Command cargo
 
-Write-Host '[INFO] Starting Rust backend + Vite client...'
+Write-Host '[INFO] Building Rust backend (first compile can take several minutes)...'
+Push-Location $rustDir
+try {
+    if ($env:RUST_RELEASE -eq '1') {
+        cargo build --release
+    } else {
+        cargo build
+    }
+    if ($LASTEXITCODE -ne 0) {
+        throw "cargo build failed with exit code $LASTEXITCODE"
+    }
+} finally {
+    Pop-Location
+}
+
+# cargo run after a successful build is usually seconds; keep a long wait as a safety net
+if (-not $env:BACKEND_WAIT_ATTEMPTS) { $env:BACKEND_WAIT_ATTEMPTS = '180' }
+if (-not $env:BACKEND_WAIT_INTERVAL_MS) { $env:BACKEND_WAIT_INTERVAL_MS = '1000' }
+
+Write-Host '[INFO] Starting PWA Rust backend + Vite client...'
 Write-Host "  Frontend: http://localhost:5173  (proxies /api + /socket.io -> :$port)"
 Write-Host "  Backend:  http://127.0.0.1:$port"
-Write-Host '  Rust code: read-only from this launcher'
 Write-Host ''
 
-$cargoArgs = @('run')
-if ($env:RUST_RELEASE -eq '1') { $cargoArgs = @('run', '--release') }
-$cargoLine = ($cargoArgs -join ' ')
-
-# Run from repo root so npx/concurrently resolve correctly. Never edit Rust sources.
-$rustCmd = "cd /d `"$rustDir`" && cargo $cargoLine"
-$clientCmd = "node `"$root\scripts\wait-for-backend.js`" && npm run dev --prefix `"$clientDir`""
-
-npx --yes concurrently -k -n rust,client -c yellow,green `
-    "cmd /c $rustCmd" `
-    "cmd /c $clientCmd"
+# Use npm script names (no spaces) so concurrently/cmd never see "E:\GUESS Who".
+if ($env:RUST_RELEASE -eq '1') {
+    npm run dev:rust:inner:release
+} else {
+    npm run dev:rust:inner
+}

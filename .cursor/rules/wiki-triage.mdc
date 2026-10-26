@@ -1,0 +1,15 @@
+---
+description: Wiki bug triage for 猜猜我是谁; read the feedback table before backend fixes
+alwaysApply: true
+---
+
+# Wiki 排查协议
+
+When the user says **「按文档进行排查」** (or equivalent):
+
+1. Open https://wiki.shdev.net/pages/viewpage.action?pageId=119719125
+2. Read 文案, 截图, and every in-cell link (follow those pages too).
+3. Only rows whose **当前状态** is not `已修复` are in scope. Empty, `未修复`, and `修复中` all mean unfixed.
+4. Classify each row as 后端 vs 前端. Implement **backend only** unless the user asks for frontend.
+5. Linked design spec: wiki `pageId=119716471` = [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md). Prefer §2 出题/提示 over inventing rules.
+6. After a backend fix, say what the wiki 当前状态 should become (`修复中` / `已修复`).

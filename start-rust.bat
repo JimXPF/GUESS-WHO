@@ -8,8 +8,7 @@ echo   Guess Who - Dev Server (Rust Backend)
 echo ========================================
 echo.
 echo   Frontend: local Vite (this repo)
-echo   Backend:  server-rust/ (already on disk)
-echo   Note: Rust sources are NEVER modified.
+echo   Backend:  PWA_Server_Rust/
 echo.
 
 where cargo >nul 2>&1
@@ -28,9 +27,9 @@ if errorlevel 1 (
   exit /b 1
 )
 
-if not exist "%~dp0server-rust\Cargo.toml" (
-  echo [ERROR] server-rust\Cargo.toml not found.
-  echo         Place the Rust backend under server-rust\ then re-run.
+if not exist "%~dp0PWA_Server_Rust\Cargo.toml" (
+  echo [ERROR] PWA_Server_Rust\Cargo.toml not found.
+  echo         Clone gitlab.shdev.net/pvp_web/guess_game_server into PWA_Server_Rust\
   echo.
   pause
   exit /b 1
@@ -41,7 +40,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\start-rust-dev
 if errorlevel 1 (
   echo.
   echo [ERROR] Rust-backed dev stack failed.
-  echo         1^) Ensure server-rust\ exists with Cargo.toml
+  echo         1^) Ensure PWA_Server_Rust\ exists with Cargo.toml
   echo         2^) Ensure cargo works: cargo --version
   echo         3^) Ensure node works: node --version
   echo.

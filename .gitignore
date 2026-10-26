@@ -19,5 +19,6 @@ server-go/*.exe
 
 # Colleague Rust backend (separate GitLab repo; do not commit)
 /server-rust/
+/PWA_Server_Rust/
 gitlab.env
 **/gitlab.env

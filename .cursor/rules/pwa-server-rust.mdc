@@ -1,0 +1,15 @@
+---
+description: Rust production backend conventions for PWA_Server_Rust
+globs: PWA_Server_Rust/**/*
+alwaysApply: false
+---
+
+# PWA_Server_Rust
+
+Online backend lives in `PWA_Server_Rust/` (GitLab `pvp_web/guess_game_server`). Do not invent a third ruleset.
+
+- Layout: `src/api/` HTTP, `src/game/` rules, `src/realtime.rs` Socket.IO, `src/repository/` DB.
+- Product spec: [`docs/GAME_DESIGN.md`](docs/GAME_DESIGN.md) §2. Port behavior from `server-go/internal/services/`.
+- After logic changes: `cargo fmt`, `cargo clippy --all-targets -- -D warnings`, `cargo test`. Add or update unit tests on the changed functions.
+- Remove unused tests, files, and dead code. Do not commit `.env`, `*.db`, or secrets.
+- Nested clone: never `git add` this folder into the parent GUESS Who repo.
